@@ -41,6 +41,13 @@ module.exports = {
         'semi': [
             'error',
             'always'
+        ],
+        "no-unused-vars": [
+            "error",
+            {
+                "vars": "all",
+                "varsIgnorePattern": "[I]\\w+"
+            }
         ]
     },
     'settings': {

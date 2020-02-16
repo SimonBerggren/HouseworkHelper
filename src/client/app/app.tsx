@@ -1,20 +1,26 @@
+import AnimatedSwitch from './animated-switch';
+import GlobalStyle from './global-style';
 import styled from 'styled-components';
 import React from 'react';
 
-const App = () =>
-    <StyledApp>
-        <h1>
-            HouseworkHelper
-        </h1>
-    </StyledApp>;
+import { BrowserRouter } from 'react-router-dom';
 
+const App = () => {
+
+    return (
+        <BrowserRouter>
+            <StyledApp>
+                <GlobalStyle />
+                <AnimatedSwitch />
+            </StyledApp>
+        </BrowserRouter>
+    );
+};
 
 const StyledApp = styled.div`
-    h1 {
-        text-align: center;
-    }
     width: 100vw;
     height: 100vh;
+    background: black;
 `;
 
 export default App;
