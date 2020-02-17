@@ -1,10 +1,14 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const NodemonPlugin = require('nodemon-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
+const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 
+const serverPort = 80;
+const clientPort = 8080;
+
 module.exports = env => {
-    const { client, dev, serverPort, clientPort } = env;
+    const { client, dev, proxy } = env;
 
     const clientConfig = {
         entry: path.resolve('src', 'client', 'index.tsx'),
@@ -19,7 +23,7 @@ module.exports = env => {
             compress: true,
             port: clientPort,
             index: '',
-            proxy: {
+            proxy: proxy && {
                 '**': `http://localhost:${serverPort}`
             }
         },
@@ -32,11 +36,10 @@ module.exports = env => {
             new NodemonPlugin({
                 ext: 'ts,tsx',
                 args: [serverPort],
-            }),
+            })
         ],
         externals: [nodeExternals()]
     };
-
 
     const config = client ? clientConfig : serverConfig;
 
@@ -47,9 +50,11 @@ module.exports = env => {
         module: {
             rules: [
                 {
-                    test: /\.(tsx?|js)$/,
-                    use: 'ts-loader',
+                    test: /\.(ts|js)x?$/,
                     exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader'
+                    },
                 },
             ],
         },
@@ -57,8 +62,13 @@ module.exports = env => {
             extensions: ['.tsx', '.ts', '.js'],
         },
         output: {
-            filename: 'bundle.js',
+            filename: '[name].js',
+            chunkFilename: '[name].bundle.js',
             path: path.resolve('dist', client ? 'client' : 'server'),
+        },
+        optimization: {
+            minimize: !dev,
+            minimizer: [new TerserPlugin()],
         }
     };
 };

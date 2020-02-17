@@ -3,7 +3,7 @@ import React from 'react';
 import PageWrapper from '../../common/page-wrapper/page-wrapper';
 import Link from '../../common/link/link';
 
-const HomePage = () => {
+const HomePage: React.FC = () => {
 
     return (
         <PageWrapper>

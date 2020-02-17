@@ -18,9 +18,8 @@ const App = () => {
 };
 
 const StyledApp = styled.div`
-    width: 100vw;
-    height: 100vh;
-    background: black;
-`;
+                width: 100vw;
+                height: 100vh;
+            `;
 
 export default App;

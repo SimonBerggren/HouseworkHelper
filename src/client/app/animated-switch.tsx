@@ -1,16 +1,18 @@
+import styled from 'styled-components';
 import React from 'react';
 
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { Location as ILocation } from 'history';
 
-import LoginPage from '../pages/login-page/login-page';
-import HomePage from '../pages/home-page/home-page';
-import styled from 'styled-components';
+import Lazy from './lazy';
 
 interface Props {
     location: ILocation
 }
+
+const LoginPage = () => <Lazy importFunc={() => import('../pages/login-page/login-page')} />;
+const HomePage = () => <Lazy importFunc={() => import('../pages/home-page/home-page')} />;
 
 const AnimatedSwitch: React.FC<Props> = ({ location }: Props) => {
     return (
@@ -37,6 +39,16 @@ const AnimatedSwitch: React.FC<Props> = ({ location }: Props) => {
 };
 
 const SwitchContainer = styled.div`
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    div {
+        animation: fadeIn 300ms;
+    }
+
     .fade-enter {
         opacity: 0;
     }
