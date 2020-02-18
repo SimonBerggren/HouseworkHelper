@@ -11,6 +11,7 @@ interface Props {
     location: ILocation
 }
 
+const Error404Page = () => <Lazy importFunc={() => import('../pages/error-404-page/error-404-page')} />;
 const LoginPage = () => <Lazy importFunc={() => import('../pages/login-page/login-page')} />;
 const HomePage = () => <Lazy importFunc={() => import('../pages/home-page/home-page')} />;
 
@@ -27,8 +28,9 @@ const AnimatedSwitch: React.FC<Props> = ({ location }: Props) => {
 
                     <RouteSection>
                         <Switch location={location}>
-                            <Route path="/login" render={() => <LoginPage />} />
-                            <Route path="/" render={() => <HomePage />} />
+                            <Route exact path="/login" render={() => <LoginPage />} />
+                            <Route exact path="/" render={() => <HomePage />} />
+                            <Route render={() => <Error404Page />} />
                         </Switch>
                     </RouteSection>
 
