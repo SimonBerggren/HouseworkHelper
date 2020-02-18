@@ -3,20 +3,24 @@ const { spawn } = require('child_process');
 const terminal = 'urxvt';
 const terminalArgs = ['-e'];
 
-const args = [...terminalArgs, 'npm', 'run'];
-
-const run = (script) =>
+const run = (...args) =>
     spawn(
         terminal,
-        [...args, script, '--', '--env.proxy'],
+        [...terminalArgs, ...args, '&'],
         {
             stdio: ['ignore', 'inherit', 'inherit'],
-            detached: true
+            detached: true,
+            shell: true
         }
     );
 
-run('start-server');
+const runScript = (script, ...args) =>
+    run('npm', 'run', script, '--', ...args);
 
-run('start-client');
+runScript('start-mongo');
+
+runScript('start-server');
+
+runScript('start-client', '--env.proxy');
 
 process.exit();

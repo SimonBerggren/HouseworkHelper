@@ -1,8 +1,5 @@
-interface FormDataModel {
-    [key: string]: string;
-    householdName: string;
-    householdHelper: string;
+interface Household {
+    name: string;
     email: string;
     password: string;
-    confirmedPassword: string;
 }

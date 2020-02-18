@@ -8,7 +8,7 @@ import { post } from '../../api/api';
 const SignupPage: React.FC = () => {
 
     const onFormSubmit = (data: FormDataModel) => {
-        post('/signup', data).then(response => console.log(response));
+        post('signup', data).then(response => console.log(response)).catch(error => alert(error));
     };
 
     return (

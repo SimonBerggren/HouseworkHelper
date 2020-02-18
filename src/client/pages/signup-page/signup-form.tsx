@@ -4,13 +4,17 @@ import styled from 'styled-components';
 import Input from '../../common/input/input';
 import { flexCenter } from '../../app/mixins';
 
-interface Props {
+interface SignupFormProps {
     onSubmit: (data: FormDataModel) => void;
 }
 
+interface FormDataModel extends Household {
+    [key: string]: string;
+    confirmedPassword: string;
+}
+
 const defaultFormData: FormDataModel = {
-    householdName: 'Home',
-    householdHelper: '',
+    name: 'Home',
     email: '',
     password: '',
     confirmedPassword: ''
@@ -18,7 +22,7 @@ const defaultFormData: FormDataModel = {
 
 const selectTextOnFocus = (event: React.FocusEvent<HTMLInputElement>) => event.currentTarget.select();
 
-const SignupForm: React.FC<Props> = ({ onSubmit }: Props) => {
+const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }: SignupFormProps) => {
 
     const [data, setData] = useState<FormDataModel>(defaultFormData);
 
@@ -44,24 +48,9 @@ const SignupForm: React.FC<Props> = ({ onSubmit }: Props) => {
 
                     <Input
                         type='text'
-                        value={data.householdName}
+                        value={data.name}
                         onFocus={selectTextOnFocus}
                         onChange={e => formDataTextChange(e, 'householdName')}
-                        required
-                    />
-                </Field>
-
-                <Field>
-                    <Label>
-                        Your Name:
-                    </Label>
-
-                    <Input
-                        type='text'
-                        autoComplete='given-name'
-                        value={data.householdHelper}
-                        onFocus={selectTextOnFocus}
-                        onChange={e => formDataTextChange(e, 'householdHelper')}
                         required
                     />
                 </Field>

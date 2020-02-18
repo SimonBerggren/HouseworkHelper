@@ -7,7 +7,7 @@ import { Location as ILocation } from 'history';
 
 import Lazy from './lazy';
 
-interface Props {
+interface AnimatedSwitchProps {
     location: ILocation
 }
 
@@ -16,7 +16,7 @@ const SignUpPage = () => <Lazy importFunc={() => import('../pages/signup-page/si
 const LoginPage = () => <Lazy importFunc={() => import('../pages/login-page/login-page')} />;
 const HomePage = () => <Lazy importFunc={() => import('../pages/home-page/home-page')} />;
 
-const AnimatedSwitch: React.FC<Props> = ({ location }: Props) => {
+const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwitchProps) => {
     return (
         <SwitchContainer>
             <TransitionGroup className="transition-group">

@@ -1,6 +1,6 @@
 const request = (path: string, method: string, data?: any) =>
     fetch(
-        path,
+        `api/${path}`,
         {
             method,
             body: JSON.stringify(data),
@@ -8,7 +8,17 @@ const request = (path: string, method: string, data?: any) =>
                 'Content-Type': 'Application/JSON'
             }
         }
-    );
+    )
+        .then(response =>
+            response.json().then(json => {
+                if (response.ok) {
+                    return Promise.resolve(json);
+                } else {
+                    return Promise.reject(json);
+                }
+
+            })
+        );
 
 export const get = (path: string) => request(path, 'GET');
 
