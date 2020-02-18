@@ -12,6 +12,7 @@ interface Props {
 }
 
 const Error404Page = () => <Lazy importFunc={() => import('../pages/error-404-page/error-404-page')} />;
+const SignUpPage = () => <Lazy importFunc={() => import('../pages/signup-page/signup-page')} />;
 const LoginPage = () => <Lazy importFunc={() => import('../pages/login-page/login-page')} />;
 const HomePage = () => <Lazy importFunc={() => import('../pages/home-page/home-page')} />;
 
@@ -28,6 +29,7 @@ const AnimatedSwitch: React.FC<Props> = ({ location }: Props) => {
 
                     <RouteSection>
                         <Switch location={location}>
+                            <Route exact path="/signup" render={() => <SignUpPage />} />
                             <Route exact path="/login" render={() => <LoginPage />} />
                             <Route exact path="/" render={() => <HomePage />} />
                             <Route render={() => <Error404Page />} />
