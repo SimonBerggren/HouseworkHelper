@@ -8,8 +8,8 @@ const LoginPage: React.FC = () => {
 
     return (
         <PageWrapper>
-            <Input type='email' placeholder='Email' autoComplete='email' />
-            <Input type='password' placeholder='Password' autoComplete='current-password' />
+            <Input type='email' autoComplete='email' />
+            <Input type='password' autoComplete='current-password' />
             <Input type='submit' value='Login' />
             <span>
                 Not a Helper yet?  <Link to='/signup'>Sign Up Here!</Link>

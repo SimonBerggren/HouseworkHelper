@@ -12,6 +12,7 @@ module.exports = env => {
 
     const clientConfig = {
         entry: path.resolve('src', 'client', 'index.tsx'),
+        devtool: 'cheap-eval-source-map',
         target: 'web',
         plugins: [
             new HtmlWebpackPlugin({
@@ -23,6 +24,7 @@ module.exports = env => {
             compress: true,
             port: clientPort,
             index: '',
+            contentBase: path.join(__dirname, 'dist', 'client'),
             proxy: proxy && {
                 '**': `http://localhost:${serverPort}`
             }

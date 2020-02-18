@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import React from 'react';
 
+import { flexCenter } from '../../app/mixins';
+
 interface Props {
     children?: React.ReactNode;
 }
@@ -18,11 +20,7 @@ const StyledPageWrapper = styled.div`
     width: 100vw;
     height: 100vh;
 
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;    
+    ${flexCenter}
 `;
 
 export default PageWrapper;

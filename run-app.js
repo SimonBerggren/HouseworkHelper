@@ -8,7 +8,7 @@ const args = [...terminalArgs, 'npm', 'run'];
 const run = (script) =>
     spawn(
         terminal,
-        [...args, script, '--', 'env.proxy'],
+        [...args, script, '--', '--env.proxy'],
         {
             stdio: ['ignore', 'inherit', 'inherit'],
             detached: true
