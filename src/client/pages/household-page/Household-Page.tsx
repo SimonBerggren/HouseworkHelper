@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 import PageWrapper from '../../common/page-wrapper/page-wrapper';
+import Link from '../../common/link/link';
+
+import { deauthenticate } from '../../app/authentication';
 import { get } from '../../api/api';
 
 const HouseholdPage: React.FC = () => {
@@ -18,6 +21,13 @@ const HouseholdPage: React.FC = () => {
             {household && <div>
 
                 <h1>{household.name}</h1>
+
+                <Link
+                    to='/'
+                    onClick={() => deauthenticate()}
+                >
+                    Log out
+                </Link>
 
             </div>}
         </PageWrapper>

@@ -31,7 +31,7 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
                     <RouteSection>
                         <Switch location={location}>
 
-                            <ProtectedRoute exact path="/household" component={HouseholdPage} />
+                            <ProtectedRoute exact path="/household" render={() => <HouseholdPage />} />
 
                             <Route exact path="/signup" render={() => <SignUpPage />} />
                             <Route exact path="/login" render={() => <LoginPage />} />

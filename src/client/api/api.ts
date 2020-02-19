@@ -1,3 +1,5 @@
+import { getToken } from '../app/authentication';
+
 const request = (path: string, method: string, data?: any) =>
     fetch(
         `api/${path}`,
@@ -6,7 +8,7 @@ const request = (path: string, method: string, data?: any) =>
             body: JSON.stringify(data),
             headers: {
                 'Content-Type': 'Application/JSON',
-                'Authorization': `bearer ${sessionStorage.getItem('jwtToken')}`
+                'Authorization': getToken()
             }
         }
     )
