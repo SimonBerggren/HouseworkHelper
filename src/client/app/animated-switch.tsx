@@ -5,14 +5,16 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { Location as ILocation } from 'history';
 
+import ProtectedRoute from './protected-route';
+
 interface AnimatedSwitchProps {
     location: ILocation
 }
 
+const HouseholdPage = React.lazy(() => import('../pages/household-page/Household-Page'));
 const Error404Page = React.lazy(() => import('../pages/error-404-page/error-404-page'));
 const SignUpPage = React.lazy(() => import('../pages/signup-page/signup-page'));
 const LoginPage = React.lazy(() => import('../pages/login-page/login-page'));
-const HouseholdPage = React.lazy(() => import('../pages/household-page/Household-Page'));
 const HomePage = React.lazy(() => import('../pages/home-page/home-page'));
 
 const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwitchProps) => {
@@ -28,11 +30,15 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
 
                     <RouteSection>
                         <Switch location={location}>
-                            <Route exact path="/household" render={() => <HouseholdPage />} />
+
+                            <ProtectedRoute exact path="/household" component={HouseholdPage} />
+
                             <Route exact path="/signup" render={() => <SignUpPage />} />
                             <Route exact path="/login" render={() => <LoginPage />} />
-                            <Route exact path="/" render={() => <HomePage />} />
+                            <Route exact path="/" component={HomePage} />
+
                             <Route render={() => <Error404Page />} />
+
                         </Switch>
                     </RouteSection>
 

@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import LoadingPage from '../pages/loading-page';
 import AnimatedSwitch from './animated-switch';
-import GlobalStyle from './global-style';
+import GlobalStyle from '../style/global-style';
 
 const App = () =>
     <Suspense fallback={<LoadingPage />}>

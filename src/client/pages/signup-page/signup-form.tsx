@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import Input from '../../common/input/input';
 
-import { flexCenter } from '../../app/mixins';
+import { flexCenter } from '../../style/mixins';
 
 interface SignupFormProps {
     onSubmit: (household: Household) => void;
@@ -13,8 +13,7 @@ const defaultFormData: SignupModel = {
     name: 'Home',
     email: '',
     password: '',
-    confirmedPassword: '',
-    tokens: []
+    confirmedPassword: ''
 };
 
 const selectTextOnFocus = (event: React.FocusEvent<HTMLInputElement>) => event.currentTarget.select();

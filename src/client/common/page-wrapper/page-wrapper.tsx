@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import React from 'react';
 
-import { flexCenter } from '../../app/mixins';
+import { flexCenter } from '../../style/mixins';
 
 interface Props {
     children?: React.ReactNode;
