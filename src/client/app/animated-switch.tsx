@@ -5,16 +5,15 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { Location as ILocation } from 'history';
 
-import Lazy from './lazy';
-
 interface AnimatedSwitchProps {
     location: ILocation
 }
 
-const Error404Page = () => <Lazy importFunc={() => import('../pages/error-404-page/error-404-page')} />;
-const SignUpPage = () => <Lazy importFunc={() => import('../pages/signup-page/signup-page')} />;
-const LoginPage = () => <Lazy importFunc={() => import('../pages/login-page/login-page')} />;
-const HomePage = () => <Lazy importFunc={() => import('../pages/home-page/home-page')} />;
+const Error404Page = React.lazy(() => import('../pages/error-404-page/error-404-page'));
+const SignUpPage = React.lazy(() => import('../pages/signup-page/signup-page'));
+const LoginPage = React.lazy(() => import('../pages/login-page/login-page'));
+const HouseholdPage = React.lazy(() => import('../pages/household-page/Household-Page'));
+const HomePage = React.lazy(() => import('../pages/home-page/home-page'));
 
 const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwitchProps) => {
     return (
@@ -29,6 +28,7 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
 
                     <RouteSection>
                         <Switch location={location}>
+                            <Route exact path="/household" render={() => <HouseholdPage />} />
                             <Route exact path="/signup" render={() => <SignUpPage />} />
                             <Route exact path="/login" render={() => <LoginPage />} />
                             <Route exact path="/" render={() => <HomePage />} />
@@ -44,14 +44,7 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
 
 const SwitchContainer = styled.div`
 
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to   { opacity: 1; }
-    }
 
-    div {
-        animation: fadeIn 300ms;
-    }
 
     .fade-enter {
         opacity: 0;

@@ -21,6 +21,13 @@ const StyledPageWrapper = styled.div`
     height: 100vh;
 
     ${flexCenter}
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    animation: fadeIn 300ms;
 `;
 
 export default PageWrapper;

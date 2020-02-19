@@ -1,18 +1,25 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import PageWrapper from '../../common/page-wrapper/page-wrapper';
 import SignupForm from './signup-form';
-import { post } from '../../api/api';
+
+import { signup } from '../../api/api';
+import { Redirect } from 'react-router-dom';
 
 const SignupPage: React.FC = () => {
 
-    const onFormSubmit = (data: FormDataModel) => {
-        post('signup', data).then(response => console.log(response)).catch(error => alert(error));
+    const [signedup, setSignedup] = useState(false);
+
+    const onFormSubmit = (household: Household) => {
+        signup(household)
+            .then(() => setSignedup(true))
+            .catch(error => alert(error));
     };
 
     return (
         <PageWrapper>
+            {signedup && <Redirect to='/login' />}
             <SignupForm
                 onSubmit={onFormSubmit}
             />

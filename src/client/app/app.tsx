@@ -1,25 +1,25 @@
-import AnimatedSwitch from './animated-switch';
-import GlobalStyle from './global-style';
+import React, { Suspense } from 'react';
 import styled from 'styled-components';
-import React from 'react';
 
 import { BrowserRouter } from 'react-router-dom';
 
-const App = () => {
+import LoadingPage from '../pages/loading-page';
+import AnimatedSwitch from './animated-switch';
+import GlobalStyle from './global-style';
 
-    return (
+const App = () =>
+    <Suspense fallback={<LoadingPage />}>
         <BrowserRouter>
             <StyledApp>
                 <GlobalStyle />
                 <AnimatedSwitch />
             </StyledApp>
         </BrowserRouter>
-    );
-};
+    </Suspense>;
 
 const StyledApp = styled.div`
-                width: 100vw;
-                height: 100vh;
-            `;
+    width: 100vw;
+    height: 100vh;
+`;
 
 export default App;

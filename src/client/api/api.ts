@@ -5,7 +5,8 @@ const request = (path: string, method: string, data?: any) =>
             method,
             body: JSON.stringify(data),
             headers: {
-                'Content-Type': 'Application/JSON'
+                'Content-Type': 'Application/JSON',
+                'Authorization': `bearer ${sessionStorage.getItem('jwtToken')}`
             }
         }
     )
@@ -23,3 +24,10 @@ const request = (path: string, method: string, data?: any) =>
 export const get = (path: string) => request(path, 'GET');
 
 export const post = (path: string, data: any) => request(path, 'POST', data);
+
+// actions
+export const signup = (household: Household) =>
+    post('signup', household);
+
+export const login = (email: string, password: string) =>
+    post('login', { email, password });
