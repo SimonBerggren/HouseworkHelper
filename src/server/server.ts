@@ -3,10 +3,12 @@ import passport from 'passport';
 import express from 'express';
 import path from 'path';
 
+import CompletedTaskController from './controllers/completed-task-controller';
 import HouseholdController from './controllers/household-controller';
 import SignupController from './controllers/signup-controller';
 import LoginController from './controllers/login-controller';
 import UserController from './controllers/user-controller';
+import TaskController from './controllers/task-controller';
 import HouseholdModel from './model/household-model';
 import connect from './mongo';
 
@@ -45,9 +47,11 @@ connect()
         passport.use(jwtStrategy);
         app.use(passport.initialize());
 
+        app.use('/api/completed-task', CompletedTaskController);
         app.use('/api/household', HouseholdController);
         app.use('/api/signup', SignupController);
         app.use('/api/login', LoginController);
+        app.use('/api/task', TaskController);
         app.use('/api/user', UserController);
 
         app.use([handleError]);
