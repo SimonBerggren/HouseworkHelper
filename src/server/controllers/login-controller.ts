@@ -13,13 +13,10 @@ router.post('/', async (req, res) => {
         .then(async existingHousehold => {
 
             if (existingHousehold) {
-
                 const correctPassword = await bcrypt.compare(household.password, existingHousehold.password);
 
                 if (correctPassword) {
-
                     const token = await existingHousehold.generateAuthToken();
-
                     return res.status(201).json(token);
                 }
             }
@@ -27,11 +24,6 @@ router.post('/', async (req, res) => {
             return res.status(400).json('Invalid credentials');
         })
         .catch(error => res.status(400).json(error));
-});
-
-router.get('/drop', async (req, res) => {
-    HouseholdModel.collection.drop();
-    res.json('dropped');
 });
 
 export default router;

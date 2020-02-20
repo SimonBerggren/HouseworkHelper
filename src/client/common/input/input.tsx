@@ -14,51 +14,6 @@ const Input: React.FC<InputProps> = ({ ...props }: InputProps) => {
 
 const StyledInput = styled.input`
 
-    width: 40vw;
-
-    max-width: 15em;
-
-    text-align: center;
-    font-size: 1.15em;
-
-    background: none;
-    color: #01579b;
-
-    border: none;
-    border-bottom: 0.1em solid #01579b;
-    cursor: default;
-    outline: none;
-
-    margin: 2vh;
-    padding: 1vh;
-
-    transition: border 0.3s linear;
-
-    ::placeholder {
-        color: #01579b;
-    }
-
-    :hover {
-        border-color: #2196f3;
-        transition: border 0.3s linear;
-
-        ::placeholder {
-            color: #2196f3;
-            transition: color 0.3s linear;
-        }   
-    }
-    
-    :focus {
-        color: #90caf9;
-        border-color: #90caf9;
-        transition: border 0.3s linear;
-
-        ::placeholder {
-            color: #90caf9;
-            transition: color 0.3s linear;
-        }
-    }
-
     /* hide default style */
 
     &:-webkit-autofill,
@@ -75,12 +30,50 @@ const StyledInput = styled.input`
         -moz-appearance: textfield;
     }
 
+    width: 40vw;
+
+    max-width: 15em;
+
+    text-align: center;
+    font-size: 1.15em;
+
+    background: none;
+    color: #01579b;
+
+    border: none;
+    border-bottom: 0.1em solid #01579b;
+
+    outline: none;
+
+    margin: 2vh;
+    padding: 1vh;
+
+    :focus {
+        color: #90caf9;
+        border-color: #90caf9;
+
+        ::placeholder {
+            color: #90caf9;
+        }
+    }
+
     /* type overries */
     &[type=button],
     &[type=submit] {
-        width: 40vw;
         border: 0.1em solid #01579b;
+        cursor: pointer;
+        color: #01579b;
     }
+    
+    :hover {
+        border-color: #2196f3;
+
+        ::placeholder {
+            color: #2196f3;
+        }   
+    }
+
+    
 `;
 
 export default Input;

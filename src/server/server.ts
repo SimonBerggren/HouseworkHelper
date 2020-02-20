@@ -6,8 +6,8 @@ import path from 'path';
 import HouseholdController from './controllers/household-controller';
 import SignupController from './controllers/signup-controller';
 import LoginController from './controllers/login-controller';
+import UserController from './controllers/user-controller';
 import HouseholdModel from './model/household-model';
-
 import connect from './mongo';
 
 // @ts-ignore
@@ -48,6 +48,7 @@ connect()
         app.use('/api/household', HouseholdController);
         app.use('/api/signup', SignupController);
         app.use('/api/login', LoginController);
+        app.use('/api/user', UserController);
 
         app.use([handleError]);
 

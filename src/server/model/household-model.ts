@@ -29,6 +29,6 @@ HouseholdSchema.methods.generateAuthToken = async function () {
     return token;
 };
 
-const HouseholdModel = mongoose.model<HouseholdSchemaModel>('Household', HouseholdSchema);
+const HouseholdModel = mongoose.model<HouseholdSchemaModel>('household', HouseholdSchema);
 
 export default HouseholdModel;

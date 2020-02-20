@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Get motivated to do more chores around the house by rewarding completed tasks",
   "scripts": {
-    "start": "node run-app.js",
+    "start": "node scripts/run-app.js",
     "build": "npm run build-server && npm run build-client",
     "clean": "rm -r dist",
     "start-client": "webpack-dev-server --env.client --env.dev --env.proxy",
@@ -23,7 +23,7 @@
     "url": "https://github.com/SimonBerggren/HouseworkHelper/issues"
   },
   "homepage": "https://github.com/SimonBerggren/HouseworkHelper#readme",
-  "dependencies": {
+  "devDependencies": {
     "@babel/core": "^7.8.4",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
@@ -44,26 +44,28 @@
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
     "babel-loader": "^8.0.6",
-    "bcrypt": "^3.0.8",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.18.3",
-    "express": "^4.17.1",
     "html-webpack-plugin": "^3.2.0",
+    "nodemon-webpack-plugin": "^4.3.1",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.8",
+    "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.1",
     "nodemon": "^2.0.2",
-    "nodemon-webpack-plugin": "^4.3.1",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
     "react-transition-group": "^4.3.0",
-    "styled-components": "^5.0.1",
-    "typescript": "^3.7.5",
-    "webpack": "^4.41.6",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3",
-    "webpack-node-externals": "^1.7.2"
+    "styled-components": "^5.0.1"
   }
 }

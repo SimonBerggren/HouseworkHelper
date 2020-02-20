@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { BrowserRouter } from 'react-router-dom';
 
-import LoadingPage from '../pages/loading-page';
+import LoadingPage from '../pages/loading-page/loading-page';
 import AnimatedSwitch from './animated-switch';
 import GlobalStyle from '../style/global-style';
 

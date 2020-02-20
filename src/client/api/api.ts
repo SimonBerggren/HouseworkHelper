@@ -27,6 +27,8 @@ export const get = (path: string) => request(path, 'GET');
 
 export const post = (path: string, data: any) => request(path, 'POST', data);
 
+export const remove = (path: string, data: any) => request(path, 'DELETE', data);
+
 // actions
 export const signup = (household: Household) =>
     post('signup', household);

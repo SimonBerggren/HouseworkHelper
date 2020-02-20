@@ -10,23 +10,15 @@ router.post('/', async (req, res) => {
 
     HouseholdModel.findOne({ email: newHousehold.email })
         .then(existingHousehold => {
+
             if (existingHousehold) {
                 return res.status(400).json('Email is already in use');
             } else {
-                HouseholdModel.create(newHousehold)
-                    .then(createdHousehold => res.status(201).json(createdHousehold.email))
-                    .catch(error => res.status(401).json(error));
+                return HouseholdModel.create(newHousehold)
+                    .then(createdHousehold => res.status(201).json(createdHousehold.email));
             }
-        });
-});
-router.get('/', async (_req, res) => {
-    const houseHolds = await HouseholdModel.find();
-    return res.json(houseHolds);
-});
-
-router.get('/drop', async (_req, res) => {
-    HouseholdModel.collection.drop();
-    res.json('dropped');
+        })
+        .catch(error => res.status(401).json(error));
 });
 
 export default router;
