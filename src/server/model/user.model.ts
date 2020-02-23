@@ -4,12 +4,12 @@ interface UserSchemaModel extends User, IDocument {
 }
 
 const UserSchema = new Schema<UserSchemaModel>({
-    email: { type: String, required: true },
+    householdID: { type: String, required: true },
     name: { type: String, required: true },
-    points: { type: Number, required: true  }
+    points: { type: Number, required: true, default: 0 }
 });
 
-UserSchema.index({ email: 1, name: 1 }, { unique: true });
+UserSchema.index({ householdID: 1, name: 1 }, { unique: true });
 
 const UserModel = mongoose.model<UserSchemaModel>('user', UserSchema);
 

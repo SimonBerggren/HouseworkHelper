@@ -1,68 +1,56 @@
 import express from 'express';
 
-import HouseholdModel from '../model/household-model';
-
-import { authenticate } from '../authentication';
 import TaskModel from '../model/task-model';
+
+import { authenticate } from '../authentication/authentication';
+import { badRequest } from '../error';
+import { getHousehold } from '../utils/mongo-utils';
 
 const router = express.Router();
 
 // get tasks from a household
 router.get('/', authenticate(), async (req, res) => {
 
-    const { email } = req.user as Household;
+    const householdID = getHousehold(req).id;
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
+    try {
+        const tasks = await TaskModel.find({ householdID });
+        return res.json(tasks);
 
-            if (household) {
-                return TaskModel.find({ email })
-                    .then(tasks => res.json(tasks));
-            }
-        })
-        .catch(error => res.status(401).json(error));
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
 // create new task
 router.post('/', authenticate(), async (req, res) => {
 
-    const { name, email, description, points, frequency } = req.body as Task;
+    const householdID = getHousehold(req).id;
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
+    const { title, desc, points, frequency } = req.body as Task;
 
-            if (household) {
-                TaskModel.findOne({ name, email })
-                    .then(task => {
+    try {
+        const createdTask = await TaskModel.create({ householdID, title, desc, points, frequency });
+        return res.json(createdTask);
 
-                        if (task) {
-                            return res.status(401).json('Task with that name already exists');
-                        } else {
-                            return TaskModel.create({ name, email, description, points, frequency })
-                                .then(createdTask => res.json(createdTask))
-                                .catch(error => res.status(401).json(error));
-                        }
-                    });
-            } else {
-                return res.status(401).json('Could not find household');
-            }
-        })
-        .catch(error => res.status(401).json(error));
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
-router.delete('/', async (req, res) => {
-    const { email, name } = req.body as Task;
+router.delete('/', authenticate(), async (req, res) => {
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
-            if (household) {
-                TaskModel.findOneAndDelete({ email, name })
-                    .then(task => res.json(task));
-            } else {
-                res.status(401).json('Could not find household');
-            }
-        })
-        .catch(error => res.status(401).json(error));
+    const householdID = getHousehold(req).id;
+
+    const { title } = req.body as Task;
+
+    try {
+        const deletedTask = await TaskModel.findOneAndDelete({ householdID, title });
+        return res.json(deletedTask);
+
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
 // get tasks from a household
@@ -71,17 +59,13 @@ router.get('/:email', async (req, res) => {
 
     const email = req.params.email;
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
+    try {
+        const tasks = await TaskModel.find({ email });
+        return res.json(tasks);
 
-            if (household) {
-                return TaskModel.find({ email })
-                    .then(tasks => res.json(tasks));
-            }
-
-            return res.status(401).json('Could not find household');
-        })
-        .catch(error => res.status(401).json(error));
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
 export default router;

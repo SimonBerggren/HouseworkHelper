@@ -21,10 +21,9 @@ const SelectUser: React.FC<PickUserProps> = ({ onUserPicked, email }: PickUserPr
     }, []);
 
     const createNewUser = () => {
-        const newUser = { name: newUserName, email, points: 0 };
+        const newUser = { userName: newUserName };
         post('user', newUser)
-            .then(() => setUsers(users.concat(newUser)))
-            .catch(error => alert(error));
+            .then(createdUser => setUsers(users.concat(createdUser)));
     };
 
     const removeUser = (event: React.MouseEvent, name: string) => {

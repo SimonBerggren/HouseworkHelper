@@ -12,16 +12,20 @@ const request = (path: string, method: string, data?: any) =>
             }
         }
     )
-        .then(response =>
-            response.json().then(json => {
-                if (response.ok) {
-                    return Promise.resolve(json);
-                } else {
-                    return Promise.reject(json);
-                }
+        .then(async response => {
 
-            })
-        );
+            const json = await response.json();
+            if (response.ok) {
+                return Promise.resolve(json);
+            }
+            else {
+                return Promise.reject(json);
+            }
+        })
+        .catch(() => {
+            alert('Something went wrong');
+            return Promise.reject();
+        });
 
 export const get = (path: string) => request(path, 'GET');
 

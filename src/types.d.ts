@@ -14,17 +14,25 @@ interface User {
     points: number;
 }
 
+interface CreateUserRequest {
+    userName: string;
+}
+
 interface Task {
     points: number;
-    email: string;
-    name: string;
+    title: string;
     frequency: string;
-    description?: string;
+    desc?: string;
 }
 
 interface CompletedTask {
-    points: number;
-    email: string;
-    name: string;
+    householdID: string;
+    taskID: string;
+    userID: string;
+    date: number;
+}
+
+interface CompleteTaskRequest {
+    taskTitle: string;
     userName: string;
 }

@@ -16,12 +16,10 @@ const LoginPage: React.FC = () => {
     const [pickUser, setPickUser] = useState(isLoggedIn());
     const [redirect, setRedirect] = useState(isAuthenticated());
 
-    const onLogin = () => {
-        login(email, password)
-            .then(token => {
-                authenticate(token, email);
-                setPickUser(true);
-            });
+    const onLogin = async () => {
+        const token = await login(email, password);
+        authenticate(token, email);
+        setPickUser(true);
     };
 
     const onUserPicked = (name: string) => {

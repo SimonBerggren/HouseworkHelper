@@ -1,10 +1,10 @@
 import express from 'express';
 
 import CompletedTaskModel from '../model/completed-task-model';
-import HouseholdModel from '../model/household-model';
 
-import { authenticate } from '../authentication';
-import UserModel from '../model/user.model';
+import { findUser, findTask, getHousehold } from '../utils/mongo-utils';
+import { authenticate } from '../authentication/authentication';
+import { badRequest } from '../error';
 
 const router = express.Router();
 
@@ -13,88 +13,42 @@ router.get('/', authenticate(), async (req, res) => {
 
     const { email } = req.user as Household;
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
-
-            if (household) {
-                return CompletedTaskModel.find({ email })
-                    .then(tasks => res.json(tasks));
-            }
-        })
-        .catch(error => res.status(401).json(error));
+    const completedTasks = await CompletedTaskModel.find({ email });
+    return res.json(completedTasks);
 });
 
 // complete task
-router.post('/:userName', authenticate(), async (req, res) => {
+router.post('/', authenticate(), async (req, res) => {
 
-    const userName = req.params.userName;
-    const { name, email, points } = req.body as CompletedTask;
-    
-    HouseholdModel.findOne({ email })
-        .then(household => {
+    const householdID = getHousehold(req).id;
+    const { taskTitle, userName } = req.body as CompleteTaskRequest;
 
-            if (household) {
+    try {
+        const user = await findUser({ householdID, name: userName });
 
-                UserModel.findOne({ email, name: userName })
-                    .then(user => {
+        const userID = user.id;
 
-                        if (user) {
+        const taskToComplete = await findTask({ householdID, title: taskTitle });
 
-                            user.points += points;
+        const taskID = taskToComplete.id;
 
-                            CompletedTaskModel.create({ name, email, points, userName })
-                                .then(createdTask => {
-                                    user.save();
-                                    res.json(createdTask);
-                                })
-                                .catch(error => res.status(400).json(error));
+        const completedTask: CompletedTask = {
+            householdID,
+            taskID,
+            userID,
+            date: Date.now()
+        };
 
-                        } else {
-                            return res.status(401).json('Could not find user ' + userName);
-                        }
+        const createdCompletedTask = await CompletedTaskModel.create(completedTask);
 
-                    })
-                    .catch(error => res.status(401).json(error));
+        user.points += taskToComplete.points;
+        user.save();
 
-            } else {
-                return res.status(401).json('Could not find household');
-            }
-        })
-        .catch(error => res.status(401).json(error));
-});
+        return res.json(createdCompletedTask);
 
-// router.delete('/', async (req, res) => {
-//     const { email, name } = req.body as Household;
-
-//     HouseholdModel.findOne({ email })
-//         .then(household => {
-//             if (household) {
-//                 UserModel.findOneAndDelete({ email, name })
-//                     .then(user => res.json(user));
-//             } else {
-//                 res.status(401).json('Could not find household');
-//             }
-//         })
-//         .catch(error => res.status(401).json(error));
-// });
-
-// get tasks from a household
-// not protected so should only be active during development
-router.get('/:email', async (req, res) => {
-
-    const email = req.params.email;
-
-    HouseholdModel.findOne({ email })
-        .then(household => {
-
-            if (household) {
-                return CompletedTaskModel.find({ email })
-                    .then(tasks => res.json(tasks));
-            }
-
-            return res.status(401).json('Could not find household');
-        })
-        .catch(error => res.status(401).json(error));
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
 export default router;

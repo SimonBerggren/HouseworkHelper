@@ -1,5 +1,3 @@
-import passportJwt from 'passport-jwt';
-import passport from 'passport';
 import express from 'express';
 import path from 'path';
 
@@ -9,43 +7,29 @@ import SignupController from './controllers/signup-controller';
 import LoginController from './controllers/login-controller';
 import UserController from './controllers/user-controller';
 import TaskController from './controllers/task-controller';
-import HouseholdModel from './model/household-model';
 import connect from './mongo';
+
+import { passportAuthentication } from './authentication/authentication';
 
 // @ts-ignore
 // eslint-disable-next-line no-unused-vars
-const handleError = (err, req, res, _next) => {
-    var output = {
-        error: {
-            name: err.name,
-            message: err.message,
-            text: err.toString()
-        }
-    };
+const handleError = (err, _req, res, _next) => {
     var statusCode = err.status || 500;
-    res.status(statusCode).json(output);
+    res.status(statusCode).json(err.message);
 };
+
+const staticPath = path.resolve('dist', 'client');
+const appPath = path.resolve(staticPath, 'index.html');
 
 connect()
     .then(() => {
         const port = process.argv.pop();
         const app = express();
 
-        const jwtOptions: passportJwt.StrategyOptions = {
-            jwtFromRequest: passportJwt.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: 'secret'
-        };
-
-        const jwtStrategy = new passportJwt.Strategy(jwtOptions, async (payload, next) => {
-            HouseholdModel.findOne({ email: payload.email })
-                .then(model => next(null, model));
-        });
-
         app.use(express.json());
-        app.use(express.static(path.resolve('dist', 'client')));
+        app.use(express.static(staticPath));
 
-        passport.use(jwtStrategy);
-        app.use(passport.initialize());
+        app.use(passportAuthentication());
 
         app.use('/api/completed-task', CompletedTaskController);
         app.use('/api/household', HouseholdController);
@@ -56,7 +40,7 @@ connect()
 
         app.use([handleError]);
 
-        app.use('*', (_req, res) => res.sendFile(path.resolve('dist', 'client', 'index.html')));
+        app.use('*', (_req, res) => res.sendFile(appPath));
 
         app.listen(port, () => console.info(`Up and running on port ${port}`));
 

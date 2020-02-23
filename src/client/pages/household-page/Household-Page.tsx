@@ -37,13 +37,13 @@ const HouseholdPage: React.FC = () => {
         get('task')
             .then(tasks => setTasks(tasks));
 
-        get(`user/${email}`)
+        get('user')
             .then(user => setUsers(user));
     }, []);
 
     const createNewTask = () => {
 
-        const newTask: Task = { name, email, frequency, points, description };
+        const newTask = { title: name, email, frequency, points, desc: description };
 
         post('task', newTask)
             .then(task => {
@@ -54,34 +54,34 @@ const HouseholdPage: React.FC = () => {
 
     const removeTask = (event: React.MouseEvent, name: string) => {
         event.stopPropagation();
-        const taskToRemove = { name, email };
+        const taskToRemove = { title: name };
 
         if (confirm(
             `Are you sure you want to delete ${name}? \nThis action is irreversible!`)
         ) {
             remove('task', taskToRemove)
                 .then(() => {
-                    const filteredTasks = tasks.filter(task => task.name !== name);
+                    const filteredTasks = tasks.filter(task => task.title !== name);
                     setTasks(filteredTasks);
                 });
         }
     };
 
-    const completeTask = ({ name, email, points }: Task) => {
+    const completeTask = ({ title }: Task) => {
 
-        post(`completed-task/${userName}`, { name, email, points });
+        post('completed-task', { taskTitle: title, userName });
     };
 
     return (
         <PageWrapper>
+            <Link
+                to='/'
+                onClick={() => deauthenticate()}
+            >
+                Log out
+            </Link>
             {household && <>
 
-                <Link
-                    to='/'
-                    onClick={() => deauthenticate()}
-                >
-                    Log out
-                </Link>
 
                 <h1>{household.name}</h1>
 
@@ -101,9 +101,9 @@ const HouseholdPage: React.FC = () => {
                             key={key}
                             onClick={() => completeTask(task)}
                         >
-                            {task.name}
+                            {task.title}
                             <div
-                                onClick={e => removeTask(e, task.name)}
+                                onClick={e => removeTask(e, task.title)}
                             >
                                 x
                             </div>

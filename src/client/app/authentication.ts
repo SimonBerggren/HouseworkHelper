@@ -2,33 +2,35 @@ const tokenKey = 'hwhJwtToken';
 const userKey = 'hwhUser';
 const emailKey = 'hwhEmail';
 
+const storage = sessionStorage;
+
 // User authentication
 export const deauthenticate = () => {
-    localStorage.removeItem(tokenKey);
-    localStorage.removeItem(userKey);
+    storage.removeItem(tokenKey);
+    storage.removeItem(userKey);
 };
 
 export const authenticate = (token: string, email: string) => {
-    localStorage.setItem(tokenKey, `bearer ${token}`);
-    localStorage.setItem(emailKey, email);
+    storage.setItem(tokenKey, `bearer ${token}`);
+    storage.setItem(emailKey, email);
 };
 
 export const getToken = (): string =>
-    localStorage.getItem(tokenKey) || '';
+    storage.getItem(tokenKey) || '';
 
 export const isLoggedIn = (): boolean =>
-    localStorage.getItem(tokenKey) !== null;
+    storage.getItem(tokenKey) !== null;
 
 
 // User configuration
 export const setUser = (name: string) =>
-    localStorage.setItem(userKey, name);
+    storage.setItem(userKey, name);
 
 export const getUserName = (): string =>
-    localStorage.getItem(userKey) || '';
+    storage.getItem(userKey) || '';
 
 export const getEmail = (): string =>
-    localStorage.getItem(emailKey) || '';
+    storage.getItem(emailKey) || '';
 
 export const isAuthenticated = (): boolean =>
     isLoggedIn() && getUserName() !== '' && getEmail() !== '';

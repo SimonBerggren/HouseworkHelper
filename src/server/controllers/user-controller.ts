@@ -1,68 +1,55 @@
 import express from 'express';
 
-import HouseholdModel from '../model/household-model';
 import UserModel from '../model/user.model';
 
-import { authenticate } from '../authentication';
+import { authenticate } from '../authentication/authentication';
+import { getHousehold } from '../utils/mongo-utils';
+import { badRequest } from '../error';
 
 const router = express.Router();
 
 // create new user
 router.post('/', authenticate(), async (req, res) => {
 
-    const { name, email } = req.body as User;
+    const householdID = getHousehold(req).id;
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
+    const { userName } = req.body as CreateUserRequest;
 
-            if (household) {
-                UserModel.findOne({ name, email })
-                    .then(user => {
+    try {
+        const createdUser = await UserModel.create({ householdID, name: userName });
+        return res.json(createdUser);
 
-                        if (user) {
-                            return res.status(401).json('User already exists');
-                        } else {
-                            return UserModel.create({ name, email })
-                                .then(() => res.json(req.user));
-                        }
-                    });
-            } else {
-                return res.status(401).json('Could not find household');
-            }
-        })
-        .catch(error => res.status(401).json(error));
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
 // get users within a household
 router.get('/', authenticate(), async (req, res) => {
 
-    const { email } = req.user as Household;
+    const householdID = getHousehold(req).id;
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
+    try {
+        const users = await UserModel.find({ householdID });
+        return res.json(users);
 
-            if (household) {
-                return UserModel.find({ email })
-                    .then(users => res.json(users));
-            }
-        })
-        .catch(error => res.status(401).json(error));
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
-
+// delete user from a household
 router.delete('/', authenticate(), async (req, res) => {
+
     const { email, name } = req.body as Household;
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
-            if (household) {
-                UserModel.findOneAndDelete({ email, name })
-                    .then(user => res.json(user));
-            } else {
-                res.status(401).json('Could not find household');
-            }
-        })
-        .catch(error => res.status(401).json(error));
+    try {
+        const deletedUser = await UserModel.findOneAndDelete({ email, name });
+        return res.json(deletedUser);
+
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
 
@@ -74,17 +61,13 @@ router.get('/:email/:name', async (req, res) => {
     const email = req.params.email;
     const name = req.params.name;
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
+    try {
+        const user = await UserModel.findOne({ email, name });
+        return res.json(user);
 
-            if (household) {
-                return UserModel.findOne({ email, name })
-                    .then(users => res.json(users));
-            }
-
-            return res.status(401).json('Could not find household');
-        })
-        .catch(error => res.status(401).json(error));
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
 // get users within a household
@@ -93,17 +76,13 @@ router.get('/:email', async (req, res) => {
 
     const email = req.params.email;
 
-    HouseholdModel.findOne({ email })
-        .then(household => {
+    try {
+        const users = await UserModel.find({ email });
+        return res.json(users);
 
-            if (household) {
-                return UserModel.find({ email })
-                    .then(users => res.json(users));
-            }
-
-            return res.status(401).json('Could not find household');
-        })
-        .catch(error => res.status(401).json(error));
+    } catch (error) {
+        return badRequest(res, error);
+    }
 });
 
 export default router;

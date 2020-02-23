@@ -4,15 +4,17 @@ interface TaskSchemaModel extends Task, IDocument {
 }
 
 const TaskSchema = new Schema<TaskSchemaModel>({
-    points: { type: Number, required: true },
-    email: { type: String, required: true },
     frequency: { type: String, required: true },
-    name: { type: String, required: true },
-    description: { type: String },
+    householdID: { type: String, required: true },
+    points: { type: Number, required: true },
+    title: { type: String, required: true },
+    desc: { type: String },
 });
 
-TaskSchema.index({ email: 1, name: 1 }, { unique: true });
+TaskSchema.index({ householdID: 1, title: 1 }, { unique: true });
 
 const TaskModel = mongoose.model<TaskSchemaModel>('task', TaskSchema);
+
+TaskModel.collection.drop();
 
 export default TaskModel;
