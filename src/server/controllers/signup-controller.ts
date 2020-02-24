@@ -6,13 +6,17 @@ import { badRequest } from '../error';
 
 const router = express.Router();
 
+// sign up as new household
 router.post('/', async (req, res) => {
 
     const newHousehold = req.body as Household;
 
     try {
-        await HouseholdModel.create(newHousehold);
-        return res.json('Created new household');
+        const createdHousehold = await HouseholdModel.create(newHousehold);
+        
+        if (createdHousehold) {
+            return res.json(true);
+        }
 
     } catch (error) {
         return badRequest(res, error);

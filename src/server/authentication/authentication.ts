@@ -22,6 +22,6 @@ export const passportAuthentication = () => passport.initialize();
 
 export const authenticate = () => passport.authenticate('jwt', { session: false, failWithError: true });
 
-export const generateToken = function ({ email }: Household) {
+export const generateToken = function (email: string) {
     return jwt.sign({ email }, secret);
 };

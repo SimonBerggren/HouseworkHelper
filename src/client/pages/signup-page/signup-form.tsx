@@ -10,7 +10,7 @@ interface SignupFormProps {
 }
 
 const defaultFormData: SignupModel = {
-    name: 'Home',
+    householdName: 'Home',
     email: '',
     password: '',
     confirmedPassword: ''
@@ -44,7 +44,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }: SignupFormProps) =>
 
                     <Input
                         type='text'
-                        value={data.name}
+                        value={data.householdName}
                         onFocus={selectTextOnFocus}
                         onChange={e => formDataTextChange(e, 'name')}
                         required

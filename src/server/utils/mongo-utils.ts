@@ -3,7 +3,9 @@ import UserModel from '../model/user.model';
 import TaskModel from '../model/task-model';
 import { Document as IDocument } from 'mongoose';
 
-export const getHousehold = (request: Express.Request) => request.user as Household & IDocument;
+export const getHousehold = (request: Express.Request) => (request.user as Household & IDocument);
+
+export const getHouseholdID = (request: Express.Request) => getHousehold(request).id;
 
 export const findHousehold = async (conditions: any) => {
     const household = await HouseholdModel.findOne(conditions);

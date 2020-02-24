@@ -5,25 +5,26 @@ import Input from '../../common/input/input';
 import Link from '../../common/link/link';
 import SelectUser from './select-user';
 
-import { authenticate, isLoggedIn, isAuthenticated, setUser, getEmail } from '../../app/authentication';
+import { authenticate, isAuthenticated, isFullyConfigured, setUser } from '../../app/authentication';
 import { Redirect } from 'react-router-dom';
-import { login } from '../../api/api';
+import { login } from '../../api/operations';
 
 const LoginPage: React.FC = () => {
 
-    const [email, setEmail] = useState(getEmail());
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [pickUser, setPickUser] = useState(isLoggedIn());
-    const [redirect, setRedirect] = useState(isAuthenticated());
+    const [pickUser, setPickUser] = useState(isAuthenticated());
+    const [redirect, setRedirect] = useState(isFullyConfigured());
 
     const onLogin = async () => {
         const token = await login(email, password);
-        authenticate(token, email);
+        
+        authenticate(token);
         setPickUser(true);
     };
 
-    const onUserPicked = (name: string) => {
-        setUser(name);
+    const onUserSelected = (userName: string) => {
+        setUser(userName);
         setRedirect(true);
     };
 
@@ -33,7 +34,7 @@ const LoginPage: React.FC = () => {
             {redirect ?
                 <Redirect to='/household' />
                 : pickUser ?
-                    <SelectUser email={email} onUserPicked={onUserPicked} />
+                    <SelectUser onUserSelected={onUserSelected} />
                     :
                     <>
                         <Input type='email' autoComplete='email' onChange={e => setEmail(e.currentTarget.value)} />

@@ -3,43 +3,43 @@ import styled from 'styled-components';
 
 import Input from '../../common/input/input';
 
-import { get, post, remove } from '../../api/api';
+import { createUser, deleteUser, getUsers } from '../../api/operations';
 import { flexCenter } from '../../style/mixins';
 
 interface PickUserProps {
-    onUserPicked: (name: string) => void;
-    email: string;
+    onUserSelected: (userName: string) => void;
 }
 
-const SelectUser: React.FC<PickUserProps> = ({ onUserPicked, email }: PickUserProps) => {
+const SelectUser: React.FC<PickUserProps> = ({ onUserSelected: onUserPicked }: PickUserProps) => {
 
     const [users, setUsers] = useState<User[]>([]);
     const [newUserName, setNewUserName] = useState('');
 
     useEffect(() => {
-        get('user').then(users => setUsers(users));
+        getUsers().then(users => setUsers(users));
     }, []);
 
-    const createNewUser = () => {
-        const newUser = { userName: newUserName };
-        post('user', newUser)
-            .then(createdUser => setUsers(users.concat(createdUser)));
+    const create = async () => {
+        const createdUser = await createUser({ userName: newUserName });
+
+        if (createdUser) {
+            setUsers(users.concat(createdUser));
+        }
     };
 
-    const removeUser = (event: React.MouseEvent, name: string) => {
+    const remove = async (event: React.MouseEvent, userName: string) => {
 
         event.stopPropagation();
 
-        const userToRemove = { name, email };
-
         if (confirm(
-            `Are you sure you want to delete ${name}? \nThis action is irreversible!`)
+            `Are you sure you want to delete ${userName}? \nThis action is irreversible!`)
         ) {
-            remove('user', userToRemove)
-                .then(() => {
-                    const filteredUsers = users.filter(user => user.name !== name);
-                    setUsers(filteredUsers);
-                });
+            const deletedUser = await deleteUser({ userName });
+
+            if (deletedUser) {
+                const filteredUsers = users.filter(user => user.userName !== userName);
+                setUsers(filteredUsers);
+            }
         }
     };
 
@@ -48,25 +48,35 @@ const SelectUser: React.FC<PickUserProps> = ({ onUserPicked, email }: PickUserPr
             {users.length > 0 &&
                 <>
                     <h1>Select a user</h1>
+
                     <Users>
                         {users.map((user, key) =>
+
                             <User
                                 key={key}
-                                onClick={() => onUserPicked(user.name)}
+                                onClick={() => onUserPicked(user.userName)}
                             >
                                 <RemoveButton
-                                    onClick={(e) => removeUser(e, user.name)}
-                                >x</RemoveButton>
-                                {user.name}
+                                    onClick={(e) => remove(e, user.userName)}
+                                >
+                                    x
+                                </RemoveButton>
+
+                                {user.userName}
+
                             </User>
                         )}
                     </Users>
                 </>
             }
+
             <Divider />
+
             <h1>Create a new user</h1>
+
             <Input type='text' onChange={e => setNewUserName(e.currentTarget.value)} />
-            <Input type='button' value='Create new user' onClick={createNewUser} />
+
+            <Input type='button' value='Create new user' onClick={create} />
         </>
     );
 };

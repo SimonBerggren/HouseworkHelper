@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document as IDocument } from 'mongoose';
 
+import { dropAllTables, dropCompletedTaskTable } from '../utils/dev-utils';
+
 interface CompletedTaskSchemaModel extends Task, IDocument {
 }
 
@@ -11,5 +13,9 @@ const CompletedTaskSchema = new Schema<CompletedTaskSchemaModel>({
 });
 
 const CompletedTaskModel = mongoose.model<CompletedTaskSchemaModel>('completed-task', CompletedTaskSchema);
+
+if (dropAllTables || dropCompletedTaskTable) {
+    CompletedTaskModel.collection.drop();
+}
 
 export default CompletedTaskModel;

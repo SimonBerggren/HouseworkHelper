@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import PageWrapper from '../../common/page-wrapper/page-wrapper';
 import SignupForm from './signup-form';
 
-import { signup } from '../../api/api';
+import { signup } from '../../api/operations';
 import { Redirect } from 'react-router-dom';
 
 const SignupPage: React.FC = () => {

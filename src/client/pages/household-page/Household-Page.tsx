@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 import PageWrapper from '../../common/page-wrapper/page-wrapper';
+import Input from '../../common/input/input';
 import Link from '../../common/link/link';
 
-import { deauthenticate, getEmail, getUserName } from '../../app/authentication';
-import { get, post, remove } from '../../api/api';
-import Input from '../../common/input/input';
+import { getUsers, getHousehold, getTasks, createTask, deleteTask, completeTask, logout, switchUser } from '../../api/operations';
+import { getUserName } from '../../app/authentication';
 
 const frequencies = [
     'Daily',
@@ -22,73 +22,82 @@ const HouseholdPage: React.FC = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [users, setUsers] = useState<User[]>([]);
 
-    const [name, setName] = useState<string>('');
-    const [description, setDescription] = useState<string>();
+    const [taskName, setTaskName] = useState<string>('');
+    const [desc, setDesc] = useState<string>();
     const [frequency, setFrequency] = useState<string>('');
     const [points, setPoints] = useState<number>(0);
 
-    const email = getEmail();
     const userName = getUserName();
 
     useEffect(() => {
-        get('household')
+        getHousehold()
             .then(household => setHousehold(household));
 
-        get('task')
+        getTasks()
             .then(tasks => setTasks(tasks));
 
-        get('user')
+        getUsers()
             .then(user => setUsers(user));
     }, []);
 
-    const createNewTask = () => {
+    const create = async () => {
 
-        const newTask = { title: name, email, frequency, points, desc: description };
+        const createdTask = await createTask({ taskName, frequency, points, desc });
 
-        post('task', newTask)
-            .then(task => {
-                const newTasks = tasks.concat(task);
-                setTasks(newTasks);
-            });
-    };
-
-    const removeTask = (event: React.MouseEvent, name: string) => {
-        event.stopPropagation();
-        const taskToRemove = { title: name };
-
-        if (confirm(
-            `Are you sure you want to delete ${name}? \nThis action is irreversible!`)
-        ) {
-            remove('task', taskToRemove)
-                .then(() => {
-                    const filteredTasks = tasks.filter(task => task.title !== name);
-                    setTasks(filteredTasks);
-                });
+        if (createdTask) {
+            const newTasks = tasks.concat(createdTask);
+            setTasks(newTasks);
         }
     };
 
-    const completeTask = ({ title }: Task) => {
+    const remove = async (event: React.MouseEvent, taskName: string) => {
+        event.stopPropagation();
 
-        post('completed-task', { taskTitle: title, userName });
+        if (confirm(
+            `Are you sure you want to delete ${taskName}?\nThis action is irreversible!`)
+        ) {
+            const deletedTask = await deleteTask(taskName);
+
+            if (deletedTask) {
+                const filteredTasks = tasks.filter(task => task.taskName !== deletedTask.taskName);
+                setTasks(filteredTasks);
+            }
+        }
+    };
+
+    const complete = async ({ taskName }: Task) => {
+        const completed = await completeTask({ taskName, userName });
+
+        if (completed) {
+
+            const users = await getUsers();
+            setUsers(users);
+        }
     };
 
     return (
         <PageWrapper>
             <Link
                 to='/'
-                onClick={() => deauthenticate()}
+                onClick={() => logout()}
             >
                 Log out
+            </Link>
+            <Link
+                to='/login'
+                onClick={() => switchUser()}
+            >
+                Switch User
             </Link>
             {household && <>
 
 
-                <h1>{household.name}</h1>
+                <h1>{household.householdName}</h1>
 
                 {users.map(user =>
                     <>
                         <h3>
-                            {user.name}, {user.points}p
+                            {user.userName}, {user.points}p
                         </h3>
                     </>
                 )}
@@ -99,11 +108,11 @@ const HouseholdPage: React.FC = () => {
                     tasks.map((task, key) =>
                         <div
                             key={key}
-                            onClick={() => completeTask(task)}
+                            onClick={() => complete(task)}
                         >
-                            {task.title}
+                            {task.taskName}
                             <div
-                                onClick={e => removeTask(e, task.title)}
+                                onClick={e => remove(e, task.taskName)}
                             >
                                 x
                             </div>
@@ -112,9 +121,9 @@ const HouseholdPage: React.FC = () => {
 
                 <h1>Create new task</h1>
 
-                <Input type='text' onChange={e => setName(e.currentTarget.value)} />
+                <Input type='text' onChange={e => setTaskName(e.currentTarget.value)} />
 
-                <textarea onChange={e => setDescription(e.currentTarget.value)} />
+                <textarea onChange={e => setDesc(e.currentTarget.value)} />
 
                 <Input type='number' defaultValue={points} onChange={e => setPoints(parseInt(e.currentTarget.value))} />
 
@@ -130,7 +139,7 @@ const HouseholdPage: React.FC = () => {
                     )}
                 </select>
 
-                <Input type='button' value='Create new task' onClick={createNewTask} />
+                <Input type='button' value='Create new task' onClick={create} />
 
 
 

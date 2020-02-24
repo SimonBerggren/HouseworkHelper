@@ -3,14 +3,13 @@ interface SignupModel extends Household {
 }
 
 interface Household {
-    name: string;
+    householdName: string;
     email: string;
     password: string;
 }
 
 interface User {
-    name: string;
-    email: string;
+    userName: string;
     points: number;
 }
 
@@ -18,9 +17,13 @@ interface CreateUserRequest {
     userName: string;
 }
 
+interface DeleteUserRequest {
+    userName: string;
+}
+
 interface Task {
     points: number;
-    title: string;
+    taskName: string;
     frequency: string;
     desc?: string;
 }
@@ -33,6 +36,6 @@ interface CompletedTask {
 }
 
 interface CompleteTaskRequest {
-    taskTitle: string;
+    taskName: string;
     userName: string;
 }

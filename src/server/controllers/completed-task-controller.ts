@@ -2,7 +2,7 @@ import express from 'express';
 
 import CompletedTaskModel from '../model/completed-task-model';
 
-import { findUser, findTask, getHousehold } from '../utils/mongo-utils';
+import { findUser, findTask, getHouseholdID } from '../utils/mongo-utils';
 import { authenticate } from '../authentication/authentication';
 import { badRequest } from '../error';
 
@@ -11,40 +11,40 @@ const router = express.Router();
 // get all completed tasks in household
 router.get('/', authenticate(), async (req, res) => {
 
-    const { email } = req.user as Household;
+    const householdID = getHouseholdID(req);
 
-    const completedTasks = await CompletedTaskModel.find({ email });
+    const completedTasks = await CompletedTaskModel.find({ householdID });
     return res.json(completedTasks);
 });
 
 // complete task
 router.post('/', authenticate(), async (req, res) => {
 
-    const householdID = getHousehold(req).id;
-    const { taskTitle, userName } = req.body as CompleteTaskRequest;
+    const householdID = getHouseholdID(req);
+    const { taskName, userName } = req.body as CompleteTaskRequest;
 
     try {
-        const user = await findUser({ householdID, name: userName });
-
-        const userID = user.id;
-
-        const taskToComplete = await findTask({ householdID, title: taskTitle });
-
-        const taskID = taskToComplete.id;
+        const taskToComplete = await findTask({ householdID, taskName });
+        const user = await findUser({ householdID, userName });
 
         const completedTask: CompletedTask = {
             householdID,
-            taskID,
-            userID,
+            taskID: taskToComplete.id,
+            userID: user.id,
             date: Date.now()
         };
 
         const createdCompletedTask = await CompletedTaskModel.create(completedTask);
 
-        user.points += taskToComplete.points;
-        user.save();
+        if (createdCompletedTask) {
 
-        return res.json(createdCompletedTask);
+            user.points += taskToComplete.points;
+            user.save();
+
+            return res.json(true);
+        }
+
+        return res.json(false);
 
     } catch (error) {
         return badRequest(res, error);
