@@ -8,12 +8,12 @@ import { badRequest } from '../error';
 
 const router = express.Router();
 
-// get all completed tasks in household
+// get 20 latest completed tasks in household
 router.get('/', authenticate(), async (req, res) => {
 
     const householdID = getHouseholdID(req);
 
-    const completedTasks = await CompletedTaskModel.find({ householdID });
+    const completedTasks = await CompletedTaskModel.find({ householdID }, null).sort({ 'date': -1 }).limit(20);
     return res.json(completedTasks);
 });
 

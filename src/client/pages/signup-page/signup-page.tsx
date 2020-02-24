@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
 
-import PageWrapper from '../../common/page-wrapper/page-wrapper';
+import PageWrapper from '../../common/page-wrapper';
 import SignupForm from './signup-form';
 
-import { signup } from '../../api/operations';
+import { signup } from '../../common/api-operations';
 import { Redirect } from 'react-router-dom';
 
 const SignupPage: React.FC = () => {

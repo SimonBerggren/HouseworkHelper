@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import cors from 'cors';
 
 import CompletedTaskController from './controllers/completed-task-controller';
 import HouseholdController from './controllers/household-controller';
@@ -26,6 +27,7 @@ connect()
         const port = process.argv.pop();
         const app = express();
 
+        app.use(cors());
         app.use(express.json());
         app.use(express.static(staticPath));
 

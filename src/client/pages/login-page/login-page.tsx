@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 
-import PageWrapper from '../../common/page-wrapper/page-wrapper';
-import Input from '../../common/input/input';
-import Link from '../../common/link/link';
+import PageWrapper from '../../common/page-wrapper';
+import Input from '../../common/input';
+import Link from '../../common/link';
 import SelectUser from './select-user';
 
-import { authenticate, isAuthenticated, isFullyConfigured, setUser } from '../../app/authentication';
+import { authenticate, isAuthenticated, setUser } from '../../common/user/authentication';
 import { Redirect } from 'react-router-dom';
-import { login } from '../../api/operations';
+import { login } from '../../common/api-operations';
 
 const LoginPage: React.FC = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [pickUser, setPickUser] = useState(isAuthenticated());
-    const [redirect, setRedirect] = useState(isFullyConfigured());
+    const [redirect, setRedirect] = useState(false);
 
     const onLogin = async () => {
         const token = await login(email, password);
-        
+
         authenticate(token);
         setPickUser(true);
     };

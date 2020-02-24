@@ -1,3 +1,11 @@
+type Frequency =
+    'Daily' |
+    'Weekly' |
+    'Monthly' |
+    'Quaterly' |
+    'Semiannually' |
+    'Annually';
+
 interface SignupModel extends Household {
     confirmedPassword: string;
 }
@@ -33,6 +41,10 @@ interface CompletedTask {
     taskID: string;
     userID: string;
     date: number;
+}
+
+interface DeleteTaskRequest {
+    taskName: string;
 }
 
 interface CompleteTaskRequest {

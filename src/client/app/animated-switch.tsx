@@ -5,13 +5,13 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { Location as ILocation } from 'history';
 
-import ProtectedRoute from './protected-route';
+import ProtectedRoute from '../common/protected-route';
 
 interface AnimatedSwitchProps {
     location: ILocation
 }
 
-const HouseholdPage = React.lazy(() => import('../pages/household-page/Household-Page'));
+const HouseholdPage = React.lazy(() => import('../pages/household-page/household-page'));
 const Error404Page = React.lazy(() => import('../pages/error-404-page/error-404-page'));
 const SignUpPage = React.lazy(() => import('../pages/signup-page/signup-page'));
 const LoginPage = React.lazy(() => import('../pages/login-page/login-page'));

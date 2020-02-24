@@ -30,14 +30,12 @@ const StyledInput = styled.input`
         -moz-appearance: textfield;
     }
 
-    width: 40vw;
-
-    max-width: 15em;
+    width: 20vw;
 
     text-align: center;
     font-size: 1.15em;
 
-    background: none;
+    background: black;
     color: #01579b;
 
     border: none;

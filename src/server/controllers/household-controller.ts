@@ -14,7 +14,7 @@ router.get('/', authenticate(), async (req, res) => {
 
     try {
         const household = await HouseholdModel.findById(householdID);
-        return res.json(household);
+        return res.json({ email: household?.email, householdName: household?.householdName });
 
     } catch (error) {
         return badRequest(res, error);

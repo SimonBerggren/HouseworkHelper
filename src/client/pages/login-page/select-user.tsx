@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import Input from '../../common/input/input';
+import Input from '../../common/input';
 
-import { createUser, deleteUser, getUsers } from '../../api/operations';
+import { createUser, deleteUser, getUsers } from '../../common/api-operations';
 import { flexCenter } from '../../style/mixins';
 
 interface PickUserProps {

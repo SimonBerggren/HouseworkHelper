@@ -1,10 +1,10 @@
 import React from 'react';
 
-import PageWrapper from '../../common/page-wrapper/page-wrapper';
-import Link from '../../common/link/link';
+import PageWrapper from '../../common/page-wrapper';
+import Link from '../../common/link';
 
-import { isAuthenticated } from '../../app/authentication';
-import { logout } from '../../api/operations';
+import { isAuthenticated } from '../../common/user/authentication';
+import { logout } from '../../common/api-operations';
 
 const HomePage: React.FC = () => {
 

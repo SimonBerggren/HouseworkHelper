@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import Input from '../../common/input/input';
+import Input from '../../common/input';
 
 import { flexCenter } from '../../style/mixins';
 

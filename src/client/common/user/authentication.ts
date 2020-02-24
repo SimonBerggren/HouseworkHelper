@@ -1,3 +1,5 @@
+import { populateHouseholdInfo, emptyHouseholdInfo } from './household-info';
+
 const tokenKey = 'hwhJwtToken';
 const userKey = 'hwhUser';
 
@@ -5,12 +7,15 @@ const storage = sessionStorage;
 
 // User authentication
 
-export const authenticate = (token: string) =>
+export const authenticate = (token: string) => {
     storage.setItem(tokenKey, `bearer ${token}`);
+    populateHouseholdInfo();
+};
 
 export const deauthenticate = () => {
     storage.removeItem(tokenKey);
     storage.removeItem(userKey);
+    emptyHouseholdInfo();
 };
 
 export const isAuthenticated = (): boolean =>
@@ -19,12 +24,10 @@ export const isAuthenticated = (): boolean =>
 export const getToken = (): string =>
     storage.getItem(tokenKey) || '';
 
-// User configuration
-
 export const setUser = (userName: string) =>
     storage.setItem(userKey, userName);
 
-export const resetUser = () =>
+export const unsetUser = () =>
     storage.removeItem(userKey);
 
 export const isFullyConfigured = (): boolean =>
