@@ -1,54 +1,140 @@
+import { TextField, Button, Dialog, DialogTitle, DialogContentText, DialogContent, DialogActions } from '@material-ui/core';
 import React, { useState } from 'react';
+import styled from 'styled-components';
 
 import PageWrapper from '../../common/page-wrapper';
-import Input from '../../common/input';
 import Link from '../../common/link';
-import SelectUser from './select-user';
 
-import { authenticate, isAuthenticated, setUser } from '../../common/user/authentication';
-import { Redirect } from 'react-router-dom';
+import { authenticate, isAuthenticated } from '../../common/user/authentication';
 import { login } from '../../common/api-operations';
+import { flexCenter } from '../../style/mixins';
+import { Redirect } from 'react-router-dom';
+
 
 const LoginPage: React.FC = () => {
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [pickUser, setPickUser] = useState(isAuthenticated());
+    const [showInvalidCredentials, setShowInvalidCredentials] = React.useState(false);
     const [redirect, setRedirect] = useState(false);
+    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
 
     const onLogin = async () => {
-        const token = await login(email, password);
 
-        authenticate(token);
-        setPickUser(true);
+        try {
+            const token = await login(email, password);
+
+            authenticate(token);
+            setRedirect(true);
+
+        } catch (error) {
+            setShowInvalidCredentials(true)
+        }
     };
 
-    const onUserSelected = (userName: string) => {
-        setUser(userName);
-        setRedirect(true);
+    const handleClose = () => {
+        setShowInvalidCredentials(false);
     };
 
     return (
         <PageWrapper>
 
             {redirect ?
-                <Redirect to='/household' />
-                : pickUser ?
-                    <SelectUser onUserSelected={onUserSelected} />
-                    :
-                    <>
-                        <Input type='email' autoComplete='email' onChange={e => setEmail(e.currentTarget.value)} />
-                        <Input type='password' autoComplete='current-password' onChange={e => setPassword(e.currentTarget.value)} />
-                        <Input type='submit' value='Login' onClick={onLogin} />
+                <Redirect to='/users' />
+                :
+                <form autoComplete='on' onSubmit={e => e.preventDefault()}>
+                    <FieldSet>
 
-                        <span>
+                        <Title>
+                            Login
+                        </Title>
+
+                        <InputField
+                            label="Email"
+                            variant='outlined'
+                            autoFocus
+                            onChange={e => setEmail(e.currentTarget.value)}
+                        />
+
+                        <br />
+
+                        <InputField
+                            label="Password"
+                            type='password'
+                            variant='outlined'
+                            onChange={e => setPassword(e.currentTarget.value)}
+                        />
+
+                        <br />
+
+                        <LoginButton
+                            onClick={onLogin}
+                            variant='contained'
+                            color='primary'
+                            size='large'
+                        >
+                            Login
+                        </LoginButton>
+
+                        <Signup>
                             Not a Helper yet? <Link to='/signup'>Sign Up Here!</Link>
-                        </span>
-                    </>
+                        </Signup>
+
+                        <Dialog
+                            open={showInvalidCredentials}
+                            onClose={handleClose}
+                        >
+                            <DialogTitle children={'Invalid Credentials'} />
+                            <DialogContent>
+                                <DialogContentText children={'Forgotten your credentials? At this time, too bad!'} />
+                                <DialogContentText>
+                                    Are you new here? You are welcome to <Link to='/signup' onClick={handleClose}>Create an account!</Link>
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose} color="primary" autoFocus>
+                                    Try again
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+
+                    </FieldSet>
+                </form>
             }
 
-        </PageWrapper>
+        </PageWrapper >
     );
 };
+
+const InputField = styled(TextField)`
+            width: 20em;
+            padding: 2em;
+        `;
+
+const LoginButton = styled(Button)`
+            width: 15em;
+        `;
+
+const FieldSet = styled.div`
+    ${flexCenter}
+            margin: 0;
+            padding: 2em;
+            border: 0.1em solid purple;
+            background: rgba(255,255,255,0.8);
+            width: 30em;
+        `;
+
+const Title = styled.h1`
+            color: purple;
+        `;
+
+const Signup = styled.div`
+            align-self: flex-start;
+            color: #000;
+            margin-top: 2em;
+        
+    a {
+                color: purple;
+        }
+    `
 
 export default LoginPage;

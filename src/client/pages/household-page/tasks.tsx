@@ -1,22 +1,27 @@
-import React from 'react';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
+import React, { useState } from 'react';
+import styled from 'styled-components';
+
+import CreateTaskForm from './create-task-form';
 
 import { deleteTask, completeTask } from '../../common/api-operations';
 import { getUserName } from '../../common/user/authentication';
-import { flexCenter } from '../../style/mixins';
-import styled from 'styled-components';
-import Input from '../../common/input';
+import { UserContext } from '../../app/user-context';
 
 interface TasksProps {
     onTaskCompleted: (task: Task) => void;
     onTaskDeleted: (task: Task) => void;
+    onTaskCreated: (task: Task) => void;
     tasks: Task[];
 }
 
-const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted }: TasksProps) => {
+const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, onTaskCreated }: TasksProps) => {
 
-    const stopPropagationAndDelete = async (event: React.MouseEvent, { taskName }: Task) => {
-        event.stopPropagation();
+    const [showCreateTask, setShowCreateTask] = useState(false);
 
+    const onDeleteTask = async ({ taskName }: Task) => {
         if (confirm(
             `Are you sure you want to delete ${taskName}?\nThis action is irreversible!`)
         ) {
@@ -28,9 +33,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted }: 
         }
     };
 
-    const stopPropagationAndComplete = async (event: React.MouseEvent, taskToComplete: Task) => {
-        event.stopPropagation();
-
+    const onCompleteTask = async (taskToComplete: Task) => {
         const userName = getUserName();
         const completed = await completeTask({ taskName: taskToComplete.taskName, userName });
 
@@ -39,80 +42,77 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted }: 
         }
     };
 
-    const onViewTask = () => {
-
-    };
-
     return (
-        <Form onSubmit={e => e.preventDefault()}>
-            <FieldSet>
+        <UserContext.Consumer>
+            {user =>
+                <>
 
-                <Legend>Existing Tasks</Legend>
+                    <TasksContainer>
+                        <Table stickyHeader>
+                            <TableHead>
+                                <TableRow>
+                                    <TasksHeaderCell>Task</TasksHeaderCell>
+                                    <TasksHeaderCell align='right'>Frequency</TasksHeaderCell>
+                                    <TasksHeaderCell align='right'>Points</TasksHeaderCell>
+                                    <TasksHeaderCell align='right' >
+                                        <IconButton
+                                            onClick={() => setShowCreateTask(true)}
+                                        >
+                                            <AddIcon />
+                                        </IconButton>
+                                    </TasksHeaderCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {tasks.map((task, key) => (
+                                    <TableRow
+                                        hover
+                                        key={key}
+                                        onClick={e => console.log('click')}
+                                    >
+                                        <TableCell>{task.taskName}</TableCell>
+                                        <TableCell align='right'>{task.frequency}</TableCell>
+                                        <TableCell align='right'>{task.points}</TableCell>
+                                        <TableCell align='right'>
+                                            <IconButton
+                                                onClick={e => {e.stopPropagation(); onDeleteTask(task)}}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TasksContainer>
 
-                {tasks.length > 0 && tasks.map((task, key) =>
-
-                    <Task
-                        key={key}
-                        onClick={() => onViewTask}
-                    >
-                        <h3>{task.taskName}</h3>
-
-                        <DeleteButton
-                            onClick={e => stopPropagationAndComplete(e, task)}
-                        >
-                            Complete Task
-                        </DeleteButton>
-
-                        <DeleteButton
-                            onClick={e => stopPropagationAndDelete(e, task)}
-                        >
-                            x
-                        </DeleteButton>
-                    </Task>
-                )}
-            </FieldSet>
-        </Form>
+                    <CreateTaskForm
+                        onTaskCreated={onTaskCreated}
+                        onClose={() => setShowCreateTask(false)}
+                        open={showCreateTask}
+                    />
+                </>
+            }
+        </UserContext.Consumer>
     );
 };
 
-const Form = styled.form`
-    ${flexCenter}
-    width: 80vw;
-`;
-
-const FieldSet = styled.fieldset`
-    ${flexCenter}
-    margin: 1em;
-    padding: 1.5em;
-    border: 0.1em solid #2196f3;
-    width: 50vw;
-`;
-
-const Legend = styled.legend`
-    color: #2196f3;
-    font-size: 1.3em;
-`;
-
-const Task = styled.div`
-    display: flex;
-    justify-content: space-between;
-    border: 0.1em solid transparent;
-    padding: 0.5em;
-    margin-top: 1em;
-
-    :hover {
-        border: 0.1em solid #2196f3;
+const TasksContainer = styled(TableContainer)`
+    && {
+        background: rgba(255,255,255,0.85);
+        width: 50vw;
     }
 `;
 
-const DeleteButton = styled.button`
-    background: black;
-    border: none;
-    color: #01579b;
-    font-size: 1.3em;
+const TasksHeaderCell = styled(TableCell)`
+    && {
+        background-color: #9c27b0;
+        color: white;
+        font-size: large;
 
-    :hover {
-        color: #2196f3;
+        svg {
+            color: white;
+        }
     }
 `;
 

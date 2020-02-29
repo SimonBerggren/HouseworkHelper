@@ -7,31 +7,36 @@ import { Location as ILocation } from 'history';
 
 import ProtectedRoute from '../common/protected-route';
 
+import Lazy from './lazy';
+
 interface AnimatedSwitchProps {
     location: ILocation
 }
 
-const HouseholdPage = React.lazy(() => import('../pages/household-page/household-page'));
-const Error404Page = React.lazy(() => import('../pages/error-404-page/error-404-page'));
-const SignUpPage = React.lazy(() => import('../pages/signup-page/signup-page'));
-const LoginPage = React.lazy(() => import('../pages/login-page/login-page'));
-const HomePage = React.lazy(() => import('../pages/home-page/home-page'));
+const HouseholdPage = () => <Lazy importFunc={() => import('../pages/household-page/household-page')} />;
+const Error404Page = () => <Lazy importFunc={() => import('../pages/error-404-page/error-404-page')} />;
+const SignUpPage = () => <Lazy importFunc={() => import('../pages/signup-page/signup-page')} />;
+const LoginPage = () => <Lazy importFunc={() => import('../pages/login-page/login-page')} />;
+const UsersPage = () => <Lazy importFunc={() => import('../pages/users-page/users-page')} />;
+const HomePage = () => <Lazy importFunc={() => import('../pages/home-page/home-page')} />;
 
 const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwitchProps) => {
+
     return (
         <SwitchContainer>
-            <TransitionGroup className="transition-group">
 
+            <TransitionGroup className="transition-group">
                 <CSSTransition
                     key={location.key}
                     timeout={{ enter: 300, exit: 300 }}
                     classNames='fade'
                 >
-
                     <RouteSection>
+
                         <Switch location={location}>
 
                             <ProtectedRoute exact path="/household" render={() => <HouseholdPage />} />
+                            <ProtectedRoute exact path="/users" render={() => <UsersPage />} />
 
                             <Route exact path="/signup" render={() => <SignUpPage />} />
                             <Route exact path="/login" render={() => <LoginPage />} />
@@ -48,9 +53,9 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
     );
 };
 
+
+
 const SwitchContainer = styled.div`
-
-
 
     .fade-enter {
         opacity: 0;

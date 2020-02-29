@@ -3,7 +3,7 @@ import { Route, RouteProps as IRouteProps, Redirect } from 'react-router-dom';
 
 import { isAuthenticated } from './user/authentication';
 
-const ProtectedRoute = ({ render, ...routeProps }: IRouteProps) =>
+const ProtectedRoute: React.FC<IRouteProps> = ({ render, ...routeProps }: IRouteProps) =>
     <Route {...routeProps} render={(props) =>
         isAuthenticated()
             ? render && render(props)

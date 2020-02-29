@@ -58,6 +58,12 @@ module.exports = env => {
                         loader: 'babel-loader'
                     },
                 },
+                {
+                    test: /\.(png)$/,
+                    use: {
+                        loader: 'file-loader'
+                    }
+                }
             ],
         },
         resolve: {

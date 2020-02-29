@@ -1,17 +1,18 @@
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import Input from '../../common/input';
-
 import { frequencies } from '../../../common/frequencies';
 import { createTask } from '../../common/api-operations';
-import { flexCenter } from '../../style/mixins';
 
 interface CreateTaskProps {
     onTaskCreated: (taskToCreate: Task) => void;
+    onClose: () => void;
+    open: boolean;
 }
 
-const CreateTaskForm: React.FC<CreateTaskProps> = ({ onTaskCreated }: CreateTaskProps) => {
+const CreateTaskForm: React.FC<CreateTaskProps> = ({ open, onClose, onTaskCreated }: CreateTaskProps) => {
 
     const [taskName, setTaskName] = useState<string>('');
     const [desc, setDesc] = useState<string>();
@@ -23,108 +24,102 @@ const CreateTaskForm: React.FC<CreateTaskProps> = ({ onTaskCreated }: CreateTask
 
         if (createdTask) {
             onTaskCreated(createdTask);
+            onClose();
         }
     };
 
     return (
-        <Form onSubmit={e => e.preventDefault()}>
-            <FieldSet>
-                <Legend>Create new task</Legend>
 
-                <Field>
-                    <Label>Title</Label>
+        <Dialog
+            open={open}
+            onClose={onClose}
+        >
+            <Title>
+                Create New Task
 
-                    <Input type='text' onChange={e => setTaskName(e.currentTarget.value)} />
-                </Field>
+                <CloseButton
+                    onClick={onClose}
+                >
+                    <CloseIcon />
+                </CloseButton>
+            </Title>
+            <DialogContent dividers>
 
+                <InputField
+                    label="Title"
+                    onChange={(e) => setTaskName(e.currentTarget.value)}
+                    required
+                />
 
+                <InputField
+                    label="Description"
+                    onChange={(e) => setDesc(e.currentTarget.value)}
+                    multiline
+                />
 
-                <Field>
-                    <Label>Description</Label>
+                <InputField
+                    type='number'
+                    label='Reward Points'
+                    onChange={(e) => setPoints(parseInt(e.currentTarget.value))}
+                    required
+                />
 
-                    <DescriptionBox onChange={e => setDesc(e.currentTarget.value)} />
-                </Field>
+                <SelectField>
+                    <InputLabel required >Frequency</InputLabel>
 
-                <Field>
-                    <Label>Rewards points</Label>
-
-                    <Input type='number' defaultValue={points} onChange={e => setPoints(parseInt(e.currentTarget.value))} />
-                </Field>
-
-
-                <Field>
-                    <Label>Frequency</Label>
-
-                    <Dropdown onChange={e => setFrequency(e.currentTarget.value)}>
-                        <option style={{ display: 'none' }} ></option>
-
+                    <Select
+                        value={frequency}
+                        onChange={e => setFrequency(e.target.value as string)}
+                    >
                         {frequencies.map((frequency, key) =>
-                            <option
+                            <MenuItem
                                 key={key}
                                 value={frequency}
                             >
                                 {frequency}
-                            </option>
+                            </MenuItem>
                         )}
-                    </Dropdown>
-                </Field>
+                    </Select>
 
-                <Input type='button' value='Create new task' onClick={() => onCreateTask({ frequency, points, taskName, desc })} />
+                    <FormHelperText>Select how frequent this task needs to be perfomed</FormHelperText>
+                </SelectField>
 
-            </FieldSet>
-        </Form>
+            </DialogContent>
+            <DialogActions >
+                <SignupButton
+                    onClick={() => onCreateTask({ frequency, points, taskName, desc })}
+                    color="primary"
+                    variant='contained'
+                >
+                    Create Task
+                    </SignupButton>
+            </DialogActions>
+        </Dialog>
     );
 };
 
-const Dropdown = styled.select`
-    background: black;
-    color: #01579b;
-    border: 0.1em solid #01579b;
-    font-size: 1.15em;
-    width: 15vw;
-    
-    :focus {
-        border: 0.1em solid #01579b;
+const Title = styled(DialogTitle)`
+    color: purple;
+`;
+
+const CloseButton = styled(IconButton)`
+    && { 
+        position: absolute;
+        top: 0.3em;
+        right: 0.3em;
     }
 `;
 
-const Form = styled.form`
-    ${flexCenter}
-    width: 80vw;
+const InputField = styled(TextField)`
+    width: 20em;
 `;
 
-const FieldSet = styled.fieldset`
-    ${flexCenter}
-    margin: 1em;
-    border: 0.1em solid #2196f3;
+const SelectField = styled(FormControl)`
+    width: 20em;
 `;
 
-const Legend = styled.legend`
-    color: #2196f3;
-    font-size: 1.3em;
-`;
-
-const Field = styled.p`
-    ${flexCenter}
-    align-items: center;
-    margin-top: 4em;
-    padding-bottom: 4em;
-    width: 100%;
-`;
-
-const Label = styled.label`
-    font-size: 1.2em;
-    align-self: flex-start;
-`;
-
-const DescriptionBox = styled.textarea`
-    background: black;
-    color: #01579b;
-    border: 0.1em solid #01579b;
-    font-size: 1.4em;
-    width: 30vw;
-    height: 10vw;
-    resize: none;
+const SignupButton = styled(Button)`
+    width: 15em;
 `;
 
 export default CreateTaskForm;

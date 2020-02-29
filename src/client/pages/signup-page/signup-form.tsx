@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import Input from '../../common/input';
+import { TextField, Button } from '@material-ui/core';
 
 import { flexCenter } from '../../style/mixins';
 
 interface SignupFormProps {
-    onSubmit: (household: Household) => void;
+    onSignup: (household: Household) => void;
 }
 
 const defaultFormData: SignupModel = {
@@ -16,122 +16,87 @@ const defaultFormData: SignupModel = {
     confirmedPassword: ''
 };
 
-const selectTextOnFocus = (event: React.FocusEvent<HTMLInputElement>) => event.currentTarget.select();
-
-const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }: SignupFormProps) => {
+const SignupForm: React.FC<SignupFormProps> = ({ onSignup }: SignupFormProps) => {
 
     const [data, setData] = useState<SignupModel>(defaultFormData);
 
-
-    const formDataTextChange = (event: React.ChangeEvent<HTMLInputElement>, property: string) => {
+    const onDataChange = (event: React.ChangeEvent<HTMLInputElement>, property: string) => {
         setData({ ...data, [property]: event.currentTarget.value });
     };
 
     return (
-        <Form onSubmit={(e) => {
-            e.preventDefault();
-            onSubmit(data);
-        }}>
-            <FieldSet>
-                <Legend>
-                    Sign Up to become a Helper!
-                </Legend>
+        <FieldSet>
+            <Title>
+                Sign Up to become a Helper!
+            </Title>
 
-                <Field>
-                    <Label>
-                        Do you want to name your household anything?
-                    </Label>
+            <br />
 
-                    <Input
-                        type='text'
-                        value={data.householdName}
-                        onFocus={selectTextOnFocus}
-                        onChange={e => formDataTextChange(e, 'name')}
-                        required
-                    />
-                </Field>
-
-                <Field>
-                    <Label>
-                        Email:
-                    </Label>
-
-                    <Input
-                        type='email'
-                        autoComplete='email'
-                        value={data.email}
-                        onFocus={selectTextOnFocus}
-                        onChange={e => formDataTextChange(e, 'email')}
-                        required
-                    />
-                </Field>
-
-                <Field>
-                    <Label>
-                        Password:
-                    </Label>
-
-                    <Input
-                        type='password'
-                        autoComplete='new-password'
-                        value={data.password}
-                        onFocus={selectTextOnFocus}
-                        onChange={e => formDataTextChange(e, 'password')}
-                        required
-                    />
-                </Field>
-
-                <Field>
-                    <Label>Confirm Password:</Label>
-
-                    <Input
-                        type='password'
-                        autoComplete='new-password'
-                        value={data.confirmedPassword}
-                        onFocus={selectTextOnFocus}
-                        onChange={e => formDataTextChange(e, 'confirmedPassword')}
-                        required
-                    />
-                </Field>
-
-            </FieldSet>
-
-            <Input
-                type='submit'
-                value='Sign Up'
+            <InputField
+                value={data.householdName}
+                label="Household name"
+                variant='outlined'
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onDataChange(e, 'householdName')}
+                required
             />
 
-        </Form>
+            <br />
+
+            <InputField
+                type='email'
+                value={data.email}
+                label="Email"
+                variant='outlined'
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onDataChange(e, 'email')}
+                required
+            />
+
+            <br />
+
+            <InputField
+                type='password'
+                value={data.password}
+                label="Password"
+                variant='outlined'
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onDataChange(e, 'password')}
+                required
+            />
+
+            <br />
+
+            <SignupButton
+                onClick={() => onSignup(data)}
+                variant='contained'
+                color='primary'
+                size='large'
+            >
+                Sign Up
+            </SignupButton>
+        </FieldSet>
+
     );
 };
 
-const Form = styled.form`
+const FieldSet = styled.div`
     ${flexCenter}
-    width: 80vw;
+    margin: 0;
+    padding: 2em;
+    border: 0.1em solid purple;
+    background: rgba(255,255,255,0.7);
+    width: 30em;
 `;
 
-const FieldSet = styled.fieldset`
-    ${flexCenter}
-    margin: 1em;
-    border: 0.1em solid #2196f3;
+const Title = styled.h3`
+    color: purple;
 `;
 
-const Legend = styled.legend`
-    color: #2196f3;
-    font-size: 1.3em;
+const InputField = styled(TextField)`
+    width: 20em;
+    padding: 2em;
 `;
 
-const Field = styled.p`
-    ${flexCenter}
-    align-items: center;
-    margin-top: 4em;
-    padding-bottom: 4em;
-    width: 100%;
-`;
-
-const Label = styled.label`
-    font-size: 1.2em;
-    align-self: flex-start;
+const SignupButton = styled(Button)`
+    width: 15em;
 `;
 
 export default SignupForm;

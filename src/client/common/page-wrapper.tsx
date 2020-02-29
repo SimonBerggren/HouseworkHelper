@@ -3,14 +3,15 @@ import React from 'react';
 
 import { flexCenter } from '../style/mixins';
 
-interface Props {
+interface PageWrapperProps {
     children?: React.ReactNode;
+    className?: string;
 }
 
-const PageWrapper: React.FC = ({ children }: Props) => {
+const PageWrapper: React.FC = ({ children, className }: PageWrapperProps) => {
 
     return (
-        <StyledPageWrapper>
+        <StyledPageWrapper className={className}>
             {children}
         </StyledPageWrapper>
     );
@@ -19,6 +20,8 @@ const PageWrapper: React.FC = ({ children }: Props) => {
 const StyledPageWrapper = styled.div`
     width: 100vw;
     height: 100vh;
+
+    margin-top: 3.6em;
 
     ${flexCenter}
 

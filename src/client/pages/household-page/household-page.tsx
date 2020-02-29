@@ -4,7 +4,6 @@ import PageWrapper from '../../common/page-wrapper';
 import Link from '../../common/link';
 
 import { getUsers, getHousehold, getTasks, logout, switchUser } from '../../common/api-operations';
-import CreateTaskForm from './create-task-form';
 import Tasks from './tasks';
 
 const HouseholdPage: React.FC = () => {
@@ -39,42 +38,17 @@ const HouseholdPage: React.FC = () => {
         setUsers(users);
     };
 
-
     return (
+
         <PageWrapper>
-            <Link
-                to='/'
-                onClick={() => logout()}
-            >
-                Log out
-            </Link>
-            <Link
-                to='/login'
-                onClick={() => switchUser()}
-            >
-                Switch User
-            </Link>
 
             {household && <>
-
-                <h1>{household.householdName}</h1>
-
-                {users.map((user, key) =>
-                    <div key={key}>
-                        <h3>
-                            {user.userName}, {user.points}p
-                        </h3>
-                    </div>
-                )}
 
                 <Tasks
                     onTaskCompleted={onTaskCompleted}
                     onTaskDeleted={onTaskDeleted}
-                    tasks={tasks}
-                />
-
-                <CreateTaskForm
                     onTaskCreated={onTaskCreated}
+                    tasks={tasks}
                 />
             </>}
 

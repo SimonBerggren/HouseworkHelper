@@ -1,4 +1,4 @@
-import { populateHouseholdInfo, emptyHouseholdInfo } from './household-info';
+import { emitEvent } from '../../app/event-manager';
 
 const tokenKey = 'hwhJwtToken';
 const userKey = 'hwhUser';
@@ -9,13 +9,15 @@ const storage = sessionStorage;
 
 export const authenticate = (token: string) => {
     storage.setItem(tokenKey, `bearer ${token}`);
-    populateHouseholdInfo();
+    emitEvent('authenticateChanged', true);
 };
 
 export const deauthenticate = () => {
     storage.removeItem(tokenKey);
     storage.removeItem(userKey);
-    emptyHouseholdInfo();
+    
+    emitEvent('authenticateChanged', false);
+    emitEvent('userNameChanged', false);
 };
 
 export const isAuthenticated = (): boolean =>
@@ -24,11 +26,15 @@ export const isAuthenticated = (): boolean =>
 export const getToken = (): string =>
     storage.getItem(tokenKey) || '';
 
-export const setUser = (userName: string) =>
+export const setUser = (userName: string) => {
     storage.setItem(userKey, userName);
+    emitEvent('userNameChanged', userName);
+}
 
-export const unsetUser = () =>
+export const unsetUser = () => {
     storage.removeItem(userKey);
+    emitEvent('userNameChanged', '');
+}
 
 export const isFullyConfigured = (): boolean =>
     isAuthenticated() && getUserName() !== '';

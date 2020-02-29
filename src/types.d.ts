@@ -1,3 +1,5 @@
+declare module "*.png"
+
 type Frequency =
     'Daily' |
     'Weekly' |

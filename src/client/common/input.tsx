@@ -3,10 +3,11 @@ import React from 'react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
-const Input: React.FC<InputProps> = ({ ...props }: InputProps) => {
+const Input: React.FC<InputProps> = ({ className, ...props }: InputProps) => {
 
     return (
         <StyledInput
+            className={className}
             {...props}
         />
     );
@@ -24,29 +25,29 @@ const StyledInput = styled.input`
         transition-delay: 9999s;
         -webkit-text-fill-color: #01579b;
         box-shadow: 0 0 0px 1000px #000 inset;
+        font-size: 1.2em;
     }
 
     &[type=number] {
         -moz-appearance: textfield;
     }
 
-    width: 20vw;
+    width: 30vw;
 
     text-align: center;
-    font-size: 1.15em;
+    font-size: 1em;
 
-    background: black;
+    background: white;
     color: #01579b;
 
-    border: none;
-    border-bottom: 0.1em solid #01579b;
+    border: 0.1em solid #01579b;
 
     outline: none;
 
     margin: 2vh;
     padding: 1vh;
 
-    :focus {
+    &:focus {
         color: #90caf9;
         border-color: #90caf9;
 
@@ -63,15 +64,13 @@ const StyledInput = styled.input`
         color: #01579b;
     }
     
-    :hover {
+    &:hover {
         border-color: #2196f3;
 
         ::placeholder {
             color: #2196f3;
         }   
     }
-
-    
 `;
 
 export default Input;

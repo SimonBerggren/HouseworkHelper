@@ -55,6 +55,10 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
+    "@material-ui/core": "^4.9.4",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/utils": "^4.7.1",
+    "@types/material-ui": "^0.21.7",
     "bcrypt": "^3.0.8",
     "cors": "^2.8.5",
     "express": "^4.17.1",

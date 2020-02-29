@@ -10,7 +10,6 @@ if (process.platform !== 'win32') {
     keepTerminalOpen = ['&&', terminal];
 }
 
-
 const run = (...args) =>
     spawn(
         terminal,

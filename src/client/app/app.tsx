@@ -1,25 +1,30 @@
 import React, { Suspense } from 'react';
-import styled from 'styled-components';
 
 import { BrowserRouter } from 'react-router-dom';
 
 import LoadingPage from '../pages/loading-page/loading-page';
-import AnimatedSwitch from './animated-switch';
 import GlobalStyle from '../style/global-style';
+import AnimatedSwitch from './animated-switch';
+import Background from '../style/background';
+import MenuBar from '../common/menu-bar';
+import UserContextProvider from './user-context';
+import ThemeProvider from '../style/theme';
 
-const App = () =>
-    <Suspense fallback={<LoadingPage />}>
-        <BrowserRouter>
-            <StyledApp>
-                <GlobalStyle />
-                <AnimatedSwitch />
-            </StyledApp>
-        </BrowserRouter>
-    </Suspense>;
-
-const StyledApp = styled.div`
-    width: 100vw;
-    height: 100vh;
-`;
+const App = () => {
+    return (
+        <ThemeProvider>
+            <Suspense fallback={<LoadingPage />}>
+                <BrowserRouter>
+                    <UserContextProvider>
+                        <GlobalStyle />
+                        <Background />
+                        <MenuBar />
+                        <AnimatedSwitch />
+                    </UserContextProvider>
+                </BrowserRouter>
+            </Suspense>
+        </ThemeProvider>
+    );
+}
 
 export default App;

@@ -3,10 +3,7 @@ import { createGlobalStyle } from 'styled-components';
 const GlobalStyle = createGlobalStyle`
     body {
         font-size: 1.1em;
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
-        color: #01579b;
-        
-        background: #000;
+        font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 
         padding: 0;
         margin: 0;

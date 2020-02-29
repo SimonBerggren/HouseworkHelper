@@ -24,7 +24,6 @@ const request = (path: string, method: string, data?: any) =>
         })
         .catch(error => {
             console.log(error);
-            alert(error);
             return Promise.reject();
         });
 
