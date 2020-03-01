@@ -3,8 +3,9 @@ import express from 'express';
 import UserModel from '../model/user.model';
 
 import { authenticate } from '../authentication/authentication';
-import { getHouseholdID } from '../utils/mongo-utils';
+import { getHouseholdID, findTasks, findUsers } from '../utils/mongo-utils';
 import { badRequest } from '../error';
+import TaskModel from '../model/task-model';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get('/', authenticate(), async (req, res) => {
     const householdID = getHouseholdID(req);
 
     try {
-        const users = await UserModel.find({ householdID });
+        const users = await findUsers({ householdID });
         return res.json(users);
 
     } catch (error) {
@@ -46,9 +47,33 @@ router.delete('/', authenticate(), async (req, res) => {
     const { userName } = req.body as DeleteUserRequest;
 
     try {
-        const deletedUser = await UserModel.findOneAndDelete({ householdID, userName });
+        const deletedUser = await UserModel.findOne({ householdID, userName });
+
         if (!deletedUser) {
             console.log('Could not delete', userName);
+
+        } else {
+            const tasks = await findTasks({ householdID, visibleTo: { '$in': [deletedUser.id] }, visibleToAll: false });
+
+            console.log(tasks);
+
+            await Promise.all(tasks.map(async task => {
+                task.visibleTo = task.visibleTo.filter(userID => userID !== deletedUser.id);
+
+                if (!task.visibleTo.length) {
+                    const deletedTask = await TaskModel.findOneAndDelete({ _id: task.id });
+                    if (deletedTask) {
+                        console.log('deleted', deletedTask);
+                    } else {
+                        console.log('could not delete', deletedTask);
+                    }
+                } else {
+                    task.save();
+                    console.log('not deleting', task.taskName, task.visibleTo);
+                }
+
+                return task;
+            }));
         }
         return res.json(deletedUser);
 

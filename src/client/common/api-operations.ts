@@ -31,6 +31,8 @@ export const get = (path: string) => request(path, 'GET');
 
 export const post = (path: string, data: any) => request(path, 'POST', data);
 
+export const put = (path: string, data: any) => request(path, 'PUT', data);
+
 export const remove = (path: string, data: any) => request(path, 'DELETE', data);
 
 // Authentication
@@ -71,11 +73,14 @@ export const getTasks = (): Promise<Task[]> =>
 export const createTask = (task: Task): Promise<Task> =>
     post('task', task);
 
-export const deleteTask = (taskToDelete: DeleteTaskRequest): Promise<Task> =>
-    remove('task', taskToDelete);
+export const updateTask = (data: UpdateTaskRequest): Promise<Task> =>
+    put('task', data);
+
+export const deleteTask = (data: DeleteTaskRequest): Promise<Task> =>
+    remove('task', data);
 
 export const getCompletedTasks = (): Promise<CompletedTask[]> =>
     get('completed-task');
 
-export const completeTask = (completedTask: CompleteTaskRequest): Promise<boolean> =>
-    post('completed-task', completedTask);
+export const completeTask = (data: CompleteTaskRequest): Promise<boolean> =>
+    post('completed-task', data);

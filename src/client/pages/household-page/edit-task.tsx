@@ -4,13 +4,13 @@ import styled from 'styled-components';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton, Checkbox, FormControlLabel, ListItemText, Input } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
+import { createTask, getUsers, updateTask } from '../../common/api-operations';
 import { frequencies } from '../../../common/frequencies';
-import { createTask, getUsers } from '../../common/api-operations';
 import { UserContext } from '../../app/user-context';
 
 interface TaskProps {
     onTaskCreated: (taskToCreate: Task) => void;
-    onTaskEdited: (taskToEdit: Task) => void;
+    onTaskEdited: (oldTask: Task, updatedTask: Task) => void;
     onClose: () => void;
     editTask?: Task;
     open: boolean;
@@ -30,11 +30,11 @@ const defaultValues = (defaultTask?: Task): Task => {
 const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated, onTaskEdited }: TaskProps) => {
 
     const [task, setTask] = useState<Task>(defaultValues(editTask));
-    const [users, setUsers] = useState<User[]>();
+    const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
         setTask(defaultValues(editTask));
-        if (editTask) {
+        if (!users.length || (!users.length && editTask)) {
             getUsers()
                 .then(users => setUsers(users));
         }
@@ -51,22 +51,17 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
 
     const onEditTask = async () => {
 
-        onTaskEdited;
+        if (editTask) {
+            const updatedTask = await updateTask({ task, taskToUpdate: editTask.taskName });
+
+            if (updatedTask) {
+                onTaskEdited(editTask, task);
+            }
+        }
     };
 
     const onCloseModal = () => {
         onClose();
-    };
-
-    const onVisibleToAllChanged = async () => {
-        const visibleToAll = !task.visibleToAll;
-        let visibleTo = task.visibleTo;
-        if (visibleToAll) {
-            visibleTo = [];
-        } else {
-            visibleTo = [];
-        }
-        setTask({ ...task, visibleToAll, visibleTo });
     };
 
     return (
@@ -77,7 +72,7 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                     onClose={onCloseModal}
                 >
                     <Title>
-                        Create New Task
+                        {editTask ? 'Edit Task' : 'Create New Task'}
 
                         <CloseButton
                             onClick={onCloseModal}
@@ -85,6 +80,7 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                             <CloseIcon />
                         </CloseButton>
                     </Title>
+
                     <DialogContent dividers>
 
                         <InputField
@@ -121,7 +117,7 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                                 input={<Input />}
                                 renderValue={(userNames: any) => userNames.join(', ')}
                                 value={task.visibleTo}
-                                onChange={e => setTask({ ...task, visibleTo: e.currentTarget.value as string[] })}
+                                onChange={e => setTask({ ...task, visibleTo: e.target.value as string[] })}
                                 MenuProps={{
                                     anchorOrigin: {
                                         vertical: 'bottom',
@@ -155,7 +151,7 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                             control={
                                 <Checkbox
                                     checked={task.visibleToAll}
-                                    onChange={onVisibleToAllChanged}
+                                    onChange={() => setTask({ ...task, visibleToAll: !task.visibleToAll, visibleTo: !task.visibleToAll ? [] : [userContext.userName] })}
                                     color='primary'
                                 />
                             }

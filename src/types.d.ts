@@ -23,14 +23,6 @@ interface User {
     points: number;
 }
 
-interface CreateUserRequest {
-    userName: string;
-}
-
-interface DeleteUserRequest {
-    userName: string;
-}
-
 interface Task {
     points: number;
     taskName: string;
@@ -47,8 +39,21 @@ interface CompletedTask {
     date: number;
 }
 
+interface CreateUserRequest {
+    userName: string;
+}
+
+interface DeleteUserRequest {
+    userName: string;
+}
+
 interface DeleteTaskRequest {
     taskName: string;
+}
+
+interface UpdateTaskRequest {
+    taskToUpdate: string;
+    task: Task;
 }
 
 interface CompleteTaskRequest {

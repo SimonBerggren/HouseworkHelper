@@ -23,6 +23,15 @@ const HouseholdPage: React.FC = () => {
         setTasks(newTasks);
     };
 
+    const onTaskEdited = (oldTask: Task, updatedTask: Task) => {
+        const indexOfOldTask = tasks.findIndex(task => task.taskName === oldTask.taskName);
+        if (indexOfOldTask >= 0) {
+            const copy = [...tasks];
+            copy.splice(indexOfOldTask, 1, updatedTask);
+            setTasks(copy);
+        }
+    };
+
     const onTaskDeleted = ({ taskName }: Task) => {
         const filteredTasks = tasks.filter(task => task.taskName !== taskName);
         setTasks(filteredTasks);
@@ -41,6 +50,7 @@ const HouseholdPage: React.FC = () => {
                     onTaskCompleted={onTaskCompleted}
                     onTaskDeleted={onTaskDeleted}
                     onTaskCreated={onTaskCreated}
+                    onTaskEdited={onTaskEdited}
                     tasks={tasks}
                 />
             </>}

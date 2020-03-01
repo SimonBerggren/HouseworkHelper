@@ -16,10 +16,11 @@ interface TasksProps {
     onTaskCompleted: (task: Task) => void;
     onTaskDeleted: (task: Task) => void;
     onTaskCreated: (task: Task) => void;
+    onTaskEdited: (oldTask: Task, updatedTask: Task) => void;
     tasks: Task[];
 }
 
-const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, onTaskCreated }: TasksProps) => {
+const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, onTaskCreated, onTaskEdited }: TasksProps) => {
 
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [selectedTask, setSelectedTask] = useState();
@@ -113,7 +114,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                     <TaskForm
                         onTaskCreated={onTaskCreated}
                         onClose={onTaskModalClose}
-                        onTaskEdited={tte => tte}
+                        onTaskEdited={onTaskEdited}
                         open={showCreateTask}
                         editTask={editTask}
                     />
