@@ -56,12 +56,9 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
 
             if (updatedTask) {
                 onTaskEdited(editTask, task);
+                onClose();
             }
         }
-    };
-
-    const onCloseModal = () => {
-        onClose();
     };
 
     return (
@@ -69,13 +66,13 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
             {userContext =>
                 <Dialog
                     open={editTask != undefined || open}
-                    onClose={onCloseModal}
+                    onClose={onClose}
                 >
                     <Title>
                         {editTask ? 'Edit Task' : 'Create New Task'}
 
                         <CloseButton
-                            onClick={onCloseModal}
+                            onClick={onClose}
                         >
                             <CloseIcon />
                         </CloseButton>
