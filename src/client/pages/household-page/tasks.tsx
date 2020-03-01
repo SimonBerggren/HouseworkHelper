@@ -38,7 +38,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                 setTimeout(() => {
                     setDeleting('');
                     onTaskDeleted(deletedTask);
-                }, 5000);
+                }, 500);
 
             }
         }

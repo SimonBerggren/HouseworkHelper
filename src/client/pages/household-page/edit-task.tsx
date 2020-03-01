@@ -1,10 +1,12 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton, Checkbox, FormControlLabel, ListItemText, Input } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+
 import { frequencies } from '../../../common/frequencies';
-import { createTask } from '../../common/api-operations';
+import { createTask, getUsers } from '../../common/api-operations';
+import { UserContext } from '../../app/user-context';
 
 interface TaskProps {
     onTaskCreated: (taskToCreate: Task) => void;
@@ -14,12 +16,29 @@ interface TaskProps {
     open: boolean;
 }
 
+const defaultValues = (defaultTask?: Task): Task => {
+    return {
+        taskName: defaultTask ? defaultTask.taskName : '',
+        desc: defaultTask ? defaultTask.desc : '',
+        frequency: defaultTask ? defaultTask.frequency : '',
+        points: defaultTask ? defaultTask.points : 0,
+        visibleTo: defaultTask ? defaultTask.visibleTo : [],
+        visibleToAll: defaultTask ? defaultTask.visibleToAll : true
+    };
+};
+
 const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated, onTaskEdited }: TaskProps) => {
 
-    const [taskName, setTaskName] = useState<string>('');
-    const [desc, setDesc] = useState<string>();
-    const [frequency, setFrequency] = useState<string>('');
-    const [points, setPoints] = useState<number>(0);
+    const [task, setTask] = useState<Task>(defaultValues(editTask));
+    const [users, setUsers] = useState<User[]>();
+
+    useEffect(() => {
+        setTask(defaultValues(editTask));
+        if (editTask) {
+            getUsers()
+                .then(users => setUsers(users));
+        }
+    }, [open, editTask]);
 
     const onCreateTask = async (taskToCreate: Task) => {
         const createdTask = await createTask(taskToCreate);
@@ -39,88 +58,152 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
         onClose();
     };
 
+    const onVisibleToAllChanged = async () => {
+        const visibleToAll = !task.visibleToAll;
+        let visibleTo = task.visibleTo;
+        if (visibleToAll) {
+            visibleTo = [];
+        } else {
+            visibleTo = [];
+        }
+        setTask({ ...task, visibleToAll, visibleTo });
+    };
+
     return (
-
-        <Dialog
-            open={editTask != undefined || open}
-            onClose={onCloseModal}
-        >
-            <Title>
-                Create New Task
-
-                <CloseButton
-                    onClick={onCloseModal}
+        <UserContext.Consumer>
+            {userContext =>
+                <Dialog
+                    open={editTask != undefined || open}
+                    onClose={onCloseModal}
                 >
-                    <CloseIcon />
-                </CloseButton>
-            </Title>
-            <DialogContent dividers>
+                    <Title>
+                        Create New Task
 
-                <InputField
-                    label="Title"
-                    defaultValue={editTask?.taskName}
-                    onChange={(e) => setTaskName(e.currentTarget.value)}
-                    required
-                />
+                        <CloseButton
+                            onClick={onCloseModal}
+                        >
+                            <CloseIcon />
+                        </CloseButton>
+                    </Title>
+                    <DialogContent dividers>
 
-                <InputField
-                    label="Description"
-                    defaultValue={editTask?.desc}
-                    onChange={(e) => setDesc(e.currentTarget.value)}
-                    multiline
-                />
+                        <InputField
+                            label='Title'
+                            helperText='What is the task?'
+                            defaultValue={task.taskName}
+                            onChange={e => setTask({ ...task, taskName: e.currentTarget.value })}
+                            required
+                        />
 
-                <InputField
-                    type='number'
-                    label='Reward Points'
-                    defaultValue={editTask?.points}
-                    onChange={(e) => setPoints(parseInt(e.currentTarget.value))}
-                    required
-                />
+                        <InputField
+                            label='Description'
+                            helperText='Describe the task in more detail if needed'
+                            defaultValue={task.desc}
+                            onChange={e => setTask({ ...task, desc: e.currentTarget.value })}
+                            multiline
+                        />
 
-                <SelectField
+                        <InputField
+                            type='number'
+                            label='Reward Points'
+                            helperText='Select how much this is worth'
+                            defaultValue={task.points}
+                            onChange={e => setTask({ ...task, points: parseInt(e.currentTarget.value) })}
+                            required
+                        />
 
-                >
-                    <InputLabel required >Frequency</InputLabel>
+                        <SelectField>
+                            <InputLabel>Visible To</InputLabel>
 
-                    <Select
-                        value={editTask?.frequency || frequency}
-                        onChange={e => setFrequency(e.target.value as string)}
-                    >
-                        <MenuItem />
-                        {frequencies.map((frequency, key) =>
-                            <MenuItem
-                                key={key}
-                                value={frequency}
+                            <Select
+                                multiple
+                                disabled={task.visibleToAll}
+                                input={<Input />}
+                                renderValue={(userNames: any) => userNames.join(', ')}
+                                value={task.visibleTo}
+                                onChange={e => setTask({ ...task, visibleTo: e.currentTarget.value as string[] })}
+                                MenuProps={{
+                                    anchorOrigin: {
+                                        vertical: 'bottom',
+                                        horizontal: 'left'
+                                    },
+                                    transformOrigin: {
+                                        vertical: 'top',
+                                        horizontal: 'left'
+                                    },
+                                    getContentAnchorEl: null
+                                }}
                             >
-                                {frequency}
-                            </MenuItem>
-                        )}
-                    </Select>
+                                {users && users.map((user, key) =>
+                                    <MenuItem
+                                        key={key}
+                                        value={user.userName}
+                                        disabled={user.userName === userContext.userName}
+                                    >
+                                        <Checkbox
+                                            checked={user.userName === userContext.userName || task.visibleTo.indexOf(user.userName) >= 0}
+                                        />
+                                        <ListItemText primary={user.userName} />
+                                    </MenuItem>
+                                )}
+                            </Select>
 
-                    <FormHelperText>Select how frequent this task needs to be perfomed</FormHelperText>
-                </SelectField>
+                            <FormHelperText>Select which users this task is visible to</FormHelperText>
+                        </SelectField>
 
-            </DialogContent>
-            <DialogActions >
-                <SignupButton
-                    onClick={() => editTask ?
-                        onEditTask()
-                        :
-                        onCreateTask({ frequency, points, taskName, desc })
-                    }
-                    color="primary"
-                    variant='contained'
-                >
-                    {editTask ? 'Save' : 'Create Task'}
-                </SignupButton>
-            </DialogActions>
-        </Dialog>
+                        <CheckboxField
+                            control={
+                                <Checkbox
+                                    checked={task.visibleToAll}
+                                    onChange={onVisibleToAllChanged}
+                                    color='primary'
+                                />
+                            }
+                            label='All'
+                        />
+
+                        <SelectField>
+                            <InputLabel required >Frequency</InputLabel>
+
+                            <Select
+                                value={task.frequency}
+                                onChange={e => setTask({ ...task, frequency: e.target.value as string })}
+                            >
+                                {frequencies.map((frequency, key) =>
+                                    <MenuItem
+                                        key={key}
+                                        value={frequency}
+                                    >
+                                        {frequency}
+                                    </MenuItem>
+                                )}
+                            </Select>
+
+                            <FormHelperText>Select how frequently this task needs to be perfomed</FormHelperText>
+                        </SelectField>
+
+                    </DialogContent>
+                    <DialogActions >
+                        <SignupButton
+                            onClick={() => editTask ?
+                                onEditTask()
+                                :
+                                onCreateTask(task)
+                            }
+                            color='primary'
+                            variant='contained'
+                        >
+                            {editTask ? 'Save' : 'Create Task'}
+                        </SignupButton>
+                    </DialogActions>
+                </Dialog>
+            }
+        </UserContext.Consumer>
     );
 };
 
 const Title = styled(DialogTitle)`
-    color: purple;
+    color: #9c27b0;
 `;
 
 const CloseButton = styled(IconButton)`
@@ -133,6 +216,10 @@ const CloseButton = styled(IconButton)`
 
 const InputField = styled(TextField)`
     width: 20em;
+`;
+
+const CheckboxField = styled(FormControlLabel)`
+    display: inline-block;
 `;
 
 const SelectField = styled(FormControl)`

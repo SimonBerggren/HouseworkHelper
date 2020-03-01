@@ -13,7 +13,7 @@ router.get('/', authenticate(), async (req, res) => {
 
     const householdID = getHouseholdID(req);
 
-    const completedTasks = await CompletedTaskModel.find({ householdID }, null).sort({ 'date': -1 }).limit(20);
+    const completedTasks = await CompletedTaskModel.find({ householdID }, undefined).sort({ 'date': -1 }).limit(20);
     return res.json(completedTasks);
 });
 

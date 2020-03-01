@@ -13,7 +13,7 @@ const jwtOptions: passportJwt.StrategyOptions = {
 
 const jwtStrategy = new passportJwt.Strategy(jwtOptions, async (payload, next) => {
     const household = await findHousehold({ email: payload.email });
-    next(null, household);
+    next(undefined, household);
 });
 
 passport.use(jwtStrategy);

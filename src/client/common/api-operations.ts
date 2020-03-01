@@ -1,4 +1,4 @@
-import { getToken, deauthenticate, unsetUser } from './user/authentication';
+import { getToken, deauthenticate, unsetUser, getUserName } from './user/authentication';
 
 const request = (path: string, method: string, data?: any) =>
     fetch(
@@ -66,7 +66,7 @@ export const deleteUser = (data: DeleteUserRequest): Promise<User> =>
 // Tasks
 
 export const getTasks = (): Promise<Task[]> =>
-    get('task');
+    get('task/' + getUserName());
 
 export const createTask = (task: Task): Promise<Task> =>
     post('task', task);

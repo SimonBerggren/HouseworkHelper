@@ -9,13 +9,16 @@ import { getHouseholdID } from '../utils/mongo-utils';
 const router = express.Router();
 
 // get tasks from a household
-router.get('/', authenticate(), async (req, res) => {
+router.get('/:user', authenticate(), async (req, res) => {
 
     const householdID = getHouseholdID(req);
 
     try {
         const tasks = await TaskModel.find({ householdID });
-        return res.json(tasks);
+
+        const filteredTasks = tasks.filter(task => task.visibleToAll || (task.visibleTo.findIndex(u => u === req.params.user) >= 0));
+
+        return res.json(filteredTasks);
 
     } catch (error) {
         return badRequest(res, error);
