@@ -6,7 +6,6 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 import { Location as ILocation } from 'history';
 
 import ProtectedRoute from '../common/protected-route';
-
 import Lazy from './lazy';
 
 interface AnimatedSwitchProps {

@@ -1,70 +1,77 @@
-import EditIcon from "@material-ui/icons/Edit";
-import CheckIcon from "@material-ui/icons/check";
-import CloseIcon from "@material-ui/icons/Close";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import { IconButton, TextField, CircularProgress } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import EditIcon from '@material-ui/icons/Edit';
+
+import { IconButton, TextField } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
-import { deleteUser } from "../../common/api-operations";
-import { flexCenter } from '../../style/mixins';
+import { flexCenter, fadeIn, scaleUp } from '../../style/mixins';
+import { deleteUser } from '../../common/api-operations';
+import { setUser } from '../../common/user/authentication';
 
 
 interface UserProps {
     edit: boolean;
     user: User;
-    onClick: () => void;
-    onUserDeleted: () => void;
+    onUserDeleted: (deletedUsed: User) => void;
 }
 
-const User: React.FC<UserProps> = ({ edit, user, onClick, onUserDeleted }) => {
+const User: React.FC<UserProps> = ({ edit, user, onUserDeleted }: UserProps) => {
 
     const [userName, setUserName] = useState(user.userName);
     const [editingName, setEditingName] = useState(false);
-    const [renaming, setRenaming] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [loading, setLoading] = useState(false);
+    let ref: HTMLInputElement;
+
+    useEffect(() => {
+        if (editingName) {
+            ref.focus();
+        }
+    }, [editingName]);
+
+
+    const onSelectUser = () => {
+        setUser(userName);
+    };
 
     const onDeleteUser = async () => {
         if (confirm(
             `Are you sure you want to delete ${userName}? \nThis action is irreversible!`)
         ) {
-            setDeleting(true);
+            setLoading(true);
 
             setTimeout(async () => {
                 const deletedUser = await deleteUser({ userName });
 
                 if (deletedUser) {
-                    onUserDeleted();
+                    setDeleting(true);
+                    setTimeout(() => {
+                        onUserDeleted(user);
+                    }, 500);
                 }
 
-                setDeleting(false);
-            }, 2000);
+
+            }, 500);
 
         }
-    }
+    };
 
     const renameUser = () => {
-        if (!renaming) {
-            setRenaming(true);
-            setTimeout(() => {
-                user.userName = userName;
-                setEditingName(false);
-                setRenaming(false);
-            }, 2000);
-        }
-    }
+        setLoading(true);
+        setTimeout(() => {
+            user.userName = userName;
+            setLoading(false);
+            setEditingName(false);
+        }, 500);
+    };
 
     const resetUserName = () => {
         setEditingName(false);
         setUserName(user.userName);
-    }
-
-    const onUserNameChange = (userName: string) => {
-        if (!renaming) {
-            setUserName(userName);
-        }
-    }
+    };
 
     const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         const { key } = event;
@@ -74,72 +81,56 @@ const User: React.FC<UserProps> = ({ edit, user, onClick, onUserDeleted }) => {
         } else if (key == 'Escape') {
             resetUserName();
         }
-    }
+    };
 
+    const onToggleEdit = () => {
+        setEditingName(true);
+    };
 
     return (
         <UserContainer
-            className={edit ? 'edit' : ''}
+            className={`${edit ? 'edit' : 'select'} ${loading && 'loading'} ${deleting && 'deleting'}`}
             to='/household'
-            onClick={e => edit ? e.preventDefault() : onClick()}
+            onClick={e => edit ? e.preventDefault() : onSelectUser()}
         >
 
             {edit &&
-                <ToggleEditButton
-                    onClick={() => (renaming || deleting) ? null : editingName ? renameUser() : setEditingName(true)}
-                >
-                    {
-                        renaming ?
-                            <CircularProgress
-                                size='1.5em'
-                            />
-                            :
-                            editingName ?
-                                <CheckIcon />
-                                :
-                                <EditIcon />
+                <>
+                    <ToggleEditButton
+                        disabled={loading}
+                        onClick={onToggleEdit}
+                    >
+                        <EditIcon />
+                    </ToggleEditButton>
 
-                    }
-                </ToggleEditButton>
-            }
-
-            {
-                edit &&
-                <DeleteButton
-                    onClick={() => (renaming || deleting) ? null : onDeleteUser()}
-                >
-                    {deleting ?
-                        <CircularProgress
-                            size='1.5em'
-                        />
-                        :
+                    <DeleteButton
+                        disabled={loading}
+                        onClick={onDeleteUser}
+                    >
                         <CloseIcon />
-                    }
-                </DeleteButton>
+                    </DeleteButton>
+                </>
             }
 
             <UserName>
-                {editingName ?
-
-                    <UserNameField
-                        onKeyDown={onKeyDown}
-                        onBlur={resetUserName}
-                        value={userName}
-                        onChange={e => onUserNameChange(e.currentTarget.value)}
-                        autoFocus
-                    />
-                    :
-                    user.userName
-
-                }
+                <UserNameField
+                    inputRef={r => ref = r}
+                    onKeyDown={onKeyDown}
+                    onBlur={resetUserName}
+                    value={userName}
+                    disabled={loading || !editingName}
+                    onChange={e => setUserName(e.currentTarget.value)}
+                />
             </UserName>
 
 
         </UserContainer >
-    )
-}
+    );
+};
 
 const UserContainer = styled(Link)`
+    ${scaleUp(0.5)}
+
     ${flexCenter}
     flex-direction: row;
 
@@ -149,25 +140,40 @@ const UserContainer = styled(Link)`
     color: #9c27b0;
     font-size: 1.3em;
     border: 1px solid rgba(156, 39, 176, 0.7);
-    transition: all 0.2s;
     text-decoration: none;
 
     margin: 0.5em;
     position: relative;
 
+    &.deleting {
+        transition: all 0.5s;
+        border-width: 0px;
+        margin: 0em;
+        width: 0em;
+    }
+
     &.edit {
         cursor: default;
     }
 
-    :not(.edit):hover {
+    &.select:hover {
+        transition: all 0.2s;
         background: rgba(156, 39, 176, 0.1);
         border-color: #9c27b0;
-        transition: all 0.2s;
 
-        width: 8em;
-        height: 8em;
+        transform: scale(1.2);
 
-        margin: 0;
+        * { 
+            cursor: pointer;
+        }
+    }
+
+    * {
+        transition: color 0.2s;
+    }
+
+    &.deleting * {
+        color: rgba(255, 255, 255, 0);
     }
 `;
 
@@ -180,12 +186,15 @@ const UserNameField = styled(TextField)`
     input {
         text-align: center;
         color: #9c27b0;
-        font-size: 1.3em;
+        font-size: 1.4em;
+        margin: 0;
+        border-bottom: 1px solid #9c27b0; 
     }
 `;
 
 const ToggleEditButton = styled(IconButton)`
   && {
+        ${fadeIn(0.2)}
         position: absolute;
         top: 0;
         left: 0;

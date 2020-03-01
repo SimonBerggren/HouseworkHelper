@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
 import PageWrapper from '../../common/page-wrapper';
-import Link from '../../common/link';
-
-import { getUsers, getHousehold, getTasks, logout, switchUser } from '../../common/api-operations';
 import Tasks from './tasks';
+
+import { getHousehold, getTasks } from '../../common/api-operations';
 
 const HouseholdPage: React.FC = () => {
 
     const [household, setHousehold] = useState<Household>();
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
         getHousehold()
@@ -18,9 +16,6 @@ const HouseholdPage: React.FC = () => {
 
         getTasks()
             .then(tasks => setTasks(tasks));
-
-        getUsers()
-            .then(user => setUsers(user));
     }, []);
 
     const onTaskCreated = (createdTask: Task) => {
@@ -34,8 +29,6 @@ const HouseholdPage: React.FC = () => {
     };
 
     const onTaskCompleted = async () => {
-        const users = await getUsers();
-        setUsers(users);
     };
 
     return (

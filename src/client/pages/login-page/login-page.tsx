@@ -1,14 +1,16 @@
-import { TextField, Button, Dialog, DialogTitle, DialogContentText, DialogContent, DialogActions } from '@material-ui/core';
 import React, { useState } from 'react';
 import styled from 'styled-components';
+
+import { TextField, Button } from '@material-ui/core';
 
 import PageWrapper from '../../common/page-wrapper';
 import Link from '../../common/link';
 
-import { authenticate, isAuthenticated } from '../../common/user/authentication';
+import { authenticate } from '../../common/user/authentication';
 import { login } from '../../common/api-operations';
 import { flexCenter } from '../../style/mixins';
 import { Redirect } from 'react-router-dom';
+import ErrorDialog from '../../common/error-dialog';
 
 
 const LoginPage: React.FC = () => {
@@ -27,7 +29,7 @@ const LoginPage: React.FC = () => {
             setRedirect(true);
 
         } catch (error) {
-            setShowInvalidCredentials(true)
+            setShowInvalidCredentials(true);
         }
     };
 
@@ -79,23 +81,14 @@ const LoginPage: React.FC = () => {
                             Not a Helper yet? <Link to='/signup'>Sign Up Here!</Link>
                         </Signup>
 
-                        <Dialog
+                        <ErrorDialog
                             open={showInvalidCredentials}
                             onClose={handleClose}
-                        >
-                            <DialogTitle children={'Invalid Credentials'} />
-                            <DialogContent>
-                                <DialogContentText children={'Forgotten your credentials? At this time, too bad!'} />
-                                <DialogContentText>
-                                    Are you new here? You are welcome to <Link to='/signup' onClick={handleClose}>Create an account!</Link>
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleClose} color="primary" autoFocus>
-                                    Try again
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
+                            messages={[
+                                'Forgotten your credentials? At this time, too bad!',
+                                `Are you new here? You are welcome to ${<Link to='/signup' onClick={handleClose}>Create an account!</Link>}`
+                            ]}
+                        />
 
                     </FieldSet>
                 </form>
@@ -106,35 +99,35 @@ const LoginPage: React.FC = () => {
 };
 
 const InputField = styled(TextField)`
-            width: 20em;
-            padding: 2em;
-        `;
+    width: 20em;
+    padding: 2em;
+`;
 
 const LoginButton = styled(Button)`
-            width: 15em;
-        `;
+    width: 15em;
+`;
 
 const FieldSet = styled.div`
     ${flexCenter}
-            margin: 0;
-            padding: 2em;
-            border: 0.1em solid purple;
-            background: rgba(255,255,255,0.8);
-            width: 30em;
-        `;
+    margin: 0;
+    padding: 2em;
+    border: 0.1em solid purple;
+    background: rgba(255,255,255,0.8);
+    width: 30em;
+`;
 
 const Title = styled.h1`
-            color: purple;
-        `;
+    color: purple;
+`;
 
 const Signup = styled.div`
-            align-self: flex-start;
-            color: #000;
-            margin-top: 2em;
+    align-self: flex-start;
+    margin-top: 2em;
+    color: #000;
         
     a {
-                color: purple;
-        }
-    `
+        color: purple;
+    }
+`;
 
 export default LoginPage;

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { createUser } from '../../common/api-operations';
-import { flexCenter } from '../../style/mixins';
 import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close'
+import CloseIcon from '@material-ui/icons/Close';
+
+import { createUser } from '../../common/api-operations';
 
 interface CreateUserProps {
     onUserCreated: (createdUser: User) => void;
@@ -32,7 +32,7 @@ const CreateUser: React.FC<CreateUserProps> = ({ onUserCreated, onClose, open }:
         } else if (key == 'Escape') {
             onClose();
         }
-    }
+    };
 
     return (
         <Dialog
@@ -67,7 +67,7 @@ const CreateUser: React.FC<CreateUserProps> = ({ onUserCreated, onClose, open }:
             </DialogActions>
         </Dialog >
     );
-}
+};
 
 const Title = styled(DialogTitle)`
     color: #9c27b0;

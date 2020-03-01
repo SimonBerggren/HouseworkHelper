@@ -9,29 +9,25 @@ interface IUserContext {
 }
 
 const defaultUserContext: IUserContext = {
-    userName: '',
-    authenticated: false
-}
+    userName: getUserName(),
+    authenticated: isAuthenticated()
+};
 
 export const UserContext = React.createContext<IUserContext>(defaultUserContext);
 
-interface UserContextProviderProps { }
+const UserContextProvider: React.FC = ({ children }: React.PropsWithChildren<{}>) => {
 
-const UserContextProvider: React.FC<UserContextProviderProps> = ({ children }) => {
+    const [authenticated, setAuthenticated] = useState(defaultUserContext.authenticated);
+    const [userName, setUserName] = useState(defaultUserContext.userName);
 
-    const [context, setContext] = useState<IUserContext>({
-        authenticated: isAuthenticated(),
-        userName: getUserName()
-    });
-
-    addEventListener('userNameChanged', userName => setContext({ ...context, userName }));
-    addEventListener('authenticateChanged', authenticated => setContext({ ...context, authenticated }));
+    addEventListener('userNameChanged', userName => setUserName(userName));
+    addEventListener('authenticateChanged', authenticated => setAuthenticated(authenticated));
 
     return (
-        <UserContext.Provider value={context}>
+        <UserContext.Provider value={{ authenticated, userName }}>
             {children}
         </UserContext.Provider>
-    )
-}
+    );
+};
 
 export default UserContextProvider;

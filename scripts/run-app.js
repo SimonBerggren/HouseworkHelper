@@ -6,7 +6,7 @@ let keepTerminalOpen = [];
 
 if (process.platform !== 'win32') {
     terminal = 'urxvt';
-    terminalArgs = ['-k'];
+    terminalArgs = ['-e'];
     keepTerminalOpen = ['&&', terminal];
 }
 

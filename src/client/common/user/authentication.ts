@@ -17,7 +17,7 @@ export const deauthenticate = () => {
     storage.removeItem(userKey);
     
     emitEvent('authenticateChanged', false);
-    emitEvent('userNameChanged', false);
+    emitEvent('userNameChanged', '');
 };
 
 export const isAuthenticated = (): boolean =>
@@ -29,12 +29,12 @@ export const getToken = (): string =>
 export const setUser = (userName: string) => {
     storage.setItem(userKey, userName);
     emitEvent('userNameChanged', userName);
-}
+};
 
 export const unsetUser = () => {
     storage.removeItem(userKey);
     emitEvent('userNameChanged', '');
-}
+};
 
 export const isFullyConfigured = (): boolean =>
     isAuthenticated() && getUserName() !== '';

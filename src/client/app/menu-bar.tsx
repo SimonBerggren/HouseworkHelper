@@ -2,10 +2,10 @@ import { AppBar, Toolbar } from '@material-ui/core';
 import styled from 'styled-components';
 import React from 'react';
 
-import Link from './link';
+import Link from '../common/link';
 
-import { deauthenticate } from './user/authentication';
-import { UserContext } from '../app/user-context';
+import { deauthenticate } from '../common/user/authentication';
+import { UserContext } from './user-context';
 
 const MenuBar = () => {
 
@@ -34,8 +34,8 @@ const MenuBar = () => {
                 </AppBar>
             }
         </UserContext.Consumer>
-    )
-}
+    );
+};
 
 const Bar = styled(Toolbar)`
     display: flex;

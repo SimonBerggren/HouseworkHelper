@@ -20,3 +20,11 @@ export const flexCenter = css`
     align-items: center;
     justify-content: center;
 `;
+
+export const fadeIn = (duration: number) => css`
+    animation: fadein ${duration}s linear;
+`;
+
+export const scaleUp = (duration: number, ) => css`
+    animation: scaleup ${duration}s linear;
+`;

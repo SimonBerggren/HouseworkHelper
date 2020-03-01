@@ -6,13 +6,15 @@ import styled from 'styled-components';
 import { frequencies } from '../../../common/frequencies';
 import { createTask } from '../../common/api-operations';
 
-interface CreateTaskProps {
+interface TaskProps {
     onTaskCreated: (taskToCreate: Task) => void;
+    onTaskEdited: (taskToEdit: Task) => void;
     onClose: () => void;
+    editTask?: Task;
     open: boolean;
 }
 
-const CreateTaskForm: React.FC<CreateTaskProps> = ({ open, onClose, onTaskCreated }: CreateTaskProps) => {
+const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated, onTaskEdited }: TaskProps) => {
 
     const [taskName, setTaskName] = useState<string>('');
     const [desc, setDesc] = useState<string>();
@@ -28,17 +30,26 @@ const CreateTaskForm: React.FC<CreateTaskProps> = ({ open, onClose, onTaskCreate
         }
     };
 
+    const onEditTask = async () => {
+
+        onTaskEdited;
+    };
+
+    const onCloseModal = () => {
+        onClose();
+    };
+
     return (
 
         <Dialog
-            open={open}
-            onClose={onClose}
+            open={editTask != undefined || open}
+            onClose={onCloseModal}
         >
             <Title>
                 Create New Task
 
                 <CloseButton
-                    onClick={onClose}
+                    onClick={onCloseModal}
                 >
                     <CloseIcon />
                 </CloseButton>
@@ -47,12 +58,14 @@ const CreateTaskForm: React.FC<CreateTaskProps> = ({ open, onClose, onTaskCreate
 
                 <InputField
                     label="Title"
+                    defaultValue={editTask?.taskName}
                     onChange={(e) => setTaskName(e.currentTarget.value)}
                     required
                 />
 
                 <InputField
                     label="Description"
+                    defaultValue={editTask?.desc}
                     onChange={(e) => setDesc(e.currentTarget.value)}
                     multiline
                 />
@@ -60,17 +73,21 @@ const CreateTaskForm: React.FC<CreateTaskProps> = ({ open, onClose, onTaskCreate
                 <InputField
                     type='number'
                     label='Reward Points'
+                    defaultValue={editTask?.points}
                     onChange={(e) => setPoints(parseInt(e.currentTarget.value))}
                     required
                 />
 
-                <SelectField>
+                <SelectField
+
+                >
                     <InputLabel required >Frequency</InputLabel>
 
                     <Select
-                        value={frequency}
+                        value={editTask?.frequency || frequency}
                         onChange={e => setFrequency(e.target.value as string)}
                     >
+                        <MenuItem />
                         {frequencies.map((frequency, key) =>
                             <MenuItem
                                 key={key}
@@ -87,12 +104,16 @@ const CreateTaskForm: React.FC<CreateTaskProps> = ({ open, onClose, onTaskCreate
             </DialogContent>
             <DialogActions >
                 <SignupButton
-                    onClick={() => onCreateTask({ frequency, points, taskName, desc })}
+                    onClick={() => editTask ?
+                        onEditTask()
+                        :
+                        onCreateTask({ frequency, points, taskName, desc })
+                    }
                     color="primary"
                     variant='contained'
                 >
-                    Create Task
-                    </SignupButton>
+                    {editTask ? 'Save' : 'Create Task'}
+                </SignupButton>
             </DialogActions>
         </Dialog>
     );
@@ -122,4 +143,4 @@ const SignupButton = styled(Button)`
     width: 15em;
 `;
 
-export default CreateTaskForm;
+export default EditTask;

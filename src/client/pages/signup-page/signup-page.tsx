@@ -1,18 +1,16 @@
-import { Dialog, DialogTitle, DialogContent, DialogContentText, Button, DialogActions } from '@material-ui/core';
 import React, { useState } from 'react';
-import styled from 'styled-components';
 
 import PageWrapper from '../../common/page-wrapper';
 import SignupForm from './signup-form';
 
 import { signup } from '../../common/api-operations';
 import { Redirect } from 'react-router-dom';
+import ErrorDialog from '../../common/error-dialog';
 
 const SignupPage: React.FC = () => {
 
-    const [showError, setShowError] = React.useState(false);
+    const [signupError, setSignupError] = React.useState('');
     const [signedup, setSignedup] = useState(false);
-    let signupError = '';
 
     const onSignup = async (household: Household) => {
 
@@ -22,19 +20,16 @@ const SignupPage: React.FC = () => {
             if (signedUp) {
                 setSignedup(true);
             } else {
-                signupError = 'Unable to sign up';
-                setShowError(true);
+                setSignupError('Couldn\'t sign up');
             }
 
         } catch (error) {
-            signupError = error;
-            setShowError(true);
+            setSignupError(error);
         }
     };
 
     const handleClose = () => {
-        signupError = '';
-        setShowError(false);
+        setSignupError('');
     };
 
     return (
@@ -44,24 +39,11 @@ const SignupPage: React.FC = () => {
                 onSignup={onSignup}
             />
 
-            <Dialog
-                open={showError}
+            <ErrorDialog
+                open={signupError !== ''}
                 onClose={handleClose}
-            >
-                <DialogTitle>
-                    Could not Sign up
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        {signupError}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary" autoFocus>
-                        Try again
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                messages={[signupError]}
+            />
 
         </PageWrapper >
     );

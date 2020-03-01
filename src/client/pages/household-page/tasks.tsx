@@ -1,14 +1,16 @@
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import CreateTaskForm from './create-task-form';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+
+import TaskForm from './edit-task';
 
 import { deleteTask, completeTask } from '../../common/api-operations';
-import { getUserName } from '../../common/user/authentication';
 import { UserContext } from '../../app/user-context';
+import Task from './task';
 
 interface TasksProps {
     onTaskCompleted: (task: Task) => void;
@@ -20,21 +22,29 @@ interface TasksProps {
 const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, onTaskCreated }: TasksProps) => {
 
     const [showCreateTask, setShowCreateTask] = useState(false);
+    const [selectedTask, setSelectedTask] = useState();
+    const [deleting, setDeleting] = useState('');
+    const [editTask, setEditTask] = useState<Task>();
 
     const onDeleteTask = async ({ taskName }: Task) => {
         if (confirm(
             `Are you sure you want to delete ${taskName}?\nThis action is irreversible!`)
         ) {
+            setDeleting(taskName);
+
             const deletedTask = await deleteTask({ taskName });
 
             if (deletedTask) {
-                onTaskDeleted(deletedTask);
+                setTimeout(() => {
+                    setDeleting('');
+                    onTaskDeleted(deletedTask);
+                }, 5000);
+
             }
         }
     };
 
-    const onCompleteTask = async (taskToComplete: Task) => {
-        const userName = getUserName();
+    const onCompleteTask = async (taskToComplete: Task, userName: string) => {
         const completed = await completeTask({ taskName: taskToComplete.taskName, userName });
 
         if (completed) {
@@ -42,16 +52,21 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
         }
     };
 
+    const onTaskModalClose = () => {
+        setEditTask(undefined);
+        setShowCreateTask(false);
+    };
+
     return (
         <UserContext.Consumer>
-            {user =>
+            {userContext =>
                 <>
 
                     <TasksContainer>
-                        <Table stickyHeader>
+                        <Table stickyHeader size='small'>
                             <TableHead>
                                 <TableRow>
-                                    <TasksHeaderCell>Task</TasksHeaderCell>
+                                    <TasksHeaderCell colSpan={2}>Task</TasksHeaderCell>
                                     <TasksHeaderCell align='right'>Frequency</TasksHeaderCell>
                                     <TasksHeaderCell align='right'>Points</TasksHeaderCell>
                                     <TasksHeaderCell align='right' >
@@ -65,31 +80,49 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                             </TableHead>
                             <TableBody>
                                 {tasks.map((task, key) => (
-                                    <TableRow
+                                    <TaskRow
                                         hover
                                         key={key}
-                                        onClick={e => console.log('click')}
+                                        className={`${deleting === task.taskName && 'deleting'}`}
                                     >
-                                        <TableCell>{task.taskName}</TableCell>
-                                        <TableCell align='right'>{task.frequency}</TableCell>
-                                        <TableCell align='right'>{task.points}</TableCell>
-                                        <TableCell align='right'>
+                                        <Cell>
                                             <IconButton
-                                                onClick={e => {e.stopPropagation(); onDeleteTask(task)}}
+                                                onClick={() => setEditTask(task)}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                        </Cell>
+                                        <Cell
+                                            onClick={() => setSelectedTask(task)}
+                                        >{task.taskName}</Cell>
+                                        <Cell align='right'>{task.frequency}</Cell>
+                                        <Cell align='right'>{task.points}</Cell>
+                                        <Cell align='right'>
+                                            <IconButton
+                                                onClick={e => { e.stopPropagation(); onDeleteTask(task); }}
                                             >
                                                 <DeleteIcon />
                                             </IconButton>
-                                        </TableCell>
-                                    </TableRow>
+                                        </Cell>
+                                    </TaskRow>
                                 ))}
                             </TableBody>
                         </Table>
                     </TasksContainer>
 
-                    <CreateTaskForm
+                    <TaskForm
                         onTaskCreated={onTaskCreated}
-                        onClose={() => setShowCreateTask(false)}
+                        onClose={onTaskModalClose}
+                        onTaskEdited={tte => tte}
                         open={showCreateTask}
+                        editTask={editTask}
+                    />
+
+                    <Task
+                        open={selectedTask !== undefined}
+                        onClose={() => setSelectedTask(undefined)}
+                        task={selectedTask}
+                        onCompleteTask={task => onCompleteTask(task, userContext.userName)}
                     />
                 </>
             }
@@ -100,7 +133,8 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
 const TasksContainer = styled(TableContainer)`
     && {
         background: rgba(255,255,255,0.85);
-        width: 50vw;
+        width: 80%;
+        max-width: 70vw;
     }
 `;
 
@@ -113,6 +147,22 @@ const TasksHeaderCell = styled(TableCell)`
         svg {
             color: white;
         }
+    }
+`;
+
+const TaskRow = styled(TableRow)`
+    && {
+
+            height: 0px;
+        &.deleting {
+            transition: height 0.5s linear;
+        }
+    }
+`;
+
+const Cell = styled(TableCell)`
+    && {
+        height: 0px;
     }
 `;
 

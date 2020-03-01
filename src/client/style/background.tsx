@@ -1,13 +1,13 @@
-import styled from "styled-components";
-import React from "react";
+import styled from 'styled-components';
+import React from 'react';
 
 import background from './images/background.png';
 
 const Background = () => {
     return (
         <StyledBackground src={background} className={location.pathname == '/' ? 'normal' : 'normal'} />
-    )
-}
+    );
+};
 
 const StyledBackground = styled.img`
 
