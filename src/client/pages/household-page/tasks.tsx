@@ -11,6 +11,7 @@ import TaskForm from './edit-task';
 import { deleteTask, completeTask } from '../../common/api-operations';
 import { UserContext } from '../../app/user-context';
 import Task from './task';
+import ConfirmDialog from '../../common/confirm-dialog';
 
 interface TasksProps {
     onTaskCompleted: (task: Task) => void;
@@ -22,26 +23,33 @@ interface TasksProps {
 
 const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, onTaskCreated, onTaskEdited }: TasksProps) => {
 
-    const [showCreateTask, setShowCreateTask] = useState(false);
-    const [selectedTask, setSelectedTask] = useState();
-    const [deleting, setDeleting] = useState('');
+    const [showCreateTask, setShowCreateTask] = useState<boolean>(false);
+    const [selectedTask, setSelectedTask] = useState<Task>();
+    const [deleting, setDeleting] = useState<string>('');
     const [editTask, setEditTask] = useState<Task>();
+    const [confirmText, setConfirmText] = useState<string>('');
+    const [confirming, setConfirming] = useState<boolean>(false);
 
-    const onDeleteTask = async ({ taskName }: Task) => {
-        if (confirm(
-            `Are you sure you want to delete ${taskName}?\nThis action is irreversible!`)
-        ) {
-            setDeleting(taskName);
+    let taskToDelete: Task;
 
-            const deletedTask = await deleteTask({ taskName });
+    const onDeleteTask = async (task?: Task) => {
 
-            if (deletedTask) {
-                setTimeout(() => {
-                    setDeleting('');
-                    onTaskDeleted(deletedTask);
-                }, 500);
+        if (task) {
+            taskToDelete = task;
+            setConfirming(true);
+            return setConfirmText(`Are you sure you want to delete ${task.taskName}?\nThis action is irreversible!`);
+        }
 
-            }
+        setDeleting(taskToDelete.taskName);
+
+        const deletedTask = await deleteTask({ taskName: taskToDelete.taskName });
+
+        if (deletedTask) {
+            setTimeout(() => {
+                setDeleting('');
+                onTaskDeleted(deletedTask);
+            }, 500);
+
         }
     };
 
@@ -120,10 +128,16 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                     />
 
                     <Task
-                        open={selectedTask !== undefined}
                         onClose={() => setSelectedTask(undefined)}
                         task={selectedTask}
                         onCompleteTask={task => onCompleteTask(task, userContext.userName)}
+                    />
+
+                    <ConfirmDialog
+                        messages={[confirmText]}
+                        open={confirming}
+                        onClose={() => setConfirming(false)}
+                        onConfirm={onDeleteTask}
                     />
                 </>
             }

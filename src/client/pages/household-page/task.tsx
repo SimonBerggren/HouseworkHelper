@@ -4,17 +4,16 @@ import React from 'react';
 import { DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Dialog } from '@material-ui/core';
 
 interface TaskProps {
-    task: Task;
-    open: boolean;
+    task?: Task;
     onClose: () => void;
     onCompleteTask: (taskToComplete: Task) => void;
 }
 
-const Task: React.FC<TaskProps> = ({ task, open, onClose, onCompleteTask }: TaskProps) => {
+const Task: React.FC<TaskProps> = ({ task, onClose, onCompleteTask }: TaskProps) => {
 
     return (
         <Dialog
-            open={open}
+            open={task !== undefined}
             onClose={onClose}
         >
             <DialogTitle>
@@ -28,7 +27,7 @@ const Task: React.FC<TaskProps> = ({ task, open, onClose, onCompleteTask }: Task
             </DialogContent>
             <DialogActions>
 
-                <CompleteButton onClick={() => onCompleteTask(task)} color='primary' autoFocus>
+                <CompleteButton onClick={() => task && onCompleteTask(task)} color='primary' autoFocus>
                     Complete
                 </CompleteButton>
 

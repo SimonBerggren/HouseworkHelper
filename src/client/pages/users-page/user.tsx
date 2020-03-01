@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+import { Link } from 'react-router-dom';
+
+import { IconButton, TextField } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
 
-import { IconButton, TextField } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import ConfirmDialog from '../../common/confirm-dialog';
 
-import { flexCenter, fadeIn, scaleUp } from '../../style/mixins';
 import { deleteUser, updateUser } from '../../common/api-operations';
+import { flexCenter, fadeIn, scaleUp } from '../../style/mixins';
 import { setUser } from '../../common/user/authentication';
-
 
 interface UserProps {
     edit: boolean;
@@ -20,15 +21,16 @@ interface UserProps {
 
 const User: React.FC<UserProps> = ({ edit, user, onUserDeleted }: UserProps) => {
 
-    const [userName, setUserName] = useState(user.userName);
-    const [editingName, setEditingName] = useState(false);
-    const [deleting, setDeleting] = useState(false);
-    const [loading, setLoading] = useState(false);
-    let ref: HTMLInputElement;
+    const [userName, setUserName] = useState<string>(user.userName);
+    const [editingName, setEditingName] = useState<boolean>(false);
+    const [deleting, setDeleting] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [confirming, setConfirming] = useState<boolean>(false);
+    let userNameRef: HTMLInputElement;
 
     useEffect(() => {
         if (editingName) {
-            ref.focus();
+            userNameRef.focus();
         }
     }, [editingName]);
 
@@ -37,26 +39,24 @@ const User: React.FC<UserProps> = ({ edit, user, onUserDeleted }: UserProps) => 
         setUser(userName);
     };
 
-    const onDeleteUser = async () => {
-        if (confirm(
-            `Are you sure you want to delete ${userName}? \nThis action is irreversible!`)
-        ) {
-            setLoading(true);
-
-            setTimeout(async () => {
-                const deletedUser = await deleteUser({ userName });
-
-                if (deletedUser) {
-                    setDeleting(true);
-                    setTimeout(() => {
-                        onUserDeleted(user);
-                    }, 500);
-                }
-
-
-            }, 500);
-
+    const onDeleteUser = async (confirmed?: boolean) => {
+        if (!confirmed) {
+            return setConfirming(true);
         }
+        
+        setLoading(true);
+
+        setTimeout(async () => {
+            const deletedUser = await deleteUser({ userName });
+
+            if (deletedUser) {
+                setDeleting(true);
+                setTimeout(() => {
+                    onUserDeleted(user);
+                }, 500);
+            }
+
+        }, 500);
     };
 
     const renameUser = async () => {
@@ -122,7 +122,7 @@ const User: React.FC<UserProps> = ({ edit, user, onUserDeleted }: UserProps) => 
 
                     <DeleteButton
                         disabled={loading || editingName}
-                        onClick={onDeleteUser}
+                        onClick={() => onDeleteUser(false)}
                     >
                         <CloseIcon />
                     </DeleteButton>
@@ -131,7 +131,7 @@ const User: React.FC<UserProps> = ({ edit, user, onUserDeleted }: UserProps) => 
 
             <UserName>
                 <UserNameField
-                    inputRef={r => ref = r}
+                    inputRef={r => userNameRef = r}
                     onKeyDown={onKeyDown}
                     onBlur={resetUserName}
                     value={userName}
@@ -140,6 +140,12 @@ const User: React.FC<UserProps> = ({ edit, user, onUserDeleted }: UserProps) => 
                 />
             </UserName>
 
+            <ConfirmDialog
+                open={confirming}
+                onClose={() => setConfirming(false)}
+                onConfirm={() => onDeleteUser(true)}
+                messages={[`Are you sure you want to delete ${user.userName}? \nThis action is irreversible!`]}
+            />
 
         </UserContainer >
     );

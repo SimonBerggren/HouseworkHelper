@@ -1,9 +1,11 @@
+import styled from 'styled-components';
 import React from 'react';
+
 import { DialogTitle, Dialog, DialogContent, DialogContentText, DialogActions, Button } from '@material-ui/core';
 
 interface ErrorDialogProps {
     title?: string;
-    messages?: string[];
+    messages: string[];
     open: boolean;
     onClose: () => void;
 }
@@ -14,14 +16,15 @@ const ErrorDialog: React.FC<ErrorDialogProps> = ({ open, onClose, title, message
         <Dialog
             open={open}
             onClose={onClose}
+            color='primary'
         >
-            <DialogTitle>
+            <StyledTitle>
                 {title || 'Error'}
-            </DialogTitle>
+            </StyledTitle>
 
             <DialogContent dividers>
 
-                {messages?.map((msg, key) =>
+                {messages.map((msg, key) =>
                     <DialogContentText key={key}>
                         {msg}
                     </DialogContentText>
@@ -38,5 +41,11 @@ const ErrorDialog: React.FC<ErrorDialogProps> = ({ open, onClose, title, message
         </Dialog>
     );
 };
+
+const StyledTitle = styled(DialogTitle)`
+    && {
+        color: #9c27b0;
+    }
+`;
 
 export default ErrorDialog;

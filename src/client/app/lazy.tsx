@@ -16,9 +16,7 @@ const Lazy: React.FC<LazyProps> = ({ importFunc }: LazyProps) => {
 
     return (
         <>
-            {
-                component ? <LazyWrapper path={component} /> : <></>
-            }
+            {component ? <LazyWrapper path={component} /> : <></>}
         </>
     );
 };

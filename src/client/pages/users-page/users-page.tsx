@@ -8,22 +8,20 @@ import PageWrapper from '../../common/page-wrapper';
 import CreateUser from './create-user';
 import User from './user';
 
-import { getUsers } from '../../common/api-operations';
 import { flexCenter, fadeIn } from '../../style/mixins';
+import { getUsers } from '../../common/api-operations';
 
 const UsersPage = () => {
 
     const [editing, setEditing] = useState(false);
     const [creatingUser, setCreatingUser] = useState(false);
-
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
         getUsers().then(users => setUsers(users));
     }, []);
 
-    const onCreateUser = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.currentTarget.blur();
+    const onCreateUser = () => {
         setCreatingUser(true);
     };
 
@@ -34,7 +32,6 @@ const UsersPage = () => {
     };
 
     const onUserDeleted = ({ userName }: User) => {
-
         const copy = [...users];
         const index = copy.findIndex(user => user.userName === userName);
         copy.splice(index, 1);
