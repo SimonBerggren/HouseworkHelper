@@ -8,7 +8,7 @@ import { IconButton, TextField } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import { flexCenter, fadeIn, scaleUp } from '../../style/mixins';
-import { deleteUser } from '../../common/api-operations';
+import { deleteUser, updateUser } from '../../common/api-operations';
 import { setUser } from '../../common/user/authentication';
 
 
@@ -59,13 +59,26 @@ const User: React.FC<UserProps> = ({ edit, user, onUserDeleted }: UserProps) => 
         }
     };
 
-    const renameUser = () => {
+    const renameUser = async () => {
         setLoading(true);
-        setTimeout(() => {
-            user.userName = userName;
+        try {
+            const updatedUser = await updateUser({ oldUserName: user.userName, newUserName: userName });
+
+            setTimeout(() => {
+                setLoading(false);
+
+                if (updatedUser === userName) {
+                    user.userName = userName;
+                    setEditingName(false);
+                } else {
+                    resetUserName();
+                }
+            }, 500);
+
+        } catch (error) {
             setLoading(false);
-            setEditingName(false);
-        }, 500);
+            resetUserName();
+        }
     };
 
     const resetUserName = () => {
@@ -100,11 +113,15 @@ const User: React.FC<UserProps> = ({ edit, user, onUserDeleted }: UserProps) => 
                         disabled={loading}
                         onClick={onToggleEdit}
                     >
-                        <EditIcon />
+                        {editingName ?
+                            <CloseIcon />
+                            :
+                            <EditIcon />
+                        }
                     </ToggleEditButton>
 
                     <DeleteButton
-                        disabled={loading}
+                        disabled={loading || editingName}
                         onClick={onDeleteUser}
                     >
                         <CloseIcon />
@@ -199,6 +216,11 @@ const ToggleEditButton = styled(IconButton)`
         top: 0;
         left: 0;
         color: purple;
+
+        &:hover {
+            transition: all 0.2s;
+            transform: scale(1.3);
+        }
     }
 `;
 

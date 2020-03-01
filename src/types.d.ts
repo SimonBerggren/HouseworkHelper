@@ -43,6 +43,11 @@ interface CreateUserRequest {
     userName: string;
 }
 
+interface UpdateUserRequest {
+    newUserName: string;
+    oldUserName: string;
+}
+
 interface DeleteUserRequest {
     userName: string;
 }

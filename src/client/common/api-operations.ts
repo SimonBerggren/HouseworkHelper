@@ -62,6 +62,9 @@ export const getUsers = (): Promise<User[]> =>
 export const createUser = (data: CreateUserRequest): Promise<User> =>
     post('user', data);
 
+export const updateUser = (data: UpdateUserRequest): Promise<string> =>
+    put('user', data);
+
 export const deleteUser = (data: DeleteUserRequest): Promise<User> =>
     remove('user', data);
 
