@@ -60,7 +60,7 @@ const CreateUser: React.FC<CreateUserProps> = ({ onUserCreated, onClose, open }:
             <DialogActions>
                 <Button
                     onClick={onCreateUser}
-                    color="primary"
+                    color='primary'
                 >
                     Create New User
                 </Button>

@@ -51,7 +51,7 @@ const LoginPage: React.FC = () => {
                         </Title>
 
                         <InputField
-                            label="Email"
+                            label='Email'
                             variant='outlined'
                             autoFocus
                             onChange={e => setEmail(e.currentTarget.value)}
@@ -60,7 +60,7 @@ const LoginPage: React.FC = () => {
                         <br />
 
                         <InputField
-                            label="Password"
+                            label='Password'
                             type='password'
                             variant='outlined'
                             onChange={e => setPassword(e.currentTarget.value)}

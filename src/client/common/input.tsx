@@ -17,17 +17,6 @@ const StyledInput = styled.input`
 
     /* hide default style */
 
-    &:-webkit-autofill,
-    &:-webkit-autofill:hover,
-    &:-webkit-autofill:focus,
-    &:-webkit-autofill:active {
-        transition: "color 9999s ease-out, background-color 9999s ease-out";
-        transition-delay: 9999s;
-        -webkit-text-fill-color: #01579b;
-        box-shadow: 0 0 0px 1000px #000 inset;
-        font-size: 1.2em;
-    }
-
     &[type=number] {
         -moz-appearance: textfield;
     }

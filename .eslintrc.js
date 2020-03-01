@@ -34,6 +34,10 @@ module.exports = {
             'error',
             'unix'
         ],
+        'jsx-quotes': [
+            'error',
+            'prefer-single'
+        ],
         'quotes': [
             'error',
             'single'

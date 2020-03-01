@@ -34,7 +34,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignup }: SignupFormProps) =>
 
             <InputField
                 value={data.householdName}
-                label="Household name"
+                label='Household name'
                 variant='outlined'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onDataChange(e, 'householdName')}
                 required
@@ -45,7 +45,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignup }: SignupFormProps) =>
             <InputField
                 type='email'
                 value={data.email}
-                label="Email"
+                label='Email'
                 variant='outlined'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onDataChange(e, 'email')}
                 required
@@ -56,7 +56,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSignup }: SignupFormProps) =>
             <InputField
                 type='password'
                 value={data.password}
-                label="Password"
+                label='Password'
                 variant='outlined'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onDataChange(e, 'password')}
                 required

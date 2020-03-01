@@ -24,7 +24,7 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
     return (
         <SwitchContainer>
 
-            <TransitionGroup className="transition-group">
+            <TransitionGroup className='transition-group'>
                 <CSSTransition
                     key={location.key}
                     timeout={{ enter: 300, exit: 300 }}
@@ -34,12 +34,12 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
 
                         <Switch location={location}>
 
-                            <ProtectedRoute exact path="/household" render={() => <HouseholdPage />} />
-                            <ProtectedRoute exact path="/users" render={() => <UsersPage />} />
+                            <ProtectedRoute exact path='/household' render={() => <HouseholdPage />} />
+                            <ProtectedRoute exact path='/users' render={() => <UsersPage />} />
 
-                            <Route exact path="/signup" render={() => <SignUpPage />} />
-                            <Route exact path="/login" render={() => <LoginPage />} />
-                            <Route exact path="/" component={HomePage} />
+                            <Route exact path='/signup' render={() => <SignUpPage />} />
+                            <Route exact path='/login' render={() => <LoginPage />} />
+                            <Route exact path='/' component={HomePage} />
 
                             <Route render={() => <Error404Page />} />
 

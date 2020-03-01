@@ -28,7 +28,7 @@ const Task: React.FC<TaskProps> = ({ task, open, onClose, onCompleteTask }: Task
             </DialogContent>
             <DialogActions>
 
-                <CompleteButton onClick={() => onCompleteTask(task)} color="primary" autoFocus>
+                <CompleteButton onClick={() => onCompleteTask(task)} color='primary' autoFocus>
                     Complete
                 </CompleteButton>
 

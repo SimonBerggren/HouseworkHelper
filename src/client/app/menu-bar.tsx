@@ -12,7 +12,7 @@ const MenuBar = () => {
     return (
         <UserContext.Consumer>
             {userContext =>
-                <AppBar position="fixed">
+                <AppBar position='fixed'>
                     <Bar>
                         <MenuTitle >
                             <Link to='/' >HouseWorkHelper</Link>

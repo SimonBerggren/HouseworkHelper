@@ -30,7 +30,7 @@ const ErrorDialog: React.FC<ErrorDialogProps> = ({ open, onClose, title, message
             </DialogContent>
             <DialogActions>
 
-                <Button onClick={onClose} color="primary" autoFocus>
+                <Button onClick={onClose} color='primary' autoFocus>
                     Ok
                 </Button>
 
