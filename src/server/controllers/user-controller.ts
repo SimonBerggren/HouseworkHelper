@@ -69,7 +69,7 @@ router.delete('/', authenticate(), async (req, res) => {
     const { userName } = req.body as DeleteUserRequest;
 
     try {
-        const deletedUser = await UserModel.findOne({ householdID, userName });
+        const deletedUser = await UserModel.findOneAndDelete({ householdID, userName });
 
         if (!deletedUser) {
             console.log('Could not delete', userName);
