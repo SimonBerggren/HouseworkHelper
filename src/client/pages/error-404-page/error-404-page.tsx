@@ -1,6 +1,6 @@
 import React from 'react';
 
-import PageWrapper from '../../common/page-wrapper';
+import PageWrapper from '../../common/utils/page-wrapper';
 
 const Error404Page: React.FC = () => {
     return (

@@ -1,12 +1,13 @@
 import React from 'react';
+
 import { Route, RouteProps as IRouteProps, Redirect } from 'react-router-dom';
 
-import { isAuthenticated } from './user/authentication';
+import { isAuthenticated } from '../user/authentication';
 
 const ProtectedRoute: React.FC<IRouteProps> = ({ render, ...routeProps }: IRouteProps) =>
-    <Route {...routeProps} render={(props) =>
+    <Route {...routeProps} render={(renderProps) =>
         isAuthenticated()
-            ? render && render(props)
+            ? render && render(renderProps)
             : <Redirect to={{
                 pathname: '/',
             }} />

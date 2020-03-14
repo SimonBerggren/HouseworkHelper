@@ -11,7 +11,6 @@ const TaskSchema = new Schema<TaskSchemaModel>({
     points: { type: Number, required: true },
     taskName: { type: String, required: true },
     desc: { type: String },
-    visibleToAll: { type: Boolean, required: true },
     visibleTo: { type: Array }
 });
 

@@ -75,7 +75,7 @@ router.delete('/', authenticate(), async (req, res) => {
             console.log('Could not delete', userName);
 
         } else {
-            const tasks = await findTasks({ householdID, visibleTo: { '$in': [deletedUser.id] }, visibleToAll: false });
+            const tasks = await findTasks({ householdID, visibleTo: { '$in': [deletedUser.id] } });
 
             await Promise.all(tasks.map(async task => {
                 task.visibleTo = task.visibleTo.filter(userID => userID !== deletedUser.id);

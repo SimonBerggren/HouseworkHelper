@@ -21,4 +21,19 @@ router.get('/', authenticate(), async (req, res) => {
     }
 });
 
+//////////////////////////////// DEV ////////////////////////////////
+
+// get all households
+router.get('/dev',  async (req, res) => {
+
+    try {
+        const households = await HouseholdModel.find();
+        return res.json(households);
+
+    } catch (error) {
+        return badRequest(res, error);
+    }
+});
+
+
 export default router;

@@ -1,4 +1,5 @@
-import { getToken, deauthenticate, unsetUser, getUserName } from './user/authentication';
+import { deauthenticate, getToken } from '../user/authentication';
+import { unsetUser, getUserName } from '../user/user-info';
 
 const request = (path: string, method: string, data?: any) =>
     fetch(
@@ -24,7 +25,7 @@ const request = (path: string, method: string, data?: any) =>
         })
         .catch(error => {
             console.log(error);
-            return Promise.reject();
+            return Promise.reject(error);
         });
 
 export const get = (path: string) => request(path, 'GET');

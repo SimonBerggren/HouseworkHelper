@@ -12,7 +12,7 @@ module.exports = env => {
 
     const clientConfig = {
         entry: path.resolve('src', 'client', 'index.tsx'),
-        devtool: 'cheap-eval-source-map',
+        devtool: 'source-map',
         target: 'web',
         plugins: [
             new HtmlWebpackPlugin({

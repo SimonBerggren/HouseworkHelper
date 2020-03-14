@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import PageWrapper from '../../common/page-wrapper';
+import PageWrapper from '../../common/utils/page-wrapper';
 import Tasks from './tasks';
 
-import { getHousehold, getTasks } from '../../common/api-operations';
+import { getHousehold, getTasks } from '../../common/utils/api-operations';
 
 const HouseholdPage: React.FC = () => {
 

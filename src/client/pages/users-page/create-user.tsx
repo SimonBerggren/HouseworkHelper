@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 
-import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { DialogContent, DialogActions } from '@material-ui/core';
 
-import { createUser } from '../../common/api-operations';
+import TextInput from '../../common/components/input/text-input';
+import Button from '../../common/components/button';
 
-interface CreateUserProps {
+import { createUser } from '../../common/utils/api-operations';
+import Dialog from '../../common/components/dialog/dialog';
+
+type CreateUserProps = {
     onUserCreated: (createdUser: User) => void;
     onClose: () => void;
     open: boolean;
@@ -38,56 +40,30 @@ const CreateUser: React.FC<CreateUserProps> = ({ onUserCreated, onClose, open }:
         <Dialog
             open={open}
             onClose={onClose}
+            title='Create New User'
         >
-            <Title >
-
-                Create New User
-
-                <CloseButton
-                    onClick={onClose}
-                >
-                    <CloseIcon />
-                </CloseButton>
-
-            </Title>
+            
             <DialogContent dividers>
-                <UserNameField
+
+                <TextInput
                     onChange={e => setNewUserName(e.currentTarget.value)}
                     onKeyDown={onKeyDown}
+                    variant='standard'
                     autoFocus
                 />
+
             </DialogContent>
             <DialogActions>
+
                 <Button
                     onClick={onCreateUser}
+                    label='Create New User'
                     color='primary'
-                >
-                    Create New User
-                </Button>
+                />
+
             </DialogActions>
         </Dialog >
     );
 };
-
-const Title = styled(DialogTitle)`
-    color: #9c27b0;
-`;
-
-const CloseButton = styled(IconButton)`
-    && { 
-        position: absolute;
-        top: 0.3em;
-        right: 0.3em;
-        color: #9c27b0;
-    }
-`;
-
-const UserNameField = styled(TextField)`
-    input{
-        text-align: center;
-        color: #9c27b0;
-        font-size: 1.3em;
-    }
-`;
 
 export default CreateUser;

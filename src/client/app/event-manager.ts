@@ -1,30 +1,30 @@
-type EventType = 'authenticateChanged' | 'userNameChanged';
+type EventType = 'authenticateChanged' | 'userNameChanged' | 'userPointsChanged';
 type Callback = (data?: any) => void;
 
-const allListeners: { [key: string]: (Callback[] | undefined) } = {};
+const listeners: { [key: string]: (Callback[] | undefined) } = {};
 
 export const addEventListener = (event: EventType, callback: Callback) => {
-    let eventListeners = allListeners[event];
+    let eventListeners = listeners[event];
     if (!eventListeners) {
-        eventListeners = allListeners[event] = [];
+        eventListeners = listeners[event] = [];
     }
     eventListeners.push(callback);
 };
 
 export const removeEventListener = (event: EventType, callback: Callback) => {
-    let eventListeners = allListeners[event];
+    let eventListeners = listeners[event];
     if (eventListeners) {
         const filteredListeners = eventListeners.filter(eventListener => eventListener === callback);
         if (filteredListeners.length) {
-            allListeners[event] = filteredListeners;
+            listeners[event] = filteredListeners;
         } else {
-            allListeners[event] = undefined;
+            listeners[event] = undefined;
         }
     }
 };
 
 export const emitEvent = (event: EventType, data?: any) => {
-    let eventListeners = allListeners[event];
+    let eventListeners = listeners[event];
     if (eventListeners) {
         eventListeners.forEach(eventListener => eventListener(data));
     }

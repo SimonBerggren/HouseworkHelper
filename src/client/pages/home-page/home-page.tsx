@@ -1,31 +1,32 @@
+import styled, { css } from 'styled-components';
 import React from 'react';
 
-import PageWrapper from '../../common/page-wrapper';
-
-import styled from 'styled-components';
+import PageWrapper from '../../common/utils/page-wrapper';
+import Link from '../../common/components/link';
 
 const HomePage: React.FC = () => {
 
     return (
-        <CenterPageWrapper>
-            <PageTitle>
-                WE HELP YOU HELP
-            </PageTitle>
-        </CenterPageWrapper>
+        <PageWrapper>
+            <TitleLink to={'/login'}>
+                <h1>{'WE HELP YOU HELP'}</h1>
+            </TitleLink>
+        </PageWrapper>
     );
 };
 
-const CenterPageWrapper = styled(PageWrapper)`
-    justify-content: center;
-`;
+const TitleLink = styled(Link)`
+    ${({ theme }) => css`
+        border: 1px solid ${theme.palette.primary.main};
+        color: ${theme.palette.primary.main};
+    `}
 
-const PageTitle = styled.h1`
-    font-size: 1.5em;
+    margin: 25px;
+    padding:  50px 25px;
+    text-align: center;
     letter-spacing: 0.3em;
-    color: #9c27b0;
-    border: 1px solid #9c27b0;
-    padding: 6em;
-    vertical-align: middle;
+
+    cursor: pointer;
 `;
 
 export default HomePage;

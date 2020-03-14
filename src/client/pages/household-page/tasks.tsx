@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 
+import ConfirmDialog from '../../common/components/dialog/confirm-dialog';
+import IconButton from '../../common/components/icon-button';
+import CompleteTask from './complete-task';
 import TaskForm from './edit-task';
 
-import { deleteTask, completeTask } from '../../common/api-operations';
+import { deleteTask, completeTask } from '../../common/utils/api-operations';
 import { UserContext } from '../../app/user-context';
-import Task from './task';
-import ConfirmDialog from '../../common/confirm-dialog';
+import { addUserPoints } from '../../common/user/user-info';
 
-interface TasksProps {
+
+type TasksProps = {
     onTaskCompleted: (task: Task) => void;
     onTaskDeleted: (task: Task) => void;
     onTaskCreated: (task: Task) => void;
@@ -25,31 +25,26 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
 
     const [showCreateTask, setShowCreateTask] = useState<boolean>(false);
     const [selectedTask, setSelectedTask] = useState<Task>();
-    const [deleting, setDeleting] = useState<string>('');
     const [editTask, setEditTask] = useState<Task>();
-    const [confirmText, setConfirmText] = useState<string>('');
     const [confirming, setConfirming] = useState<boolean>(false);
+    const [taskToDelete, setTaskToDelete] = useState<Task>();
 
-    let taskToDelete: Task;
+    const onDeleteTask = (task: Task) => {
+        setTaskToDelete(task);
+        setConfirming(true);
+    };
 
-    const onDeleteTask = async (task?: Task) => {
+    const onDeleteTaskConfirmed = async () => {
+        if (taskToDelete) {
+            const deletedTask = await deleteTask({ taskName: taskToDelete.taskName });
 
-        if (task) {
-            taskToDelete = task;
-            setConfirming(true);
-            return setConfirmText(`Are you sure you want to delete ${task.taskName}?\nThis action is irreversible!`);
-        }
+            if (deletedTask) {
+                setTimeout(() => {
+                    onTaskDeleted(deletedTask);
+                    setConfirming(false);
+                }, 500);
 
-        setDeleting(taskToDelete.taskName);
-
-        const deletedTask = await deleteTask({ taskName: taskToDelete.taskName });
-
-        if (deletedTask) {
-            setTimeout(() => {
-                setDeleting('');
-                onTaskDeleted(deletedTask);
-            }, 500);
-
+            }
         }
     };
 
@@ -57,7 +52,9 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
         const completed = await completeTask({ taskName: taskToComplete.taskName, userName });
 
         if (completed) {
+            addUserPoints(taskToComplete.points);
             onTaskCompleted(taskToComplete);
+            setSelectedTask(undefined);
         }
     };
 
@@ -70,54 +67,84 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
         <UserContext.Consumer>
             {userContext =>
                 <>
-
-                    <TasksContainer>
+                    <TableContainer style={{ width: '90%' }}>
                         <Table stickyHeader size='small'>
                             <TableHead>
                                 <TableRow>
-                                    <TasksHeaderCell colSpan={2}>Task</TasksHeaderCell>
-                                    <TasksHeaderCell align='right'>Frequency</TasksHeaderCell>
-                                    <TasksHeaderCell align='right'>Points</TasksHeaderCell>
-                                    <TasksHeaderCell align='right' >
-                                        <IconButton
+
+                                    <TH padding='none' style={{ width: '15%' }}>
+                                        <SmallIconButton
+                                            
+                                            style={{ padding: '0px' }}
                                             onClick={() => setShowCreateTask(true)}
-                                        >
-                                            <AddIcon />
-                                        </IconButton>
-                                    </TasksHeaderCell>
+                                            icon='add'
+                                        />
+                                    </TH>
+
+                                    <TH style={{ width: '55%' }}>
+                                        Task
+                                    </TH>
+
+                                    <TH style={{ width: '20%' }} align='right'>
+                                        Frequency
+                                    </TH>
+
+                                    <TH style={{ width: '10%' }} align='right'>
+                                        Points
+                                    </TH>
+
                                 </TableRow>
+
                             </TableHead>
                             <TableBody>
                                 {tasks.map((task, key) => (
-                                    <TaskRow
-                                        hover
+
+                                    <BodyTR
                                         key={key}
-                                        className={`${deleting === task.taskName && 'deleting'}`}
+                                        className={`${taskToDelete && taskToDelete.taskName === task.taskName && 'deleting'} ${key % 2 ? 'odd' : 'even'}`}
                                     >
-                                        <Cell>
-                                            <IconButton
+                                        <TableCell padding='none' style={{ position: 'relative' }}>
+                                            <SmallIconButton
                                                 onClick={() => setEditTask(task)}
-                                            >
-                                                <EditIcon />
-                                            </IconButton>
-                                        </Cell>
-                                        <Cell
-                                            onClick={() => setSelectedTask(task)}
-                                        >{task.taskName}</Cell>
-                                        <Cell align='right'>{task.frequency}</Cell>
-                                        <Cell align='right'>{task.points}</Cell>
-                                        <Cell align='right'>
-                                            <IconButton
+                                                icon='edit'
+                                            />
+
+                                            <SmallIconButton
                                                 onClick={e => { e.stopPropagation(); onDeleteTask(task); }}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Cell>
-                                    </TaskRow>
+                                                icon='delete'
+                                            />
+                                        </TableCell>
+
+                                        <TableCell
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => setSelectedTask(task)}
+                                        >
+                                            <h3>{task.taskName}</h3>
+                                            <p>{task.desc}</p>
+
+                                        </TableCell>
+
+                                        <TableCell
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => setSelectedTask(task)}
+                                            align='right'
+                                        >
+                                            {task.frequency}
+                                        </TableCell>
+
+                                        <TableCell
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => setSelectedTask(task)}
+                                            align='right'
+                                        >
+                                            {task.points}
+                                        </TableCell>
+
+                                    </BodyTR>
                                 ))}
                             </TableBody>
                         </Table>
-                    </TasksContainer>
+                    </TableContainer>
 
                     <TaskForm
                         onTaskCreated={onTaskCreated}
@@ -127,17 +154,17 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                         editTask={editTask}
                     />
 
-                    <Task
+                    <CompleteTask
                         onClose={() => setSelectedTask(undefined)}
                         task={selectedTask}
                         onCompleteTask={task => onCompleteTask(task, userContext.userName)}
                     />
 
                     <ConfirmDialog
-                        messages={[confirmText]}
+                        messages={[`Are you sure you want to delete ${taskToDelete && taskToDelete.taskName}?\nThis action is irreversible!`]}
                         open={confirming}
                         onClose={() => setConfirming(false)}
-                        onConfirm={onDeleteTask}
+                        onConfirm={onDeleteTaskConfirmed}
                     />
                 </>
             }
@@ -145,40 +172,38 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
     );
 };
 
-const TasksContainer = styled(TableContainer)`
+const TH = styled(TableCell)`
     && {
-        background: rgba(255,255,255,0.85);
-        width: 80%;
-        max-width: 70vw;
-    }
-`;
-
-const TasksHeaderCell = styled(TableCell)`
-    && {
-        background-color: #9c27b0;
-        color: white;
-        font-size: large;
-
-        svg {
+        ${({ theme }) => css`
+            background-color: ${theme.palette.primary.main};
             color: white;
-        }
+        `}
     }
 `;
 
-const TaskRow = styled(TableRow)`
-    && {
+const BodyTR = styled(TableRow)`
 
-            height: 0px;
-        &.deleting {
-            transition: height 0.5s linear;
+        ${({ theme }) => css`
+            background-color: ${theme.palette.primary.main};
+            color: white;
+            &.even {
+                background-color: ${theme.palette.primary.light};
+            }
+        `}
+
+
+        &.odd {
+            background-color: white;
         }
-    }
+
+        .deleting {
+            opacity: 0.5;
+            pointer-events: none;
+        }
 `;
 
-const Cell = styled(TableCell)`
-    && {
-        height: 0px;
-    }
+const SmallIconButton = styled(IconButton)`
+    padding: 5px;
 `;
 
 export default Tasks;

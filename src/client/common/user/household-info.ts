@@ -1,4 +1,4 @@
-import { getTasks, getHousehold, getCompletedTasks } from '../api-operations';
+import { getTasks, getHousehold, getCompletedTasks } from '../utils/api-operations';
 
 let completedTasks: CompletedTask[] = [];
 let houseHoldName: string = '';

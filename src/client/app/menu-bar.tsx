@@ -1,8 +1,8 @@
 import { AppBar, Toolbar } from '@material-ui/core';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import React from 'react';
 
-import Link from '../common/link';
+import Link from '../common/components/link';
 
 import { deauthenticate } from '../common/user/authentication';
 import { UserContext } from './user-context';
@@ -10,56 +10,50 @@ import { UserContext } from './user-context';
 const MenuBar = () => {
 
     return (
-        <UserContext.Consumer>
-            {userContext =>
-                <AppBar position='fixed'>
+        <StyledAppBar >
+            <UserContext.Consumer>
+                {userContext =>
                     <Bar>
-                        <MenuTitle >
+                        <h2 >
                             <Link to='/' >HouseWorkHelper</Link>
-                        </MenuTitle>
+                        </h2>
 
                         <div>
 
                             {userContext.userName &&
-                                <MenuLink to='/users'> {userContext.userName} </MenuLink>
+                                <Link to='/users'>
+                                    {userContext.userName}
+                                    <br />
+                                    {userContext.userPoints}p
+                                </Link>
                             }
 
                             {userContext.authenticated ?
-                                <MenuLink to='/' onClick={() => deauthenticate()}> Logout </MenuLink>
+                                <Link to='/' onClick={() => deauthenticate()}> Logout </Link>
                                 :
-                                <MenuLink to='/login'> Login </MenuLink>
+                                <Link to='/login'> Login </Link>
                             }
                         </div>
                     </Bar>
-                </AppBar>
-            }
-        </UserContext.Consumer>
+                }
+            </UserContext.Consumer>
+        </StyledAppBar>
     );
 };
+
+const StyledAppBar = styled(AppBar)`
+   && {
+        ${({ theme }) => css`
+            background-color: ${theme.palette.primary.main};
+        `}
+    }
+`;
 
 const Bar = styled(Toolbar)`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     font-weight: bold;
-`;
-
-const MenuTitle = styled.h1`
-    cursor: default;
-    margin-bottom: 10vh;
-    font-size: 1.3em;
-    margin: 0;
-
-    a {
-        text-decoration: none;
-    }
-`;
-
-const MenuLink = styled(Link)`
-    text-decoration: none;
-    :hover {
-        text-decoration: underline;
-    }
 `;
 
 export default MenuBar;

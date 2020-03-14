@@ -1,49 +1,58 @@
+import { Redirect } from 'react-router-dom';
 import React, { useState } from 'react';
 
-import PageWrapper from '../../common/page-wrapper';
+import ErrorDialog from '../../common/components/dialog/error-dialog';
+import PageWrapper from '../../common/utils/page-wrapper';
+import Link from '../../common/components/link';
 import SignupForm from './signup-form';
 
-import { signup } from '../../common/api-operations';
-import { Redirect } from 'react-router-dom';
-import ErrorDialog from '../../common/error-dialog';
+import { signup } from '../../common/utils/api-operations';
 
 const SignupPage: React.FC = () => {
 
-    const [signupError, setSignupError] = React.useState('');
+    const [showError, setShowError] = React.useState(false);
     const [signedup, setSignedup] = useState(false);
+    const [signupError, setSignupError] = useState('Something went terribly wrong');
 
     const onSignup = async (household: Household) => {
 
         try {
             const signedUp = await signup(household);
 
-            if (signedUp) {
-                setSignedup(true);
-            } else {
-                setSignupError('Couldn\'t sign up');
+            if (!signedUp) {
+                setSignupError('Something went terribly wrong');
+                return setShowError(true);
             }
+
+            setSignedup(true);
 
         } catch (error) {
             setSignupError(error);
+            setShowError(true);
         }
     };
 
-    const handleClose = () => {
-        setSignupError('');
+    const onErrorClose = () => {
+        setShowError(false);
     };
 
-    return (
+    return (signedup ? <Redirect to='/login' /> :
         <PageWrapper>
-            {signedup && <Redirect to='/login' />}
-            <SignupForm
-                onSignup={onSignup}
-            />
+
+            <SignupForm onSignup={onSignup} />
 
             <ErrorDialog
-                open={signupError !== ''}
-                onClose={handleClose}
-                messages={[signupError]}
-            />
+                open={showError}
+                onClose={onErrorClose}
+                title={signupError}
+            >
+                <span>
+                    {'Already have an account?'}
+                    <Link to='/login' onClick={onErrorClose}>
+                        {' Login!'}
+                    </Link>
+                </span>
+            </ErrorDialog>
 
         </PageWrapper >
     );

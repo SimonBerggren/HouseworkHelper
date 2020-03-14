@@ -15,13 +15,10 @@ router.get('/:user', authenticate(), async (req, res) => {
 
     try {
         const user = await findUser({ householdID, userName: req.params.user });
+        
+        const tasks = await findTasks({ householdID, visibleTo: { '$in': [user.id] } });
 
-        const tasks = await findTasks({ householdID });
-
-
-        const filteredTasks = tasks.filter(task => task.visibleToAll || (task.visibleTo.findIndex(u => u === user.id) >= 0));
-
-        const mappedTasks = await Promise.all(filteredTasks.map(async task => {
+        const mappedTasks = await Promise.all(tasks.map(async task => {
             task.visibleTo = await Promise.all(task.visibleTo.map(async userID => {
                 const user = await findUser({ _id: userID });
                 return user.userName;
@@ -60,8 +57,8 @@ router.post('/', authenticate(), async (req, res) => {
 
     try {
 
-        if (taskToCreate.visibleToAll) {
-            taskToCreate.visibleTo = [];
+        if (!taskToCreate.visibleTo || !taskToCreate.visibleTo.length) {
+            throw 'Task needs to be visible to at least one person';
 
         } else {
             const visibleTo = await Promise.all(taskToCreate.visibleTo.map(async (userName) => {
@@ -93,8 +90,8 @@ router.put('/', authenticate(), async (req, res) => {
 
     try {
 
-        if (task.visibleToAll) {
-            task.visibleTo = [];
+        if (!task.visibleTo || !task.visibleTo.length) {
+            throw 'Task needs to be visible to at least one person';
 
         } else {
             const visibleTo = await Promise.all(task.visibleTo.map(async (userName) => {

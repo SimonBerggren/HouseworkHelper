@@ -1,24 +1,30 @@
 import React from 'react';
 
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { purple } from '@material-ui/core/colors';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from 'styled-components';
+
+type ThemeProviderProps = React.PropsWithChildren<{}> & {
+
+}
 
 const defaultTheme = createMuiTheme({
     palette: {
+        type: 'light',
         primary: purple,
-        secondary: {
-            main: '#8e24aa',
-        },
-    },
+        secondary: purple,
+    }
 });
 
-const ThemeProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }: React.PropsWithChildren<{}>) => {
+const TShemeProvider: React.FC<ThemeProviderProps> = ({ children }: ThemeProviderProps) => {
 
     return (
         <MuiThemeProvider theme={defaultTheme}>
-            {children}
+            <ThemeProvider theme={defaultTheme}>
+                {children}
+            </ThemeProvider>
         </MuiThemeProvider>
     );
 };
 
-export default ThemeProvider;
+export default TShemeProvider;

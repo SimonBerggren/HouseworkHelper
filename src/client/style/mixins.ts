@@ -21,10 +21,22 @@ export const flexCenter = css`
     justify-content: center;
 `;
 
-export const fadeIn = (duration: number) => css`
-    animation: fadein ${duration}s linear;
+export const boxShadow = css`
+    box-shadow: 0px 0px 10px 0px black;
 `;
 
-export const scaleUp = (duration: number, ) => css`
-    animation: scaleup ${duration}s linear;
+export const boxShadowLight = css`
+    box-shadow: 0px 0px 6px 0px black;
+`;
+
+export const boxShadowNone = css`
+    box-shadow: 0px 0px 0px 0px black;
+`;
+
+export const boxShadowInset = css`
+    box-shadow: inset 0px 0px 6px 0px black;
+`;
+
+export const fadeIn = (duration: number) => css`
+    animation: fadein ${duration}s linear;
 `;

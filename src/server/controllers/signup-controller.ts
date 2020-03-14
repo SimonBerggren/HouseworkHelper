@@ -12,8 +12,14 @@ router.post('/', async (req, res) => {
     const newHousehold = req.body as Household;
 
     try {
+        const existingHousehold = await HouseholdModel.findOne({ email: newHousehold.email });
+
+        if (existingHousehold) {
+            return badRequest(res, 'Email is already in use');
+        }
+
         const createdHousehold = await HouseholdModel.create(newHousehold);
-        
+
         if (createdHousehold) {
             return res.json(true);
         }

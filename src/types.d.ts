@@ -9,7 +9,7 @@ type Frequency =
     'Annually';
 
 interface SignupModel extends Household {
-    confirmedPassword: string;
+    
 }
 
 interface Household {
@@ -29,7 +29,6 @@ interface Task {
     frequency: string;
     desc?: string;
     visibleTo: string[];
-    visibleToAll: boolean;
 }
 
 interface CompletedTask {

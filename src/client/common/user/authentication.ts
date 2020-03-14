@@ -1,9 +1,9 @@
 import { emitEvent } from '../../app/event-manager';
+import { unsetUser, getUserName } from './user-info';
 
 const tokenKey = 'hwhJwtToken';
-const userKey = 'hwhUser';
 
-const storage = sessionStorage;
+export const storage = sessionStorage;
 
 // User authentication
 
@@ -14,10 +14,9 @@ export const authenticate = (token: string) => {
 
 export const deauthenticate = () => {
     storage.removeItem(tokenKey);
-    storage.removeItem(userKey);
-    
+    unsetUser();
+
     emitEvent('authenticateChanged', false);
-    emitEvent('userNameChanged', '');
 };
 
 export const isAuthenticated = (): boolean =>
@@ -26,18 +25,5 @@ export const isAuthenticated = (): boolean =>
 export const getToken = (): string =>
     storage.getItem(tokenKey) || '';
 
-export const setUser = (userName: string) => {
-    storage.setItem(userKey, userName);
-    emitEvent('userNameChanged', userName);
-};
-
-export const unsetUser = () => {
-    storage.removeItem(userKey);
-    emitEvent('userNameChanged', '');
-};
-
 export const isFullyConfigured = (): boolean =>
     isAuthenticated() && getUserName() !== '';
-
-export const getUserName = (): string =>
-    storage.getItem(userKey) || '';

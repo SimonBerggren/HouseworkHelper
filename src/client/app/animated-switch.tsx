@@ -5,10 +5,11 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { Location as ILocation } from 'history';
 
-import ProtectedRoute from '../common/protected-route';
+import ProtectedRoute from '../common/utils/protected-route';
+
 import Lazy from './lazy';
 
-interface AnimatedSwitchProps {
+type AnimatedSwitchProps = {
     location: ILocation
 }
 
@@ -44,10 +45,12 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
                             <Route render={() => <Error404Page />} />
 
                         </Switch>
+
                     </RouteSection>
 
                 </CSSTransition>
             </TransitionGroup>
+
         </SwitchContainer>
     );
 };
@@ -81,8 +84,7 @@ const SwitchContainer = styled.div`
 
 const RouteSection = styled.section`
     position: absolute;
-    width: 100%;
-    top: 0;
+    top: 64px;
     left: 0;
 `;
 

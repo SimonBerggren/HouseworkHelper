@@ -1,27 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import { Button, IconButton } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-
-import PageWrapper from '../../common/page-wrapper';
+import IconButtonTop from '../../common/components/icon-button-top';
+import PageWrapper from '../../common/utils/page-wrapper';
+import Button from '../../common/components/button';
+import Link from '../../common/components/link';
 import CreateUser from './create-user';
 import User from './user';
 
-import { flexCenter, fadeIn } from '../../style/mixins';
-import { getUsers } from '../../common/api-operations';
+import { getUsers } from '../../common/utils/api-operations';
+import { setUserName, setUserPoints } from '../../common/user/user-info';
+import { flexCenter } from '../../style/mixins';
+import IconButton from '../../common/components/icon-button';
 
 const UsersPage = () => {
 
-    const [editing, setEditing] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<User>();
     const [creatingUser, setCreatingUser] = useState(false);
     const [users, setUsers] = useState<User[]>([]);
+    const [editing, setEditing] = useState(false);
 
     useEffect(() => {
-        getUsers().then(users => setUsers(users));
+        getUsers().then(users => {
+            if (!users.length) {
+                setEditing(true);
+            } else {
+                setUsers(users);
+            }
+        });
     }, []);
 
-    const onCreateUser = () => {
+    useEffect(() => {
+        if (editing) {
+            setSelectedUser(undefined);
+        }
+    }, [editing]);
+
+    const onCreateUserClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.currentTarget.blur(); // if the user exits modal by pressing exit or enter
         setCreatingUser(true);
     };
 
@@ -29,6 +45,13 @@ const UsersPage = () => {
         const concatendatedUsers = users.concat(createdUser);
         setUsers(concatendatedUsers);
         setCreatingUser(false);
+    };
+
+    const onUserSelected = () => {
+        if (selectedUser) {
+            setUserPoints(selectedUser.points);
+            setUserName(selectedUser.userName);
+        }
     };
 
     const onUserDeleted = ({ userName }: User) => {
@@ -44,72 +67,68 @@ const UsersPage = () => {
             <UsersContainer>
 
                 {editing &&
-                    <AddUserButton
-                        onClick={onCreateUser}
-                    >
-                        <AddIcon />
-                    </AddUserButton>
+                    <IconButtonTop left
+                        iconSize='large'
+                        color='primary'
+                        icon='add'
+                        onClick={onCreateUserClicked}
+                    />
                 }
 
                 {users.map((user) =>
                     <User
+                        selected={selectedUser && selectedUser.userName === user.userName}
+                        user={user}
                         edit={editing}
                         key={user.userName}
-                        user={user}
+                        onUserSelected={setSelectedUser}
                         onUserDeleted={onUserDeleted}
                     />
                 )}
+
+                {selectedUser &&
+                    <ForwardArrow to='/household' onClick={onUserSelected} >
+                        <IconButton
+                            color='primary'
+                            icon='forward'
+                            iconSize='large'
+                        />
+                    </ForwardArrow >
+                }
 
             </UsersContainer>
 
             <CreateUser
                 open={creatingUser}
-                onClose={() => setCreatingUser(false)}
                 onUserCreated={onUserCreated}
+                onClose={() => setCreatingUser(false)}
             />
 
-            <ManageUsersButton
-                size='large'
-                color='primary'
-                variant='outlined'
+            <Button
                 onClick={() => setEditing(!editing)}
-            >
-                {editing ? 'Done' : 'Manage Users'}
-            </ManageUsersButton>
+                label={editing ? 'Done' : 'Manage Users'}
+            />
 
         </PageWrapper>
     );
 };
 
 const UsersContainer = styled.div`
-    position: relative;
-
     ${flexCenter}
     flex-wrap: wrap;
     flex-direction: row;
 
-    background: rgba(255,255,255,0.9);
-    border: 1px solid #9c27b0;
+    position: relative;
 
-    padding: 2em;
-    margin-bottom: 5em;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
 
-    width: 50em;
+    padding: 50px;
 `;
 
-const ManageUsersButton = styled(Button)`
-    width: 20em;
-    height: 4em;
-`;
-
-const AddUserButton = styled(IconButton)`
-    && {
-        ${fadeIn(0.2)}
-        position: absolute;
-        color: #9c27b0;
-        top: 0;
-        left: 0;
-    }
+const ForwardArrow = styled(Link)`
+    position: absolute;
+    right: 0;
 `;
 
 export default UsersPage;

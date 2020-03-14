@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 
 import { BrowserRouter } from 'react-router-dom';
 
@@ -11,18 +11,20 @@ import MenuBar from './menu-bar';
 
 const App = () => {
     return (
-        <ThemeProvider>
-            <Suspense fallback={<></>}>
-                <BrowserRouter>
-                    <UserContextProvider>
-                        <GlobalStyle />
-                        <Background />
-                        <MenuBar />
-                        <AnimatedSwitch />
-                    </UserContextProvider>
-                </BrowserRouter>
-            </Suspense>
-        </ThemeProvider>
+        <BrowserRouter>
+
+            <ThemeProvider>
+                <UserContextProvider>
+
+                    <GlobalStyle />
+                    <Background />
+                    <MenuBar />
+                    <AnimatedSwitch />
+
+                </UserContextProvider>
+            </ThemeProvider>
+
+        </BrowserRouter>
     );
 };
 

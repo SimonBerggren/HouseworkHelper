@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-interface LazyProps {
+type LazyProps = {
     importFunc: () => Promise<any>;
 }
 

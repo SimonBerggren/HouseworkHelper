@@ -16,9 +16,12 @@ const StyledBackground = styled.img`
         -webkit-filter: blur(8px);
     }
 
-    position: absolute;
-    z-index: -10;
+    background-color: white;
     object-fit: cover;
+
+    position: fixed;
+    z-index: -10;
+
     width: 100vw;
     height: 100vh;
 `;

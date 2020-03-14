@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, IconButton, Checkbox, FormControlLabel, ListItemText, Input } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { DialogContent, DialogActions, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText, Input } from '@material-ui/core';
 
-import { createTask, getUsers, updateTask } from '../../common/api-operations';
+import TextInput from '../../common/components/input/text-input';
+import Dialog from '../../common/components/dialog/dialog';
+import Button from '../../common/components/button';
+
+import { createTask, getUsers, updateTask } from '../../common/utils/api-operations';
 import { frequencies } from '../../../common/frequencies';
+import { getUserName } from '../../common/user/user-info';
 import { UserContext } from '../../app/user-context';
 
-interface TaskProps {
+type TaskProps = {
     onTaskCreated: (taskToCreate: Task) => void;
     onTaskEdited: (oldTask: Task, updatedTask: Task) => void;
     onClose: () => void;
@@ -22,8 +25,7 @@ const defaultValues = (defaultTask?: Task): Task => {
         desc: defaultTask ? defaultTask.desc : '',
         frequency: defaultTask ? defaultTask.frequency : '',
         points: defaultTask ? defaultTask.points : 0,
-        visibleTo: defaultTask ? defaultTask.visibleTo : [],
-        visibleToAll: defaultTask ? defaultTask.visibleToAll : true
+        visibleTo: defaultTask ? defaultTask.visibleTo : [getUserName()]
     };
 };
 
@@ -33,10 +35,12 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
-        setTask(defaultValues(editTask));
-        if (!users.length || (!users.length && editTask)) {
-            getUsers()
-                .then(users => setUsers(users));
+        if (open || editTask) {
+            setTask(defaultValues(editTask));
+            if (!users.length || (!users.length && editTask)) {
+                getUsers()
+                    .then(users => setUsers(users));
+            }
         }
     }, [open, editTask]);
 
@@ -65,52 +69,40 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
         <UserContext.Consumer>
             {userContext =>
                 <Dialog
-                    open={editTask != undefined || open}
                     onClose={onClose}
+                    open={editTask != undefined || open}
+                    title={editTask ? 'Edit Task' : 'Create New Task'}
                 >
-                    <Title>
-                        {editTask ? 'Edit Task' : 'Create New Task'}
-
-                        <CloseButton
-                            onClick={onClose}
-                        >
-                            <CloseIcon />
-                        </CloseButton>
-                    </Title>
-
                     <DialogContent dividers>
 
-                        <InputField
+                        <TextInput fullWidth required margin='normal'
                             label='Title'
-                            helperText='What is the task?'
+                            variant='standard'
                             defaultValue={task.taskName}
                             onChange={e => setTask({ ...task, taskName: e.currentTarget.value })}
-                            required
                         />
 
-                        <InputField
+                        <TextInput fullWidth multiline margin='normal'
+                            variant='standard'
                             label='Description'
-                            helperText='Describe the task in more detail if needed'
                             defaultValue={task.desc}
                             onChange={e => setTask({ ...task, desc: e.currentTarget.value })}
-                            multiline
                         />
 
-                        <InputField
+                        <TextInput fullWidth required margin='normal'
                             type='number'
+                            variant='standard'
                             label='Reward Points'
-                            helperText='Select how much this is worth'
+                            rows='3'
                             defaultValue={task.points}
                             onChange={e => setTask({ ...task, points: parseInt(e.currentTarget.value) })}
-                            required
                         />
 
-                        <SelectField>
-                            <InputLabel>Visible To</InputLabel>
 
+                        <FormControl fullWidth margin='normal'>
+                            <InputLabel>{'Visible to'}</InputLabel>
                             <Select
                                 multiple
-                                disabled={task.visibleToAll}
                                 input={<Input />}
                                 renderValue={(userNames: any) => userNames.join(', ')}
                                 value={task.visibleTo}
@@ -140,23 +132,11 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                                     </MenuItem>
                                 )}
                             </Select>
+                        </FormControl>
 
-                            <FormHelperText>Select which users this task is visible to</FormHelperText>
-                        </SelectField>
 
-                        <CheckboxField
-                            control={
-                                <Checkbox
-                                    checked={task.visibleToAll}
-                                    onChange={() => setTask({ ...task, visibleToAll: !task.visibleToAll, visibleTo: !task.visibleToAll ? [] : [userContext.userName] })}
-                                    color='primary'
-                                />
-                            }
-                            label='All'
-                        />
-
-                        <SelectField>
-                            <InputLabel required >Frequency</InputLabel>
+                        <FormControl fullWidth margin='normal'>
+                            <InputLabel required >{'Frequency'}</InputLabel>
 
                             <Select
                                 value={task.frequency}
@@ -171,56 +151,19 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                                     </MenuItem>
                                 )}
                             </Select>
-
-                            <FormHelperText>Select how frequently this task needs to be perfomed</FormHelperText>
-                        </SelectField>
+                        </FormControl>
 
                     </DialogContent>
                     <DialogActions >
-                        <SignupButton
-                            onClick={() => editTask ?
-                                onEditTask()
-                                :
-                                onCreateTask(task)
-                            }
-                            color='primary'
-                            variant='contained'
-                        >
-                            {editTask ? 'Save' : 'Create Task'}
-                        </SignupButton>
+                        <Button
+                            label={editTask ? 'Save' : 'Create Task'}
+                            onClick={() => editTask ? onEditTask() : onCreateTask(task)}
+                        />
                     </DialogActions>
                 </Dialog>
             }
         </UserContext.Consumer>
     );
 };
-
-const Title = styled(DialogTitle)`
-    color: #9c27b0;
-`;
-
-const CloseButton = styled(IconButton)`
-    && { 
-        position: absolute;
-        top: 0.3em;
-        right: 0.3em;
-    }
-`;
-
-const InputField = styled(TextField)`
-    width: 20em;
-`;
-
-const CheckboxField = styled(FormControlLabel)`
-    display: inline-block;
-`;
-
-const SelectField = styled(FormControl)`
-    width: 20em;
-`;
-
-const SignupButton = styled(Button)`
-    width: 15em;
-`;
 
 export default EditTask;
