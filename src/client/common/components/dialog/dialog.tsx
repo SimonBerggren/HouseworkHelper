@@ -31,7 +31,6 @@ const Dialog: React.FC<DialogProps> = ({ title, children, onClose, ...props }: D
 };
 
 const StyledDialog = styled(MaterialDialog)`
-    color: white;
 
     ${({ theme }) => css`
         a {

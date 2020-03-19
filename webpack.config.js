@@ -23,6 +23,7 @@ module.exports = env => {
             writeToDisk: true,
             compress: true,
             port: clientPort,
+            host: '0.0.0.0',
             index: '',
             contentBase: path.join(__dirname, 'dist', 'client'),
             proxy: proxy && {
@@ -59,7 +60,7 @@ module.exports = env => {
                     },
                 },
                 {
-                    test: /\.(png)$/,
+                    test: /\*?\.(png|svg)$/,
                     use: {
                         loader: 'file-loader'
                     }

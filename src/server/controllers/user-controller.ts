@@ -1,11 +1,11 @@
 import express from 'express';
 
-import UserModel from '../model/user.model';
-
-import { authenticate } from '../authentication/authentication';
-import { getHouseholdID, findTasks, findUsers, findUser } from '../utils/mongo-utils';
-import { badRequest } from '../error';
+import UserModel from '../model/user-model';
 import TaskModel from '../model/task-model';
+
+import { getHouseholdID, findTasks, findUsers } from '../utils/mongo-utils';
+import { authenticate } from '../authentication/authentication';
+import { badRequest } from '../error';
 
 const router = express.Router();
 
@@ -27,10 +27,10 @@ router.get('/', authenticate(), async (req, res) => {
 router.post('/', authenticate(), async (req, res) => {
 
     const householdID = getHouseholdID(req);
-    const { userName } = req.body as CreateUserRequest;
+    const { user } = req.body as CreateUserRequest;
 
     try {
-        const createdUser = await UserModel.create({ householdID, userName });
+        const createdUser = await UserModel.create({ householdID, ...user });
         return res.json(createdUser);
 
     } catch (error) {
@@ -42,20 +42,30 @@ router.post('/', authenticate(), async (req, res) => {
 router.put('/', authenticate(), async (req, res) => {
 
     const householdID = getHouseholdID(req);
-    const { oldUserName, newUserName } = req.body as UpdateUserRequest;
+    const { userToUpdate, user } = req.body as UpdateUserRequest;
 
     try {
-        const oldUser = await findUser({ householdID, userName: oldUserName });
+        if (userToUpdate != user.userName) {
+            const existingUser = await UserModel.findOne({ householdID, userName: user.userName });
 
-        const newUser = await UserModel.findOne({ householdID, userName: newUserName });
-
-        if (newUser) {
-            throw 'User already exist';
+            if (existingUser) {
+                return badRequest(res, 'User already exist');
+            }
         }
-        oldUser.userName = newUserName;
-        const updatedUser = await oldUser.save();
 
-        return res.json(updatedUser.userName);
+        const oldUser = await UserModel.findOne({ householdID, userName: userToUpdate });
+
+        if (!oldUser) {
+            throw 'Cannot find user';
+        }
+
+        oldUser.userName = user.userName;
+        oldUser.profilePicture = user.profilePicture;
+        oldUser.password = user.password;
+
+        await oldUser.save();
+
+        return res.json(true);
 
     } catch (error) {
         return badRequest(res, error);
@@ -73,27 +83,27 @@ router.delete('/', authenticate(), async (req, res) => {
 
         if (!deletedUser) {
             console.log('Could not delete', userName);
+            return badRequest(res, `Could not delete ${userName}`);
 
-        } else {
-            const tasks = await findTasks({ householdID, visibleTo: { '$in': [deletedUser.id] } });
+        }
+        const tasks = await findTasks({ householdID, visibleTo: { '$in': [deletedUser.id] } });
 
-            await Promise.all(tasks.map(async task => {
-                task.visibleTo = task.visibleTo.filter(userID => userID !== deletedUser.id);
+        await Promise.all(tasks.map(async task => {
+            task.visibleTo = task.visibleTo.filter(userID => userID !== deletedUser.id);
 
-                if (!task.visibleTo.length) {
-                    const deletedTask = await TaskModel.findOneAndDelete({ _id: task.id });
+            if (!task.visibleTo.length) {
+                const deletedTask = await TaskModel.findOneAndDelete({ _id: task.id });
 
-                    if (!deletedTask) {
-                        throw 'Something went wrong';
-                    }
-
-                } else {
-                    task.save();
+                if (!deletedTask) {
+                    throw 'Something went wrong';
                 }
 
-                return task;
-            }));
-        }
+            } else {
+                task.save();
+            }
+
+            return task;
+        }));
 
         return res.json(deletedUser);
 
@@ -101,6 +111,20 @@ router.delete('/', authenticate(), async (req, res) => {
         console.log('Error while deleting', userName);
         console.log(error);
         return badRequest(res, `Could not delete ${userName}`);
+    }
+});
+
+//////////////////////////////// DEV ////////////////////////////////
+
+// get all users
+router.get('/dev', async (_req, res) => {
+
+    try {
+        const users = await findUsers();
+        return res.json(users);
+
+    } catch (error) {
+        return badRequest(res, error);
     }
 });
 

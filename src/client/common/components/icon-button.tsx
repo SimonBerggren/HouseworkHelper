@@ -1,7 +1,8 @@
-import styled, { css, ThemeProps as IThemeProps } from 'styled-components';
+import styled, { css } from 'styled-components';
 import React from 'react';
 
 import ForwardIcon from '@material-ui/icons/ArrowForward';
+import PersonAdd from '@material-ui/icons/PersonAdd';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
@@ -22,6 +23,7 @@ const IconButton: React.FC<IconButtonProps> = ({ iconSize, icon, children, ...pr
         switch (icon) {
         case 'forward': return <ForwardIcon />;
         case 'delete': return <DeleteIcon />;
+        case 'addUser': return <PersonAdd />;
         case 'check': return <CheckIcon />;
         case 'close': return <CloseIcon />;
         case 'edit': return <EditIcon />;
@@ -34,7 +36,6 @@ const IconButton: React.FC<IconButtonProps> = ({ iconSize, icon, children, ...pr
         switch (iconSize) {
         case 'small':
         case 'medium': return iconSize;
-
         case 'large':
         default: return undefined;
         }
@@ -51,17 +52,17 @@ const IconButton: React.FC<IconButtonProps> = ({ iconSize, icon, children, ...pr
     );
 };
 
-const StyledIconButton = styled(MaterialIconButton)`
-    && {
-        ${({ color }: IconButtonProps) => css`
-            color: ${color ? color : 'white'};
-            opacity: ${color ? 1 : 0.6};
-        `}
-
-        &.large {
-            transform: scale(1.5);
+const StyledIconButton = styled(MaterialIconButton) <IconButtonProps>`
+    ${({ color }) => css`
+        && {
+            color: ${!color && 'white'};
+            opacity: 0.6;
+            
+            &.large {
+                transform: scale(1.5);
+            }
         }
-    }
+    `}
 `;
 
 export default IconButton;

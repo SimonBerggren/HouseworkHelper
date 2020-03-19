@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import React from 'react';
 
 import { TextField, TextFieldProps as ITextFieldProps, IconButtonProps as IIconButtonProps } from '@material-ui/core';
@@ -16,25 +16,15 @@ const TextInput: React.FC<TextInputProps> = (props: TextInputProps) => {
     return (
         <StyledTextField
             onFocus={selectAllOnFocus}
+            margin='normal'
             variant='outlined'
+            type='text'
             {...props}
         />
     );
 };
 
 const StyledTextField = styled(TextField)`
-    && {
-        ${({ theme }) => css`
-
-            .Mui-focused {
-                color: ${theme.primary};
-
-                fieldset {
-                    border-color: ${theme.primary};
-                }
-            }      
-        `} 
-    }
 `;
 
 export default TextInput;

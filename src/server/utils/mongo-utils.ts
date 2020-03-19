@@ -1,7 +1,8 @@
-import HouseholdModel from '../model/household-model';
-import UserModel from '../model/user.model';
-import TaskModel from '../model/task-model';
 import { Document as IDocument } from 'mongoose';
+
+import HouseholdModel from '../model/household-model';
+import UserModel from '../model/user-model';
+import TaskModel from '../model/task-model';
 
 export const getHousehold = (request: Express.Request) => (request.user as Household & IDocument);
 
@@ -17,25 +18,43 @@ export const findHousehold = async (conditions: any) => {
     return Promise.resolve(household);
 };
 
-export const findUser = async (conditions: any): Promise<User & IDocument> => {
-    const user = await UserModel.findOne(conditions);
+export const findUser = async (conditions?: any): Promise<User> => {
+    const dirtyUser = await UserModel.findOne(conditions);
 
-    if (!user) {
+    if (!dirtyUser) {
         console.log('Could not find user using conditions', conditions);
         return Promise.reject('Could not find user');
     }
 
-    return Promise.resolve(user);
+    const cleanUser: User = {
+        profilePicture: dirtyUser.profilePicture,
+        isKid: dirtyUser.isKid,
+        points: dirtyUser.points,
+        userName: dirtyUser.userName,
+        password: dirtyUser.password ? '********' : undefined
+    };
+
+    return Promise.resolve(cleanUser);
 };
 
-export const findUsers = async (conditions: any): Promise<User[] & IDocument[]> => {
-    const users = await UserModel.find(conditions);
+export const findUsers = async (conditions?: any): Promise<User[]> => {
+    const dirtyUsers = await UserModel.find(conditions);
 
-    if (!users) {
+    if (!dirtyUsers) {
         return Promise.reject('Could not find any users');
     }
 
-    return Promise.resolve(users);
+    const cleanUsers: User[] = dirtyUsers.map(user => {
+        return {
+            profilePicture: user.profilePicture,
+            isKid: user.isKid,
+            points: user.points,
+            userName: user.userName,
+            password: user.password ? '********' : undefined
+        };
+    });
+
+    return Promise.resolve(cleanUsers);
 };
 
 export const findTask = async (conditions: any): Promise<Task & IDocument> => {

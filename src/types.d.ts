@@ -1,3 +1,4 @@
+declare module '*.svg';
 declare module '*.png'
 
 type Frequency =
@@ -19,8 +20,11 @@ interface Household {
 }
 
 interface User {
+    profilePicture: number;
+    password?: string;
     userName: string;
     points: number;
+    isKid: boolean;
 }
 
 interface Task {
@@ -39,16 +43,17 @@ interface CompletedTask {
 }
 
 interface CreateUserRequest {
-    userName: string;
+    user: User;
 }
 
 interface UpdateUserRequest {
-    newUserName: string;
-    oldUserName: string;
+    userToUpdate: string;
+    user: User;
 }
 
 interface DeleteUserRequest {
     userName: string;
+    password?: string;
 }
 
 interface DeleteTaskRequest {

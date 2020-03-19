@@ -24,7 +24,7 @@ router.get('/', authenticate(), async (req, res) => {
 //////////////////////////////// DEV ////////////////////////////////
 
 // get all households
-router.get('/dev',  async (req, res) => {
+router.get('/dev',  async (_req, res) => {
 
     try {
         const households = await HouseholdModel.find();

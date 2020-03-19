@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 
-import { getUserPoints, getUserName } from '../common/user/user-info';
 import { isAuthenticated } from '../common/user/authentication';
 import { addEventListener } from './event-manager';
+import { getUser } from '../common/user/user-info';
 
 interface IUserContext {
-    userName: string;
-    userPoints: number;
+    user?: User;
     authenticated: boolean;
 }
 
 const defaultUserContext: IUserContext = {
-    userName: getUserName(),
-    userPoints: getUserPoints(),
+    user: getUser(),
     authenticated: isAuthenticated()
 };
 
@@ -20,16 +18,14 @@ export const UserContext = React.createContext<IUserContext>(defaultUserContext)
 
 const UserContextProvider: React.FC = ({ children }: React.PropsWithChildren<{}>) => {
 
-    const [userName, setUserName] = useState(defaultUserContext.userName);
-    const [userPoints, setUserPoints] = useState(defaultUserContext.userPoints);
+    const [user, setUser] = useState(defaultUserContext.user);
     const [authenticated, setAuthenticated] = useState(defaultUserContext.authenticated);
 
-    addEventListener('userNameChanged', userName => setUserName(userName));
-    addEventListener('userPointsChanged', userPoints => setUserPoints(userPoints));
+    addEventListener('userChanged', user => setUser(user));
     addEventListener('authenticateChanged', authenticated => setAuthenticated(authenticated));
 
     return (
-        <UserContext.Provider value={{ authenticated, userName, userPoints }}>
+        <UserContext.Provider value={{ user, authenticated }}>
             {children}
         </UserContext.Provider>
     );

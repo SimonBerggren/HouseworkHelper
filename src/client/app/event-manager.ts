@@ -1,4 +1,4 @@
-type EventType = 'authenticateChanged' | 'userNameChanged' | 'userPointsChanged';
+type EventType = 'authenticateChanged' | 'userChanged';
 type Callback = (data?: any) => void;
 
 const listeners: { [key: string]: (Callback[] | undefined) } = {};

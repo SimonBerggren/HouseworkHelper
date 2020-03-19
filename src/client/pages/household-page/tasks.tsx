@@ -23,15 +23,15 @@ type TasksProps = {
 
 const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, onTaskCreated, onTaskEdited }: TasksProps) => {
 
+    const [confirmingDelete, setConfirmingDelete] = useState<boolean>(false);
     const [showCreateTask, setShowCreateTask] = useState<boolean>(false);
     const [selectedTask, setSelectedTask] = useState<Task>();
-    const [editTask, setEditTask] = useState<Task>();
-    const [confirming, setConfirming] = useState<boolean>(false);
     const [taskToDelete, setTaskToDelete] = useState<Task>();
+    const [editTask, setEditTask] = useState<Task>();
 
     const onDeleteTask = (task: Task) => {
         setTaskToDelete(task);
-        setConfirming(true);
+        setConfirmingDelete(true);
     };
 
     const onDeleteTaskConfirmed = async () => {
@@ -41,11 +41,10 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
             if (deletedTask) {
                 setTimeout(() => {
                     onTaskDeleted(deletedTask);
-                    setConfirming(false);
                 }, 500);
-
             }
         }
+        setConfirmingDelete(false);
     };
 
     const onCompleteTask = async (taskToComplete: Task, userName: string) => {
@@ -74,7 +73,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
 
                                     <TH padding='none' style={{ width: '15%' }}>
                                         <SmallIconButton
-                                            
+
                                             style={{ padding: '0px' }}
                                             onClick={() => setShowCreateTask(true)}
                                             icon='add'
@@ -151,7 +150,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                         onClose={onTaskModalClose}
                         onTaskEdited={onTaskEdited}
                         open={showCreateTask}
-                        editTask={editTask}
+                        taskToEdit={editTask}
                     />
 
                     <CompleteTask
@@ -161,11 +160,12 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                     />
 
                     <ConfirmDialog
-                        messages={[`Are you sure you want to delete ${taskToDelete && taskToDelete.taskName}?\nThis action is irreversible!`]}
-                        open={confirming}
-                        onClose={() => setConfirming(false)}
+                        open={confirmingDelete}
+                        onClose={() => setConfirmingDelete(false)}
                         onConfirm={onDeleteTaskConfirmed}
-                    />
+                    >
+                        {`Are you sure you want to delete ${taskToDelete?.taskName}?`}
+                    </ConfirmDialog>
                 </>
             }
         </UserContext.Consumer>

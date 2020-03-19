@@ -1,137 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 
-import ConfirmDialog from '../../common/components/dialog/confirm-dialog';
+import ProfilePicture from '../../common/components/profile-picture';
 import IconButtonTop from '../../common/components/icon-button-top';
-import TextInput from '../../common/components/input/text-input';
 
-import { flexCenter, boxShadow, boxShadowInset } from '../../style/mixins';
-import { deleteUser, updateUser } from '../../common/utils/api-operations';
+import { boxShadow, boxShadowInset, boxShadowNone } from '../../style/mixins';
 
 type UserProps = {
     onUserSelected: (selectedUser: User) => void;
-    onUserDeleted: (deletedUsed: User) => void;
+    onDeleteUser: (userToDelete: User) => void;
+    onEditUser: (userToEdit: User) => void;
     selected?: boolean;
-    edit: boolean;
+    editMode: boolean;
     user: User;
 }
 
-const User: React.FC<UserProps> = ({ user, edit, selected, onUserSelected, onUserDeleted }: UserProps) => {
-
-    const [confirmingDelete, setConfirmingDelete] = useState<boolean>(false);
-    const [userName, setUserName] = useState<string>(user.userName);
-    const [editingName, setEditingName] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
-    let userNameRef: HTMLInputElement;
-
-    useEffect(() => {
-        if (editingName) {
-            userNameRef.focus();
-            userNameRef.setSelectionRange(user.userName.length, user.userName.length);
-        }
-    }, [editingName]);
-
-    useEffect(() => {
-        if (!edit) {
-            setUserName(user.userName);
-            setEditingName(false);
-        }
-    }, [edit]);
-
-    const onDeleteUser = async (confirmed?: boolean) => {
-        if (!confirmed) {
-            return setConfirmingDelete(true);
-        }
-
-        setLoading(true);
-        const deletedUser = await deleteUser({ userName });
-
-        if (deletedUser) {
-            onUserDeleted(user);
-        } else {
-            setLoading(false);
-        }
-    };
-
-    const onRenameUser = async () => {
-        setLoading(true);
-        try {
-            const updatedUser = await updateUser({ oldUserName: user.userName, newUserName: userName });
-            setLoading(false);
-
-            if (updatedUser === userName) {
-                user.userName = userName;
-                setEditingName(false);
-            } else {
-                resetUserName();
-            }
-
-        } catch (error) {
-            setLoading(false);
-            resetUserName();
-        }
-    };
-
-    const resetUserName = () => {
-        setEditingName(false);
-        setUserName(user.userName);
-    };
-
-    const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        const { key } = event;
-
-        if (key == 'Enter') {
-            onRenameUser();
-        } else if (key == 'Escape') {
-            resetUserName();
-        }
-    };
-
-    const onToggleEdit = () => {
-        setEditingName(true);
-    };
-
-    const disabled = !edit || loading || !editingName;
+const User: React.FC<UserProps> = ({ user, editMode, selected, onUserSelected, onDeleteUser, onEditUser }: UserProps) => {
 
     return (
         <UserContainer
-            className={`${edit ? 'edit' : 'select'} ${loading && 'loading'} ${selected && 'selected'}`}
-            onClick={() => !edit && onUserSelected(user)}
+            className={`${editMode ? 'edit' : 'select'} ${selected && 'selected'}`}
+            onClick={() => !editMode && onUserSelected(user)}
         >
 
-            {edit &&
+            {editMode &&
                 <>
                     <IconButtonTop left
-                        disabled={loading}
-                        icon={editingName ? 'check' : 'edit'}
-                        onClick={editingName ? onRenameUser : onToggleEdit}
+                        size='small'
+                        icon='edit'
+                        onClick={() => onEditUser(user)}
                     />
 
                     <IconButtonTop right
-                        icon='close'
-                        disabled={loading}
-                        onClick={() => editingName ? resetUserName() : onDeleteUser(false)}
+                        icon='delete'
+                        size='small'
+                        onClick={() => onDeleteUser(user)}
                     />
                 </>
             }
 
-            <TextInput
-                value={userName}
-                variant='standard'
-                onKeyDown={onKeyDown}
-                inputRef={r => userNameRef = r}
-                InputProps={{ disableUnderline: disabled }}
-                disabled={disabled}
-                onChange={e => setUserName(e.currentTarget.value)}
-            />
+            <TopPicture pic={user.profilePicture} />
 
-            <ConfirmDialog
-                open={confirmingDelete}
-                onClose={() => setConfirmingDelete(false)}
-                onConfirm={() => onDeleteUser(true)}
-            >
-                {`Are you sure you want to delete ${user.userName}?`}
-            </ConfirmDialog>
+            <UserName>{user.userName}</UserName>
 
         </UserContainer >
     );
@@ -141,15 +51,17 @@ const UserContainer = styled.div`
     ${({ theme }) => css`
         ${boxShadow}
 
-        ${flexCenter}
-        flex-direction: row;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
 
         text-align: center;
 
-        width: 7em;
-        height: 7em;
+        width: 100px;
+        height: 100px;
 
-        margin: 0.5em;
+        padding: 10px;
+        margin:  10px;
         position: relative;
 
         background-color: ${theme.palette.primary.main};
@@ -157,25 +69,30 @@ const UserContainer = styled.div`
         user-select: none;
     `}
 
-    input {
-        text-align: center;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 1.3em;
-        color: white;
-    }
-
     &.edit {
         cursor: default;
     }
 
-    &.select, input {
+    &.select {
         cursor: pointer;
     }
 
     &.selected {
         ${boxShadowInset}
+
+        img {
+            ${boxShadowNone}
+        }
     }
+`;
+
+const TopPicture = styled(ProfilePicture)`
+    position: absolute;
+    top:  0;
+`;
+
+const UserName = styled.h4`
+    color: white;
 `;
 
 export default User;

@@ -12,7 +12,7 @@ const HouseholdSchema = new Schema<HouseholdSchemaModel>({
     householdName: { type: String, required: true }
 });
 
-// Hash the password before saving the user model
+// Hash the password before saving the household
 HouseholdSchema.pre<HouseholdSchemaModel>('save', async function (next) {
     const household = this;
     if (household.isModified('password')) {

@@ -1,5 +1,5 @@
 import { emitEvent } from '../../app/event-manager';
-import { unsetUser, getUserName } from './user-info';
+import { unsetUser, getUser } from './user-info';
 
 const tokenKey = 'hwhJwtToken';
 
@@ -26,4 +26,4 @@ export const getToken = (): string =>
     storage.getItem(tokenKey) || '';
 
 export const isFullyConfigured = (): boolean =>
-    isAuthenticated() && getUserName() !== '';
+    isAuthenticated() && getUser() !== undefined;

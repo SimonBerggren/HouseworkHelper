@@ -6,16 +6,16 @@ import TextInput from '../../common/components/input/text-input';
 import Dialog from '../../common/components/dialog/dialog';
 import Button from '../../common/components/button';
 
-import { createTask, getUsers, updateTask } from '../../common/utils/api-operations';
+import { createTask, getUsers, editTask } from '../../common/utils/api-operations';
 import { frequencies } from '../../../common/frequencies';
-import { getUserName } from '../../common/user/user-info';
+// import { getUser } from '../../common/user/user-info';
 import { UserContext } from '../../app/user-context';
 
-type TaskProps = {
+type EditTaskProps = {
     onTaskCreated: (taskToCreate: Task) => void;
     onTaskEdited: (oldTask: Task, updatedTask: Task) => void;
     onClose: () => void;
-    editTask?: Task;
+    taskToEdit?: Task;
     open: boolean;
 }
 
@@ -25,71 +25,69 @@ const defaultValues = (defaultTask?: Task): Task => {
         desc: defaultTask ? defaultTask.desc : '',
         frequency: defaultTask ? defaultTask.frequency : '',
         points: defaultTask ? defaultTask.points : 0,
-        visibleTo: defaultTask ? defaultTask.visibleTo : [getUserName()]
+        visibleTo: defaultTask ? defaultTask.visibleTo : []
     };
 };
 
-const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated, onTaskEdited }: TaskProps) => {
+const EditTask: React.FC<EditTaskProps> = ({ open, taskToEdit, onClose, onTaskCreated, onTaskEdited }: EditTaskProps) => {
 
-    const [task, setTask] = useState<Task>(defaultValues(editTask));
+    const [task, setTask] = useState<Task>(defaultValues(taskToEdit));
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
-        if (open || editTask) {
-            setTask(defaultValues(editTask));
-            if (!users.length || (!users.length && editTask)) {
+        if (open || taskToEdit) {
+            setTask(defaultValues(taskToEdit));
+            if (!users.length || (!users.length && taskToEdit)) {
                 getUsers()
                     .then(users => setUsers(users));
             }
         }
-    }, [open, editTask]);
+    }, [open, taskToEdit]);
 
     const onCreateTask = async (taskToCreate: Task) => {
         const createdTask = await createTask(taskToCreate);
 
         if (createdTask) {
             onTaskCreated(createdTask);
-            onClose();
         }
     };
 
     const onEditTask = async () => {
 
-        if (editTask) {
-            const updatedTask = await updateTask({ task, taskToUpdate: editTask.taskName });
+        if (taskToEdit) {
+            const updatedTask = await editTask({ task, taskToUpdate: taskToEdit.taskName });
 
             if (updatedTask) {
-                onTaskEdited(editTask, task);
-                onClose();
+                onTaskEdited(taskToEdit, task);
             }
         }
     };
 
     return (
         <UserContext.Consumer>
-            {userContext =>
+            {({ user: loggedInUser }) =>
                 <Dialog
                     onClose={onClose}
-                    open={editTask != undefined || open}
-                    title={editTask ? 'Edit Task' : 'Create New Task'}
+                    open={taskToEdit != undefined || open}
+                    title={taskToEdit ? 'Edit Task' : 'Create New Task'}
                 >
                     <DialogContent dividers>
 
-                        <TextInput fullWidth required margin='normal'
+                        <TextInput fullWidth required
                             label='Title'
                             variant='standard'
                             defaultValue={task.taskName}
                             onChange={e => setTask({ ...task, taskName: e.currentTarget.value })}
                         />
 
-                        <TextInput fullWidth multiline margin='normal'
+                        <TextInput fullWidth multiline
                             variant='standard'
                             label='Description'
                             defaultValue={task.desc}
                             onChange={e => setTask({ ...task, desc: e.currentTarget.value })}
                         />
 
-                        <TextInput fullWidth required margin='normal'
+                        <TextInput fullWidth required
                             type='number'
                             variant='standard'
                             label='Reward Points'
@@ -99,7 +97,7 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                         />
 
 
-                        <FormControl fullWidth margin='normal'>
+                        <FormControl fullWidth >
                             <InputLabel>{'Visible to'}</InputLabel>
                             <Select
                                 multiple
@@ -123,10 +121,10 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                                     <MenuItem
                                         key={key}
                                         value={user.userName}
-                                        disabled={user.userName === userContext.userName}
+                                        disabled={loggedInUser && loggedInUser.userName === user.userName}
                                     >
                                         <Checkbox
-                                            checked={user.userName === userContext.userName || task.visibleTo.indexOf(user.userName) >= 0}
+                                            checked={(loggedInUser && loggedInUser.userName === user.userName) || task.visibleTo.indexOf(user.userName) >= 0}
                                         />
                                         <ListItemText primary={user.userName} />
                                     </MenuItem>
@@ -135,7 +133,7 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                         </FormControl>
 
 
-                        <FormControl fullWidth margin='normal'>
+                        <FormControl fullWidth >
                             <InputLabel required >{'Frequency'}</InputLabel>
 
                             <Select
@@ -156,8 +154,8 @@ const EditTask: React.FC<TaskProps> = ({ open, editTask, onClose, onTaskCreated,
                     </DialogContent>
                     <DialogActions >
                         <Button
-                            label={editTask ? 'Save' : 'Create Task'}
-                            onClick={() => editTask ? onEditTask() : onCreateTask(task)}
+                            label={taskToEdit ? 'Save' : 'Create Task'}
+                            onClick={() => taskToEdit ? onEditTask() : onCreateTask(task)}
                         />
                     </DialogActions>
                 </Dialog>

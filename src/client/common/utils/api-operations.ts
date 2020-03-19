@@ -1,5 +1,5 @@
 import { deauthenticate, getToken } from '../user/authentication';
-import { unsetUser, getUserName } from '../user/user-info';
+import { unsetUser, getUser } from '../user/user-info';
 
 const request = (path: string, method: string, data?: any) =>
     fetch(
@@ -63,7 +63,7 @@ export const getUsers = (): Promise<User[]> =>
 export const createUser = (data: CreateUserRequest): Promise<User> =>
     post('user', data);
 
-export const updateUser = (data: UpdateUserRequest): Promise<string> =>
+export const editUser = (data: UpdateUserRequest): Promise<string> =>
     put('user', data);
 
 export const deleteUser = (data: DeleteUserRequest): Promise<User> =>
@@ -71,13 +71,18 @@ export const deleteUser = (data: DeleteUserRequest): Promise<User> =>
 
 // Tasks
 
-export const getTasks = (): Promise<Task[]> =>
-    get('task/' + getUserName());
+export const getTasks = (): Promise<Task[]> => {
+    const user = getUser();
+    if (user) {
+        return get(`task/${user.userName}`);
+    }
+    return Promise.reject('Not logged in');
+};
 
 export const createTask = (task: Task): Promise<Task> =>
     post('task', task);
 
-export const updateTask = (data: UpdateTaskRequest): Promise<Task> =>
+export const editTask = (data: UpdateTaskRequest): Promise<Task> =>
     put('task', data);
 
 export const deleteTask = (data: DeleteTaskRequest): Promise<Task> =>
