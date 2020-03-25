@@ -30,6 +30,10 @@ router.post('/', authenticate(), async (req, res) => {
     const householdID = getHouseholdID(req);
     const { user } = req.body as CreateUserRequest;
 
+    if (user.password === '********') {
+        delete user.password;
+    }
+
     try {
         const createdUser = await UserModel.create({ householdID, ...user });
         return res.json(createdUser);
