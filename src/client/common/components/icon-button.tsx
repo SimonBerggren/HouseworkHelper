@@ -6,6 +6,7 @@ import PersonAdd from '@material-ui/icons/PersonAdd';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
+import MenuIcon from '@material-ui/icons/Menu';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
 
@@ -26,6 +27,7 @@ const IconButton: React.FC<IconButtonProps> = ({ iconSize, icon, children, ...pr
         case 'addUser': return <PersonAdd />;
         case 'check': return <CheckIcon />;
         case 'close': return <CloseIcon />;
+        case 'menu': return <MenuIcon />;
         case 'edit': return <EditIcon />;
         case 'add': return <AddIcon />;
         default: return children;
