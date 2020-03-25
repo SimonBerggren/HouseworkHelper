@@ -13,6 +13,7 @@ const Dialog: React.FC<DialogProps> = ({ title, children, onClose, ...props }: D
 
     return (
         <StyledDialog
+            onBackdropClick={onClose}
             color='primary'
             {...props}
         >

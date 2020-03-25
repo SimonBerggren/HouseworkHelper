@@ -15,7 +15,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ onConfirm, onClose, child
     return (
         <Dialog
             {...props}
-            title='Warning'
+            title={props.title || 'Warning'}
             onClose={onClose}
         >
             <DialogContent>

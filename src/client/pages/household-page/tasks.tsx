@@ -5,23 +5,21 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from
 
 import ConfirmDialog from '../../common/components/dialog/confirm-dialog';
 import IconButton from '../../common/components/icon-button';
-import CompleteTask from './complete-task';
-import TaskForm from './edit-task';
+import CompleteTaskDialog from './complete-task-dialog';
+import EditTaskDialog from './edit-task-dialog';
 
 import { deleteTask, completeTask } from '../../common/utils/api-operations';
-import { UserContext } from '../../app/user-context';
 import { addUserPoints } from '../../common/user/user-info';
-
+import { UserContext } from '../../app/user-context';
 
 type TasksProps = {
-    onTaskCompleted: (task: Task) => void;
     onTaskDeleted: (task: Task) => void;
     onTaskCreated: (task: Task) => void;
     onTaskEdited: (oldTask: Task, updatedTask: Task) => void;
     tasks: Task[];
 }
 
-const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, onTaskCreated, onTaskEdited }: TasksProps) => {
+const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTaskEdited }: TasksProps) => {
 
     const [confirmingDelete, setConfirmingDelete] = useState<boolean>(false);
     const [showCreateTask, setShowCreateTask] = useState<boolean>(false);
@@ -44,7 +42,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                 }, 500);
             }
         }
-        setConfirmingDelete(false);
+        onDialogClose();
     };
 
     const onCompleteTask = async (taskToComplete: Task, userName: string) => {
@@ -52,26 +50,28 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
 
         if (completed) {
             addUserPoints(taskToComplete.points);
-            onTaskCompleted(taskToComplete);
-            setSelectedTask(undefined);
+
+            onDialogClose();
         }
     };
 
-    const onTaskModalClose = () => {
+    const onDialogClose = () => {
         setEditTask(undefined);
         setShowCreateTask(false);
+        setSelectedTask(undefined);
+        setConfirmingDelete(false);
     };
 
     return (
         <UserContext.Consumer>
-            {userContext =>
+            {({ user }) =>
                 <>
                     <TableContainer style={{ width: '90%' }}>
                         <Table stickyHeader size='small'>
                             <TableHead>
                                 <TableRow>
 
-                                    <TH padding='none' style={{ width: '15%' }}>
+                                    <TH padding='none' style={{ width: '25%' }}>
                                         <SmallIconButton
 
                                             style={{ padding: '0px' }}
@@ -80,15 +80,15 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                                         />
                                     </TH>
 
-                                    <TH style={{ width: '55%' }}>
+                                    <TH style={{ width: '50%' }}>
                                         Task
                                     </TH>
 
-                                    <TH style={{ width: '20%' }} align='right'>
+                                    <TH padding='none' style={{ width: '20%' }} align='right'>
                                         Frequency
                                     </TH>
 
-                                    <TH style={{ width: '10%' }} align='right'>
+                                    <TH  style={{ width: '10%' }} align='right'>
                                         Points
                                     </TH>
 
@@ -100,40 +100,41 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
 
                                     <BodyTR
                                         key={key}
+                                        onClick={() => setSelectedTask(task)}
+                                        style={{ cursor: 'pointer' }}
                                         className={`${taskToDelete && taskToDelete.taskName === task.taskName && 'deleting'} ${key % 2 ? 'odd' : 'even'}`}
                                     >
-                                        <TableCell padding='none' style={{ position: 'relative' }}>
+                                        <TableCell padding='none' style={{ minWidth: '20px' }}>
                                             <SmallIconButton
-                                                onClick={() => setEditTask(task)}
+                                                onClick={e => { e.stopPropagation(); setEditTask(task); }}
+                                                size='small'
                                                 icon='edit'
                                             />
 
                                             <SmallIconButton
                                                 onClick={e => { e.stopPropagation(); onDeleteTask(task); }}
+                                                size='small'
                                                 icon='delete'
                                             />
                                         </TableCell>
 
                                         <TableCell
-                                            style={{ cursor: 'pointer' }}
-                                            onClick={() => setSelectedTask(task)}
+                                            size='small'
+                                            padding='none'
                                         >
-                                            <h3>{task.taskName}</h3>
+                                            <h4>{task.taskName}</h4>
                                             <p>{task.desc}</p>
 
                                         </TableCell>
 
                                         <TableCell
-                                            style={{ cursor: 'pointer' }}
-                                            onClick={() => setSelectedTask(task)}
+                                            padding='none'
                                             align='right'
                                         >
                                             {task.frequency}
                                         </TableCell>
 
                                         <TableCell
-                                            style={{ cursor: 'pointer' }}
-                                            onClick={() => setSelectedTask(task)}
                                             align='right'
                                         >
                                             {task.points}
@@ -145,23 +146,23 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskCompleted, onTaskDeleted, on
                         </Table>
                     </TableContainer>
 
-                    <TaskForm
+                    <EditTaskDialog
                         onTaskCreated={onTaskCreated}
-                        onClose={onTaskModalClose}
+                        onClose={onDialogClose}
                         onTaskEdited={onTaskEdited}
                         open={showCreateTask}
                         taskToEdit={editTask}
                     />
 
-                    <CompleteTask
-                        onClose={() => setSelectedTask(undefined)}
+                    <CompleteTaskDialog
+                        onClose={onDialogClose}
                         task={selectedTask}
-                        onCompleteTask={task => onCompleteTask(task, userContext.userName)}
+                        onCompleteTask={task => onCompleteTask(task, user.userName)}
                     />
 
                     <ConfirmDialog
                         open={confirmingDelete}
-                        onClose={() => setConfirmingDelete(false)}
+                        onClose={onDialogClose}
                         onConfirm={onDeleteTaskConfirmed}
                     >
                         {`Are you sure you want to delete ${taskToDelete?.taskName}?`}
@@ -182,28 +183,41 @@ const TH = styled(TableCell)`
 `;
 
 const BodyTR = styled(TableRow)`
-
-        ${({ theme }) => css`
-            background-color: ${theme.palette.primary.main};
-            color: white;
-            &.even {
-                background-color: ${theme.palette.primary.light};
-            }
-        `}
-
+    ${({ theme }) => css`
+        background-color: ${theme.palette.primary.main};
 
         &.odd {
+            background-color: ${theme.palette.primary.light};
+            h4, p {
+                color: white ;
+                white-space: nowrap;
+                max-width: 170px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        &.even {
             background-color: white;
+
+            button {
+                color: ${theme.palette.primary.light};
+            }
+        }
+
+        &:hover {
+            background-color: ${theme.palette.primary.main};
         }
 
         .deleting {
             opacity: 0.5;
             pointer-events: none;
         }
+    `}
 `;
 
 const SmallIconButton = styled(IconButton)`
-    padding: 5px;
+    padding: 0px;
 `;
 
 export default Tasks;

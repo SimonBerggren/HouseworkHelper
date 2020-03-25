@@ -4,17 +4,18 @@ import { DialogContent, DialogContentText, DialogActions } from '@material-ui/co
 
 import Dialog from '../../common/components/dialog/dialog';
 import Button from '../../common/components/button';
+import styled from 'styled-components';
 
-type TaskProps = {
+type CompleteTaskDialogProps = {
     task?: Task;
     onClose: () => void;
     onCompleteTask: (taskToComplete: Task) => void;
 }
 
-const CompleteTask: React.FC<TaskProps> = ({ task, onClose, onCompleteTask }: TaskProps) => {
+const CompleteTaskDialog: React.FC<CompleteTaskDialogProps> = ({ task, onClose, onCompleteTask }: CompleteTaskDialogProps) => {
 
     return (
-        <Dialog
+        <StyledCompleteTaskDialog
             onClose={onClose}
             title={task?.taskName}
             open={task !== undefined}
@@ -35,8 +36,16 @@ const CompleteTask: React.FC<TaskProps> = ({ task, onClose, onCompleteTask }: Ta
                 />
 
             </DialogActions>
-        </Dialog>
+        </StyledCompleteTaskDialog>
     );
 };
 
-export default CompleteTask;
+const StyledCompleteTaskDialog = styled(Dialog)`
+    && {
+        div {
+            min-width: 250px;
+        }
+    }
+`;
+
+export default CompleteTaskDialog;
