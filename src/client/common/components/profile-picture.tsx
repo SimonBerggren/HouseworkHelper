@@ -7,13 +7,12 @@ const reqSvgs = require.context('../../style/images/profiles', true, /\.svg$/);
 
 const pictures = reqSvgs.keys().map(path => reqSvgs(path));
 
-export type ProfilePictureProps = React.Props<React.HTMLAttributes<HTMLStyleElement>> & {
+export type ProfilePictureProps = {
     pic: number;
     size?: 'small' | 'large';
 }
 
 const ProfilePicture: React.FC<ProfilePictureProps> = ({ pic, size }: ProfilePictureProps) => {
-
     return (
         <Image
             className={size}
