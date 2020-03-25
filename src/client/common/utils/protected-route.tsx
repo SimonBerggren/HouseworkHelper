@@ -9,7 +9,7 @@ const ProtectedRoute: React.FC<IRouteProps> = ({ render, ...routeProps }: IRoute
         isAuthenticated()
             ? render && render(renderProps)
             : <Redirect to={{
-                pathname: '/',
+                pathname: '/login',
             }} />
     } />;
 
