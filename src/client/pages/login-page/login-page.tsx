@@ -49,6 +49,7 @@ const LoginPage: React.FC = () => {
                 title={loginError}
             >
                 {'Forgotten your credentials? At this time, too bad!'}
+
                 <span>
                     {'Are you new here?'}
                     <Link to='/signup' onClick={onErrorClose}>
