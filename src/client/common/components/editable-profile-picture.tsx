@@ -1,48 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import IconButtonTop from './icon-button-top';
-import { flexCenter } from '../../style/mixins';
 import ProfilePicture, { Image, ProfilePictureProps as IProfilePictureProps } from './profile-picture';
+import IconButton from './icon-button';
+
+import { flexCenter } from '../../style/mixins';
 
 const reqSvgs = require.context('../../style/images/profiles', true, /\.svg$/);
 
 const pictures = reqSvgs.keys().map(path => reqSvgs(path));
 
 type EditableProfilePictureProps = IProfilePictureProps & {
-    onPictureChange?: (pictureID: number) => void;
+    onPictureChange: (pictureID: number) => void;
 }
 
 const EditableProfilePicture: React.FC<EditableProfilePictureProps> = ({ pic, size, onPictureChange }: EditableProfilePictureProps) => {
 
     const [editMode, setEditMode] = useState<boolean>(false);
     const [container, setContainer] = useState<HTMLSpanElement | null>(null);
-    const [imgScroll, setImgScroll] = useState<HTMLImageElement | null>(null);
-    const [selectedImg, setSelectedImg] = useState<number>(pic);
+    const [imgRef, setImgRef] = useState<HTMLImageElement | null>(null);
 
     useEffect(() => {
-        if (container && imgScroll) {
-            container.scrollTo({ left: imgScroll.offsetLeft - 64 - 25 });
+        if (container && imgRef) {
+            container.scrollTo({ left: imgRef.offsetLeft - 64 - 25 });
         }
-
-        setSelectedImg(pic);
-
     }, [editMode, container]);
 
-    const onIconClick = () => {
-        if (editMode) {
-            onPictureChange && onPictureChange(selectedImg);
-        }
+    const onImgSelected = (picture: number) => {
+        onPictureChange(picture);
         setEditMode(!editMode);
     };
 
     return (
         <Container>
-            <IconButtonTop left
-                icon={editMode ? 'check' : 'edit'}
-                color='primary'
-                onClick={onIconClick}
-            />
+
             {editMode ?
                 <ImagesContainer
                     ref={setContainer}
@@ -51,9 +42,9 @@ const EditableProfilePicture: React.FC<EditableProfilePictureProps> = ({ pic, si
                         <Image
                             key={key}
                             src={picture.default}
-                            className={`${size} ${selectedImg == key && 'selected'}`}
-                            onClick={() => setSelectedImg(key)}
-                            ref={r => key == pic && setImgScroll(r)}
+                            className={`${size} ${pic == key && 'selected'}`}
+                            onClick={() => onImgSelected(key)}
+                            ref={r => key == pic && setImgRef(r)}
                         />
                     )}
                 </ImagesContainer>
@@ -63,6 +54,12 @@ const EditableProfilePicture: React.FC<EditableProfilePictureProps> = ({ pic, si
                     pic={pic}
                 />
             }
+
+            <IconButton
+                icon={editMode ? 'close' : 'edit'}
+                onClick={() => setEditMode(!editMode)}
+                color='primary'
+            />
         </Container >
     );
 };
@@ -70,17 +67,16 @@ const EditableProfilePicture: React.FC<EditableProfilePictureProps> = ({ pic, si
 const Container = styled.div`
     ${flexCenter}
     position: relative;
-    width: 276px;
+    width: 280px;
 
-    padding: 15px;
-    padding-bottom: 0;
+    padding: 0px 15px;
 `;
 
 const ImagesContainer = styled.span`
     display: inline-block;
     white-space: nowrap;
     overflow-x: scroll;
-    width: 276px;
+    width: 280px;
     padding: 20px;
 `;
 
