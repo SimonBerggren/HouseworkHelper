@@ -1,4 +1,5 @@
 import express from 'express';
+import bcrypt from 'bcrypt';
 
 import UserModel from '../model/user-model';
 import TaskModel from '../model/task-model';
@@ -53,17 +54,25 @@ router.put('/', authenticate(), async (req, res) => {
             }
         }
 
-        const oldUser = await UserModel.findOne({ householdID, userName: userToUpdate });
+        const existingUser = await UserModel.findOne({ householdID, userName: userToUpdate });
 
-        if (!oldUser) {
+        if (!existingUser) {
             throw 'Cannot find user';
         }
 
-        oldUser.userName = user.userName;
-        oldUser.profilePicture = user.profilePicture;
-        oldUser.password = user.password;
+        existingUser.userName = user.userName;
+        existingUser.profilePicture = user.profilePicture;
 
-        await oldUser.save();
+        if (existingUser.password) {
+            const correctPassword = user.password && await bcrypt.compare(user.password, existingUser.password);
+            if (correctPassword) {
+                existingUser.password = user.password;
+            } else {
+                return badRequest(res, 'Invalid password');
+            }
+        }
+
+        await existingUser.save();
 
         return res.json(true);
 
