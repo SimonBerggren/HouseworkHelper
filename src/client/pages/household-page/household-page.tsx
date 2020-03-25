@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import PageWrapper from '../../common/utils/page-wrapper';
+import { PageWrapper } from '../../common/utils/page-wrapper';
 import Users from './users';
 import Tasks from './tasks';
 
@@ -56,7 +56,7 @@ const HouseholdPage: React.FC = () => {
                     users={users}
                 />
 
-                <br/>
+                <br />
 
                 <TasksTitle >{'All household tasks'}</TasksTitle >
 

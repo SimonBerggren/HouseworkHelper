@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import ProfilePicture from '../../common/components/profile-picture';
-import PageWrapper from '../../common/utils/page-wrapper';
+import { PageWrapper } from '../../common/utils/page-wrapper';
 import HouseholdInfo from './household-info';
 import Tasks from './tasks';
 

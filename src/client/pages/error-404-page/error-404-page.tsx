@@ -1,12 +1,12 @@
 import React from 'react';
 
-import PageWrapper from '../../common/utils/page-wrapper';
+import { CenterPageWrapper } from '../../common/utils/page-wrapper';
 
 const Error404Page: React.FC = () => {
     return (
-        <PageWrapper>
+        <CenterPageWrapper>
             <h1>Page not found!</h1>
-        </PageWrapper>
+        </CenterPageWrapper>
     );
 };
 

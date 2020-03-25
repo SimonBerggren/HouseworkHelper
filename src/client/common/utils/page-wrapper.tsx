@@ -16,10 +16,24 @@ const PageWrapper: React.FC<PageWrapperProps> = ({ children, ...props }: PageWra
     );
 };
 
+const CenterPageWrapper: React.FC<PageWrapperProps> = ({ children, ...props }: PageWrapperProps) => {
+
+    return (
+        <StyledCenterPageWrapper {...props}>
+            {children}
+        </StyledCenterPageWrapper>
+    );
+};
+
 const StyledPageWrapper = styled.div`
     ${flexCenter}
+    justify-content: flex-start;
     width: 100vw;
     height: calc(100vh - 64px);
 `;
 
-export default PageWrapper;
+const StyledCenterPageWrapper = styled(StyledPageWrapper)`
+    justify-content: center;
+`;
+
+export { PageWrapper, CenterPageWrapper };

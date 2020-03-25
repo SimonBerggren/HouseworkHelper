@@ -2,7 +2,7 @@ import { Redirect } from 'react-router-dom';
 import React, { useState } from 'react';
 
 import ErrorDialog from '../../common/components/dialog/error-dialog';
-import PageWrapper from '../../common/utils/page-wrapper';
+import { CenterPageWrapper } from '../../common/utils/page-wrapper';
 import Link from '../../common/components/link';
 import SignupForm from './signup-form';
 
@@ -37,7 +37,7 @@ const SignupPage: React.FC = () => {
     };
 
     return (signedup ? <Redirect to='/login' /> :
-        <PageWrapper>
+        <CenterPageWrapper>
 
             <SignupForm onSignup={onSignup} />
 
@@ -54,7 +54,7 @@ const SignupPage: React.FC = () => {
                 </span>
             </ErrorDialog>
 
-        </PageWrapper >
+        </CenterPageWrapper >
     );
 };
 

@@ -1,17 +1,17 @@
 import styled, { css } from 'styled-components';
 import React from 'react';
 
-import PageWrapper from '../../common/utils/page-wrapper';
+import { CenterPageWrapper } from '../../common/utils/page-wrapper';
 import Link from '../../common/components/link';
 
 const HomePage: React.FC = () => {
 
     return (
-        <PageWrapper>
+        <CenterPageWrapper>
             <TitleLink to={'/login'}>
                 <h1>{'WE HELP YOU HELP'}</h1>
             </TitleLink>
-        </PageWrapper>
+        </CenterPageWrapper>
     );
 };
 

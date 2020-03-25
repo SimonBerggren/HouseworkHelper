@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import ConfirmDialog from '../../common/components/dialog/confirm-dialog';
 import IconButtonTop from '../../common/components/icon-button-top';
-import PageWrapper from '../../common/utils/page-wrapper';
+import { CenterPageWrapper } from '../../common/utils/page-wrapper';
 import Button from '../../common/components/button';
 import EditUserDialog from './edit-user-dialog';
 import User from './user';
@@ -99,7 +99,7 @@ const UsersPage = () => {
     };
 
     return (selectedUser ? <Redirect to='/user' /> :
-        <PageWrapper>
+        <CenterPageWrapper>
             <Background>
                 <UsersContainer>
 
@@ -145,7 +145,7 @@ const UsersPage = () => {
                 {`Are you sure you want to delete ${userToDelete?.userName}?`}
             </ConfirmDialog>
 
-        </PageWrapper>
+        </CenterPageWrapper>
     );
 };
 

@@ -2,7 +2,7 @@ import { Redirect } from 'react-router-dom';
 import React, { useState } from 'react';
 
 import ErrorDialog from '../../common/components/dialog/error-dialog';
-import PageWrapper from '../../common/utils/page-wrapper';
+import { CenterPageWrapper } from '../../common/utils/page-wrapper';
 import Link from '../../common/components/link';
 import LoginForm from './login-form';
 
@@ -39,7 +39,7 @@ const LoginPage: React.FC = () => {
     };
 
     return (loggedin ? <Redirect to='/users' /> :
-        <PageWrapper>
+        <CenterPageWrapper>
 
             <LoginForm onLogin={onLogin} />
 
@@ -58,7 +58,7 @@ const LoginPage: React.FC = () => {
                 </span>
             </ErrorDialog>
 
-        </PageWrapper>
+        </CenterPageWrapper>
     );
 };
 
