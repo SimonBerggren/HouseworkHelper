@@ -35,7 +35,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks }: TasksProps) => {
         <UserContext.Consumer>
             {({ user }) =>
                 <>
-                    <Container style={{ width: '100%' }}>
+                    <Container style={{ width: '90%' }}>
                         <Table stickyHeader size='small'>
                             <TableHead>
                                 <TableRow>
