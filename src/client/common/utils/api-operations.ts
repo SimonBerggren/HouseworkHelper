@@ -24,7 +24,6 @@ const request = (path: string, method: string, data?: any) =>
             }
         })
         .catch(error => {
-            console.log(error);
             return Promise.reject(error);
         });
 
@@ -43,6 +42,9 @@ export const signup = (household: Household): Promise<boolean> =>
 
 export const login = (email: string, password: string): Promise<string> =>
     post('login', { email, password });
+
+export const loginUser = (userName: string, password: string): Promise<string> =>
+    post('login/user', { userName, password });
 
 export const logout = () =>
     deauthenticate();
