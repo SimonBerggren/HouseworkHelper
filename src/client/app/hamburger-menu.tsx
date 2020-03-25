@@ -49,15 +49,17 @@ const HamburgerMenu: React.FC = () => {
                                             pic={user.profilePicture}
                                             size='small'
                                         />
+
+                                        <div>
+                                            {user.userName}
+                                            <br />
+                                            {user.points}p
+                                        </div>
+
                                     </StyledLink>
-
-                                    <div>
-                                        {user.userName}
-                                        <br />
-                                        {user.points}p
-                                    </div>
-
                                 </MenuItem>
+
+                                <MenuItem disabled></MenuItem>
 
                                 <MenuItem onClick={handleClose}>
                                     <StyledLink to='rewards' label='Redeem Rewards' />
@@ -65,16 +67,20 @@ const HamburgerMenu: React.FC = () => {
                             </span>
                         }
 
-                        {user && !user.isKid &&
+                        {user && !user.isKid ?
                             <span>
                                 <MenuItem>
                                     <StyledLink to='household' label='View Household' />
                                 </MenuItem>
 
+                                <MenuItem disabled></MenuItem>
+
                                 <MenuItem>
                                     <StyledLink to='users' label='Switch User' />
                                 </MenuItem>
                             </span>
+                            :
+                            <MenuItem disabled></MenuItem>
                         }
 
                         <MenuItem onClick={handleClose}>

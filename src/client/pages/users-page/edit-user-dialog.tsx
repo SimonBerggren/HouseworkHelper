@@ -24,6 +24,7 @@ const defaultValues = (defaultUser?: User): User => {
         userName: defaultUser ? defaultUser.userName : '',
         points: defaultUser ? defaultUser.points : 0,
         profilePicture: defaultUser ? defaultUser.profilePicture : 0,
+        password: defaultUser ? defaultUser.password : '',
         isKid: defaultUser ? defaultUser.isKid : false,
     };
 };
@@ -71,8 +72,6 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
         } else {
             onCreateUser();
         }
-
-        
     };
 
     return (
@@ -100,14 +99,14 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
                     }
                 />
 
-                <TextInput fullWidth required
+                <TextInput required
                     label='Name'
                     value={user.userName}
                     onChange={event => setUser({ ...user, userName: event.currentTarget.value })}
                 />
 
-                <PasswordInput fullWidth
-                    value={user.password || ''}
+                <PasswordInput disableEndAdornment
+                    value={user.password}
                     label='Password (optional)'
                     autoComplete='new-password'
                     onChange={event => setUser({ ...user, password: event.currentTarget.value })}
