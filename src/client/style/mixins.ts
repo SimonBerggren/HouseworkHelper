@@ -2,8 +2,9 @@
 // ts can't handle array spreading if atleat one argument is expected
 // @ts-nocheck
 
-import { css } from 'styled-components';
 import breakpoints from './breakpoints';
+
+import { css } from 'styled-components';
 
 export const respondTo = Object.keys(breakpoints).reduce((accumulator, label) => {
     accumulator[label] = (...args: any[]) => css`
@@ -18,7 +19,6 @@ export const flexCenter = css`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
 `;
 
 export const boxShadow = css`
@@ -39,4 +39,13 @@ export const boxShadowInset = css`
 
 export const fadeIn = (duration: number) => css`
     animation: fadein ${duration}s linear;
+`;
+
+export const growWidthIn = (duration: number, targetWidth: number) => css`
+    @keyframes growwidthin {
+        from { width: 0%; }
+        to   { width: '${targetWidth}%'; }
+    }
+
+    animation: growwidthin ${duration}s ease-in-out;
 `;
