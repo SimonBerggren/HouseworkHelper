@@ -1,62 +1,66 @@
-import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
+import React, { useState } from 'react';
 
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
+import { TableContainer, TableHead, TableCell, Table, TableRow, TableBody } from '@material-ui/core';
 
 import ConfirmDialog from '../../common/components/dialog/confirm-dialog';
-import IconButton from '../../common/components/icon-button';
-import CompleteTaskDialog from './complete-task-dialog';
-import EditTaskDialog from './edit-task-dialog';
+import RedeemRewardDialog from './redeem-reward-dialog';
 
-import { deleteTask, completeTask } from '../../common/utils/api-operations';
-import { addUserPoints } from '../../common/user/user-info';
+import { deleteReward, redeemReward } from '../../common/utils/api-operations';
+import { subtractUserPoints } from '../../common/user/user-info';
 import { UserContext } from '../../app/user-context';
+import IconButton from '../../common/components/icon-button';
+import EditRewardDialog from './edit-reward-dialog';
 
-type TasksProps = {
-    onTaskDeleted: (task: Task) => void;
-    onTaskCreated: (task: Task) => void;
-    onTaskEdited: (oldTask: Task, updatedTask: Task) => void;
-    tasks: Task[];
+interface RewardsProps {
+    onRewardDeleted: (reward: Reward) => void;
+    onRewardCreated: (reward: Reward) => void;
+    onRewardEdited: (oldReward: Reward, updatedReward: Reward) => void;
+    rewards: Reward[];
 }
 
-const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTaskEdited }: TasksProps) => {
+const Rewards: React.FC<RewardsProps> = ({ rewards, onRewardCreated, onRewardEdited, onRewardDeleted }: RewardsProps) => {
 
     const [confirmingDelete, setConfirmingDelete] = useState<boolean>(false);
-    const [showCreateTask, setShowCreateTask] = useState<boolean>(false);
-    const [selectedTask, setSelectedTask] = useState<Task>();
-    const [taskToDelete, setTaskToDelete] = useState<Task>();
-    const [taskToEdit, setTaskToEdit] = useState<Task>();
+    const [showCreateReward, setShowCreateReward] = useState<boolean>(false);
+    const [selectedReward, setSelectedReward] = useState<Reward>();
+    const [rewardToDelete, setRewardToDelete] = useState<Reward>();
+    const [rewardToEdit, setRewardToEdit] = useState<Reward>();
 
-    const onDeleteTask = (task: Task) => {
-        setTaskToDelete(task);
+    const onDeleteReward = (reward: Reward) => {
+        setRewardToDelete(reward);
         setConfirmingDelete(true);
     };
 
-    const onDeleteTaskConfirmed = async () => {
-        if (taskToDelete) {
-            const deletedTask = await deleteTask({ taskName: taskToDelete.taskName });
+    const onDeleteRewardConfirmed = async () => {
+        if (rewardToDelete) {
+            const deletedReward = await deleteReward({ rewardName: rewardToDelete.rewardName });
 
-            if (deletedTask) {
-                onTaskDeleted(deletedTask);
+            if (deletedReward) {
+                onRewardDeleted(deletedReward);
             }
         }
         onDialogClose();
     };
 
-    const onCompleteTask = async (taskToComplete: Task, userName: string) => {
-        const completed = await completeTask({ taskName: taskToComplete.taskName, userName });
+    const onRedeemReward = async (rewardToRedeem: Reward, userName: string) => {
+        try {
+            const redeemedReward = await redeemReward({ rewardName: rewardToRedeem.rewardName, userName });
 
-        if (completed) {
-            addUserPoints(taskToComplete.points);
-
+            if (redeemedReward) {
+                subtractUserPoints(rewardToRedeem.points);
+                onDialogClose();
+            }
+        } catch (error) {
             onDialogClose();
+            alert(error);
         }
     };
 
     const onDialogClose = () => {
-        setTaskToEdit(undefined);
-        setShowCreateTask(false);
-        setSelectedTask(undefined);
+        setRewardToEdit(undefined);
+        setShowCreateReward(false);
+        setSelectedReward(undefined);
         setConfirmingDelete(false);
     };
 
@@ -73,17 +77,13 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
                                         <SmallIconButton
 
                                             style={{ padding: '0px' }}
-                                            onClick={() => setShowCreateTask(true)}
+                                            onClick={() => setShowCreateReward(true)}
                                             icon='add'
                                         />
                                     </TH>
 
                                     <TH style={{ width: '50%' }}>
-                                        Task
-                                    </TH>
-
-                                    <TH padding='none' style={{ width: '20%' }} align='right'>
-                                        Frequency
+                                        Reward
                                     </TH>
 
                                     <TH style={{ width: '10%' }} align='right'>
@@ -94,23 +94,23 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
 
                             </TableHead>
                             <TableBody>
-                                {tasks.map((task, key) => (
+                                {rewards.map((reward, key) => (
 
                                     <BodyTR
                                         key={key}
-                                        onClick={() => setSelectedTask(task)}
+                                        onClick={() => setSelectedReward(reward)}
                                         style={{ cursor: 'pointer' }}
-                                        className={`${taskToDelete && taskToDelete.taskName === task.taskName && 'deleting'} ${key % 2 ? 'odd' : 'even'}`}
+                                        className={`${rewardToDelete && rewardToDelete.rewardName === reward.rewardName && 'deleting'} ${key % 2 ? 'odd' : 'even'}`}
                                     >
                                         <TableCell padding='none' style={{ minWidth: '20px' }}>
                                             <SmallIconButton
-                                                onClick={e => { e.stopPropagation(); setTaskToEdit(task); }}
+                                                onClick={e => { e.stopPropagation(); setRewardToEdit(reward); }}
                                                 size='small'
                                                 icon='edit'
                                             />
 
                                             <SmallIconButton
-                                                onClick={e => { e.stopPropagation(); onDeleteTask(task); }}
+                                                onClick={e => { e.stopPropagation(); onDeleteReward(reward); }}
                                                 size='small'
                                                 icon='delete'
                                             />
@@ -120,22 +120,15 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
                                             size='small'
                                             padding='none'
                                         >
-                                            <h4>{task.taskName}</h4>
-                                            <p>{task.desc}</p>
+                                            <h4>{reward.rewardName}</h4>
+                                            <p>{reward.desc}</p>
 
-                                        </TableCell>
-
-                                        <TableCell
-                                            padding='none'
-                                            align='right'
-                                        >
-                                            {task.frequency}
                                         </TableCell>
 
                                         <TableCell
                                             align='right'
                                         >
-                                            {task.points}
+                                            {reward.points}
                                         </TableCell>
 
                                     </BodyTR>
@@ -144,26 +137,26 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
                         </Table>
                     </TableContainer>
 
-                    <EditTaskDialog
-                        onTaskCreated={onTaskCreated}
+                    <EditRewardDialog
+                        onRewardCreated={onRewardCreated}
                         onClose={onDialogClose}
-                        onTaskEdited={onTaskEdited}
-                        open={showCreateTask}
-                        taskToEdit={taskToEdit}
+                        onRewardEdited={onRewardEdited}
+                        open={showCreateReward}
+                        rewardToEdit={rewardToEdit}
                     />
 
-                    <CompleteTaskDialog
+                    <RedeemRewardDialog
                         onClose={onDialogClose}
-                        task={selectedTask}
-                        onCompleteTask={task => onCompleteTask(task, user.userName)}
+                        reward={selectedReward}
+                        onRedeemReward={reward => onRedeemReward(reward, user.userName)}
                     />
 
                     <ConfirmDialog
                         open={confirmingDelete}
                         onClose={onDialogClose}
-                        onConfirm={onDeleteTaskConfirmed}
+                        onConfirm={onDeleteRewardConfirmed}
                     >
-                        {`Are you sure you want to delete ${taskToDelete?.taskName}?`}
+                        {`Are you sure you want to delete ${rewardToDelete?.rewardName}?`}
                     </ConfirmDialog>
                 </>
             }
@@ -218,4 +211,4 @@ const SmallIconButton = styled(IconButton)`
     padding: 0px;
 `;
 
-export default Tasks;
+export default Rewards;

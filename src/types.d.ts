@@ -10,7 +10,7 @@ type Frequency =
     'Annually';
 
 interface SignupModel extends Household {
-    
+
 }
 
 interface Household {
@@ -43,6 +43,21 @@ interface CompletedTask {
     date: number;
 }
 
+interface Reward {
+    points: number;
+    rewardName: string;
+    desc?: string;
+    visibleTo: string[];
+    visibleToEveryone: boolean;
+}
+
+interface RedeemedReward {
+    householdID: string;
+    rewardID: string;
+    userID: string;
+    date: number;
+}
+
 interface CreateUserRequest {
     user: User;
 }
@@ -68,5 +83,19 @@ interface UpdateTaskRequest {
 
 interface CompleteTaskRequest {
     taskName: string;
+    userName: string;
+}
+
+interface UpdateRewardRequest {
+    rewardToUpdate: string;
+    reward: Reward;
+}
+
+interface DeleteRewardRequest {
+    rewardName: string;
+}
+
+interface RedeemRewardRequest {
+    rewardName: string;
     userName: string;
 }

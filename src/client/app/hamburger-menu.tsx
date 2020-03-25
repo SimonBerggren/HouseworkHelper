@@ -40,35 +40,47 @@ const HamburgerMenu: React.FC = () => {
                         onClose={handleClose}
                     >
 
-                        {!location.pathname.endsWith('/user') && isFullyConfigured() &&
-                            <MenuItem onClick={handleClose}>
+                        {isFullyConfigured() &&
+                            <span>
+                                <MenuItem onClick={handleClose}>
 
-                                <StyledLink to='/user'>
-                                    <ProfilePicture
-                                        pic={user.profilePicture}
-                                        size='small'
-                                    />
-                                </StyledLink>
-                                
-                                <div>
-                                    {user.userName}
-                                    <br />
-                                    {user.points}p
-                                </div>
+                                    <StyledLink to='/user'>
+                                        <ProfilePicture
+                                            pic={user.profilePicture}
+                                            size='small'
+                                        />
+                                    </StyledLink>
 
-                            </MenuItem>
+                                    <div>
+                                        {user.userName}
+                                        <br />
+                                        {user.points}p
+                                    </div>
+
+                                </MenuItem>
+
+                                <MenuItem onClick={handleClose}>
+                                    <StyledLink to='rewards' label='Redeem Rewards' />
+                                </MenuItem>
+                            </span>
                         }
 
-                        {!user.isKid &&
-                            <MenuItem>
-                                <StyledLink to='household' label='View Household' />
-                            </MenuItem>
+                        {user && !user.isKid &&
+                            <span>
+                                <MenuItem>
+                                    <StyledLink to='household' label='View Household' />
+                                </MenuItem>
+
+                                <MenuItem>
+                                    <StyledLink to='users' label='Switch User' />
+                                </MenuItem>
+                            </span>
                         }
 
-                        <MenuItem>
+                        <MenuItem onClick={handleClose}>
                             {isFullyConfigured() ?
                                 <StyledLink to='/'
-                                    onClick={() => deauthenticate()}
+                                    onClick={deauthenticate}
                                     label='Logout'
                                 />
                                 :
@@ -79,23 +91,23 @@ const HamburgerMenu: React.FC = () => {
                     </Menu>
                 </HamburgerContainer>
             }
-        </UserContext.Consumer>
+        </UserContext.Consumer >
     );
 };
 
 const HamburgerContainer = styled.span`
     * {
-        color: black;
-    }
-`;
+                color: black;
+        }
+    `;
 
 const StyledLink = styled(Link)`
-    display: flex;
-    text-align: right;
-    margin-right: 10px;
-    color: black;
-    justify-content: space-between;
-    width: 100%;
-`;
+        display: flex;
+        text-align: right;
+        margin-right: 10px;
+        color: black;
+        justify-content: space-between;
+        width: 100%;
+    `;
 
 export default HamburgerMenu;

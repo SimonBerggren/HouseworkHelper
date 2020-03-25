@@ -23,5 +23,4 @@ if (dropAllTables || dropTaskTable) {
     TaskModel.collection.drop();
 }
 
-
 export default TaskModel;

@@ -95,3 +95,28 @@ export const getCompletedTasks = (): Promise<CompletedTask[]> =>
 
 export const completeTask = (data: CompleteTaskRequest): Promise<boolean> =>
     post('completed-task', data);
+
+// Rewards
+
+export const getRewards = (): Promise<Reward[]> => {
+    const user = getUser();
+    if (user) {
+        return get(`reward/${user.userName}`);
+    }
+    return Promise.reject('Not logged in');
+};
+
+export const createReward = (task: Reward): Promise<Reward> =>
+    post('reward', task);
+
+export const editReward = (data: UpdateRewardRequest): Promise<Reward> =>
+    put('reward', data);
+
+export const deleteReward = (data: DeleteRewardRequest): Promise<Reward> =>
+    remove('reward', data);
+
+export const getRedeemedRewards = (): Promise<CompletedTask[]> =>
+    get('redeemed-reward');
+
+export const redeemReward = (data: RedeemRewardRequest): Promise<boolean> =>
+    post('redeemed-reward', data);

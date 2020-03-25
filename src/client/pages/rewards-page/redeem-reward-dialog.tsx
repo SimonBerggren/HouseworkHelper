@@ -5,33 +5,33 @@ import { DialogContent, DialogContentText, DialogActions } from '@material-ui/co
 import Dialog from '../../common/components/dialog/dialog';
 import Button from '../../common/components/button';
 
-type CompleteTaskDialogProps = {
-    task?: Task;
+type RedeemRewardDialogProps = {
+    reward?: Reward;
     onClose: () => void;
-    onCompleteTask: (taskToComplete: Task) => void;
+    onRedeemReward: (rewardToRedeem: Reward) => void;
 }
 
-const CompleteTaskDialog: React.FC<CompleteTaskDialogProps> = ({ task, onClose, onCompleteTask }: CompleteTaskDialogProps) => {
+const RedeemRewardDialog: React.FC<RedeemRewardDialogProps> = ({ reward, onClose, onRedeemReward }: RedeemRewardDialogProps) => {
 
     return (
         <Dialog
             onClose={onClose}
-            title={task?.taskName}
-            open={task !== undefined}
+            title={reward?.rewardName}
+            open={reward !== undefined}
         >
             <DialogContent dividers>
 
                 <DialogContentText>
-                    {task?.desc || ''}
+                    {reward?.desc || ''}
                 </DialogContentText>
 
             </DialogContent>
             <DialogActions>
 
                 <Button
-                    onClick={() => task && onCompleteTask(task)}
+                    onClick={() => reward && onRedeemReward(reward)}
                     color='primary'
-                    label='Complete'
+                    label='Redeem'
                 />
 
             </DialogActions>
@@ -39,4 +39,4 @@ const CompleteTaskDialog: React.FC<CompleteTaskDialogProps> = ({ task, onClose, 
     );
 };
 
-export default CompleteTaskDialog;
+export default RedeemRewardDialog;

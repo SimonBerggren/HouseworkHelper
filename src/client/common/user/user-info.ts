@@ -27,3 +27,11 @@ export const addUserPoints = (userPoints: number) => {
         setUser(user);
     }
 };
+
+export const subtractUserPoints = (userPoints: number) => {
+    const user = getUser();
+    if (user) {
+        user.points -= userPoints;
+        setUser(user);
+    }
+};

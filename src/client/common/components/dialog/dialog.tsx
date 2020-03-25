@@ -37,6 +37,10 @@ const StyledDialog = styled(MaterialDialog)`
         a {
             color: ${theme.palette.primary.main};
         }
+        
+        div {
+            min-width: 250px;
+        }
     `}
 `;
 
