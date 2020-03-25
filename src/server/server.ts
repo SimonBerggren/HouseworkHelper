@@ -19,6 +19,16 @@ const handleError = (err, _req, res, _next) => {
     res.status(statusCode).json(err.message);
 };
 
+// @ts-ignore
+const handleTrailingSlash = (req, res, next) => {
+    const test = /\?[^]*\//.test(req.url);
+    if (req.url.substr(-1) === '/' && req.url.length > 1 && !test) {
+        res.redirect(301, req.url.slice(0, -1));
+    }
+    else
+        next();
+};
+
 const staticPath = path.resolve('dist', 'client');
 const appPath = path.resolve(staticPath, 'index.html');
 
@@ -27,11 +37,14 @@ connect()
         const port = process.argv.pop();
         const app = express();
 
-        app.use(cors());
-        app.use(express.json());
-        app.use(express.static(staticPath));
-
-        app.use(passportAuthentication());
+        app.use(
+            cors(),
+            express.json(),
+            express.static(staticPath),
+            passportAuthentication(),
+            handleError,
+            handleTrailingSlash
+        );
 
         app.use('/api/completed-task', CompletedTaskController);
         app.use('/api/household', HouseholdController);
@@ -39,8 +52,6 @@ connect()
         app.use('/api/login', LoginController);
         app.use('/api/task', TaskController);
         app.use('/api/user', UserController);
-
-        app.use([handleError]);
 
         app.use('*', (_req, res) => res.sendFile(appPath));
 
