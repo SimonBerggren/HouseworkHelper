@@ -33,10 +33,6 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
     const [user, setUser] = useState<User>(defaultValues(userToEdit));
 
     useEffect(() => {
-        console.log(user);
-    }, [user]);
-
-    useEffect(() => {
         if (open) {
             setUser(defaultValues(userToEdit));
         }
@@ -50,7 +46,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
                 onUserCreated(user);
             }
         } catch (error) {
-            console.log(error);
+            alert(error);
         }
     };
 
@@ -65,7 +61,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
                 }
             }
         } catch (error) {
-            console.log(error);
+            alert(error);
         }
     };
 
@@ -75,6 +71,8 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
         } else {
             onCreateUser();
         }
+
+        
     };
 
     return (
@@ -109,7 +107,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
                 />
 
                 <PasswordInput fullWidth
-                    value={user.password}
+                    value={user.password || ''}
                     label='Password (optional)'
                     autoComplete='new-password'
                     onChange={event => setUser({ ...user, password: event.currentTarget.value })}

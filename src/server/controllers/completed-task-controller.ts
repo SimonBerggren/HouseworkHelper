@@ -2,9 +2,10 @@ import express from 'express';
 
 import CompletedTaskModel from '../model/completed-task-model';
 
-import { findUser, findTask, getHouseholdID } from '../utils/mongo-utils';
+import { findTask, getHouseholdID } from '../utils/mongo-utils';
 import { authenticate } from '../authentication/authentication';
 import { badRequest } from '../error';
+import UserModel from '../model/user-model';
 
 const router = express.Router();
 
@@ -25,7 +26,11 @@ router.post('/', authenticate(), async (req, res) => {
 
     try {
         const taskToComplete = await findTask({ householdID, taskName });
-        const user = await findUser({ householdID, userName });
+        const user = await UserModel.findOne({ householdID, userName });
+
+        if (!user) {
+            return badRequest(res, 'Cannot find user');
+        }
 
         const completedTask: CompletedTask = {
             householdID,

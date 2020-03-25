@@ -3,16 +3,15 @@ import styled from 'styled-components';
 
 import ConfirmDialog from '../../common/components/dialog/confirm-dialog';
 import IconButtonTop from '../../common/components/icon-button-top';
-import IconButton from '../../common/components/icon-button';
 import PageWrapper from '../../common/utils/page-wrapper';
 import Button from '../../common/components/button';
-import Link from '../../common/components/link';
-import EditUserDialog from './edit-user';
+import EditUserDialog from './edit-user-dialog';
 import User from './user';
 
 import { setUser } from '../../common/user/user-info';
 import { getUsers, deleteUser } from '../../common/utils/api-operations';
 import { flexCenter } from '../../style/mixins';
+import { Redirect } from 'react-router-dom';
 
 const UsersPage = () => {
 
@@ -68,10 +67,9 @@ const UsersPage = () => {
         setSelectedUser(undefined);
     };
 
-    const onUserSelected = () => {
-        if (selectedUser) {
-            setUser(selectedUser);
-        }
+    const onUserSelected = (selectedUser: User) => {
+        setUser(selectedUser);
+        setSelectedUser(selectedUser);
     };
 
     const onDialogClose = () => {
@@ -96,46 +94,31 @@ const UsersPage = () => {
                 }
             }
         } catch (error) {
-            console.log(error);
             alert(error);
         }
     };
 
-    return (
+    return (selectedUser ? <Redirect to='/user' /> :
         <PageWrapper>
             <Background>
                 <UsersContainer>
 
-                    {editMode &&
-                        <IconButtonTop left
-                            iconSize='large'
-                            color='primary'
-                            icon='addUser'
-                            onClick={onCreateUser}
-                        />
-                    }
+                    <IconButtonTop left
+                        color='primary'
+                        icon='addUser'
+                        onClick={onCreateUser}
+                    />
 
                     {users.map((user) =>
                         <User
-                            selected={selectedUser && selectedUser.userName === user.userName}
                             user={user}
                             editMode={editMode}
                             key={user.userName}
-                            onUserSelected={setSelectedUser}
+                            onUserSelected={onUserSelected}
                             onDeleteUser={onDeleteUser}
                             onEditUser={onEditUser}
                         />
                     )}
-
-                    {selectedUser &&
-                        <ForwardArrow to='/household' onClick={onUserSelected} >
-                            <IconButton
-                                color='primary'
-                                icon='forward'
-                                iconSize='large'
-                            />
-                        </ForwardArrow >
-                    }
 
                 </UsersContainer>
 
@@ -184,12 +167,9 @@ const UsersContainer = styled.div`
     flex-wrap: wrap;
     flex-direction: row;
 
-    padding: 50px 0px;
-`;
+    justify-content: center;
 
-const ForwardArrow = styled(Link)`
-    position: absolute;
-    right: -10px;
+    padding: 50px 0px;
 `;
 
 export default UsersPage;

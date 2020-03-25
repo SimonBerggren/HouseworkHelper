@@ -5,6 +5,7 @@ import TaskModel from '../model/task-model';
 import { authenticate } from '../authentication/authentication';
 import { badRequest } from '../error';
 import { getHouseholdID, findUser, findTasks, findHousehold } from '../utils/mongo-utils';
+import UserModel from '../model/user-model';
 
 const router = express.Router();
 
@@ -14,9 +15,15 @@ router.get('/:user', authenticate(), async (req, res) => {
     const householdID = getHouseholdID(req);
 
     try {
-        const user = await findUser({ householdID, userName: req.params.user });
-        
-        const tasks = await findTasks({ householdID, visibleTo: { '$in': [user.id] } });
+        const user = await UserModel.findOne({ householdID, userName: req.params.user });
+
+        if (!user) {
+            return badRequest(res, 'Could not find user');
+        }
+
+        const tasks = await findTasks({ householdID, visibleToEveryone: true });
+        const privateTasks = await findTasks({ householdID, visibleTo: { '$in': [user.id] }, visibleToEveryone: false });
+        tasks.push(...privateTasks);
 
         const mappedTasks = await Promise.all(tasks.map(async task => {
             task.visibleTo = await Promise.all(task.visibleTo.map(async userID => {
@@ -57,21 +64,26 @@ router.post('/', authenticate(), async (req, res) => {
 
     try {
 
-        if (!taskToCreate.visibleTo || !taskToCreate.visibleTo.length) {
+        if (!taskToCreate.visibleToEveryone && (!taskToCreate.visibleTo || !taskToCreate.visibleTo.length)) {
             throw 'Task needs to be visible to at least one person';
 
         } else {
-            const visibleTo = await Promise.all(taskToCreate.visibleTo.map(async (userName) => {
 
-                const user = await findUser({ userName, householdID });
-                if (!user) {
-                    throw 'Invalid users in visibleTo';
-                }
+            if (!taskToCreate.visibleToEveryone) {
+                const visibleTo = await Promise.all(taskToCreate.visibleTo.map(async (userName) => {
 
-                return user.id as string;
-            }));
+                    const user = await UserModel.findOne({ userName, householdID });
+                    if (!user) {
+                        throw 'Invalid users in visibleTo';
+                    }
 
-            taskToCreate.visibleTo = visibleTo;
+                    return user.id as string;
+                }));
+
+                taskToCreate.visibleTo = visibleTo;
+            } else {
+                taskToCreate.visibleTo = [];
+            }
         }
 
         const createdTask = await TaskModel.create({ householdID, ...taskToCreate });
@@ -90,22 +102,28 @@ router.put('/', authenticate(), async (req, res) => {
 
     try {
 
-        if (!task.visibleTo || !task.visibleTo.length) {
+        if (!task.visibleToEveryone && (!task.visibleTo || !task.visibleTo.length)) {
             throw 'Task needs to be visible to at least one person';
 
         } else {
-            const visibleTo = await Promise.all(task.visibleTo.map(async (userName) => {
+            if (!task.visibleToEveryone) {
 
-                const user = await findUser({ userName, householdID });
-                if (!user) {
-                    throw 'Invalid users in visibleTo';
-                }
+                const visibleTo = await Promise.all(task.visibleTo.map(async (userName) => {
 
-                return user.id as string;
-            }));
+                    const user = await UserModel.findOne({ userName, householdID });
+                    if (!user) {
+                        throw 'Invalid users in visibleTo';
+                    }
 
-            task.visibleTo = visibleTo;
+                    return user.id as string;
+                }));
+
+                task.visibleTo = visibleTo;
+            } else {
+                task.visibleTo = [];
+            }
         }
+
         const updatedTask = await TaskModel.updateOne({ householdID, taskName: taskToUpdate }, { householdID, ...task });
         return res.json(updatedTask ? true : false);
 
@@ -123,6 +141,20 @@ router.delete('/', authenticate(), async (req, res) => {
     try {
         const deletedTask = await TaskModel.findOneAndDelete({ householdID, taskName });
         return res.json(deletedTask);
+
+    } catch (error) {
+        return badRequest(res, error);
+    }
+});
+
+//////////////////////////////// DEV ////////////////////////////////
+
+// get all users
+router.get('/dev/dev', async (_req, res) => {
+
+    try {
+        const tasks = await TaskModel.find();
+        return res.json(tasks);
 
     } catch (error) {
         return badRequest(res, error);

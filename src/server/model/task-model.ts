@@ -11,7 +11,8 @@ const TaskSchema = new Schema<TaskSchemaModel>({
     points: { type: Number, required: true },
     taskName: { type: String, required: true },
     desc: { type: String },
-    visibleTo: { type: Array }
+    visibleTo: { type: Array, required: true },
+    visibleToEveryone: { type: Boolean, required: true }
 });
 
 TaskSchema.index({ householdID: 1, taskName: 1 }, { unique: true });

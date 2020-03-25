@@ -33,6 +33,7 @@ interface Task {
     frequency: string;
     desc?: string;
     visibleTo: string[];
+    visibleToEveryone: boolean;
 }
 
 interface CompletedTask {
