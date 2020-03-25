@@ -81,6 +81,10 @@ export const getTasks = (): Promise<Task[]> => {
     return Promise.reject('Not logged in');
 };
 
+export const getAllTasks = (): Promise<Task[]> => {
+    return get('task/all');
+};
+
 export const createTask = (task: Task): Promise<Task> =>
     post('task', task);
 
@@ -104,6 +108,10 @@ export const getRewards = (): Promise<Reward[]> => {
         return get(`reward/${user.userName}`);
     }
     return Promise.reject('Not logged in');
+};
+
+export const getAllRewards = (): Promise<Reward[]> => {
+    return get('reward/all');
 };
 
 export const createReward = (task: Reward): Promise<Reward> =>

@@ -148,7 +148,6 @@ const BodyTR = styled(TableRow)`
 const Container = styled(TableContainer)`
 && {
     min-height: 250px;
-
 }
 `;
 

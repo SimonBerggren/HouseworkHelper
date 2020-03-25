@@ -9,6 +9,29 @@ import RewardModel from '../model/reward-model';
 
 const router = express.Router();
 
+// get all rewards from a household
+router.get('/all', authenticate(), async (req, res) => {
+
+    const householdID = getHouseholdID(req);
+
+    try {
+        const rewards = await findRewards({ householdID });
+
+        const mappedRewards = await Promise.all(rewards.map(async reward => {
+            reward.visibleTo = await Promise.all(reward.visibleTo.map(async userID => {
+                const user = await findUser({ _id: userID });
+                return user.userName;
+            }));
+            return reward;
+        }));
+
+        return res.json(mappedRewards);
+
+    } catch (error) {
+        return badRequest(res, error);
+    }
+});
+
 // get rewards from a household for a specific user
 router.get('/:user', authenticate(), async (req, res) => {
 

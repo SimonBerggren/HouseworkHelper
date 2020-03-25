@@ -9,6 +9,29 @@ import { getHouseholdID, findUser, findTasks, findHousehold } from '../utils/mon
 
 const router = express.Router();
 
+// get all tasks from a household
+router.get('/all', authenticate(), async (req, res) => {
+
+    const householdID = getHouseholdID(req);
+
+    try {
+        const tasks = await findTasks({ householdID });
+
+        const mappedTasks = await Promise.all(tasks.map(async task => {
+            task.visibleTo = await Promise.all(task.visibleTo.map(async userID => {
+                const user = await findUser({ _id: userID });
+                return user.userName;
+            }));
+            return task;
+        }));
+
+        return res.json(mappedTasks);
+
+    } catch (error) {
+        return badRequest(res, error);
+    }
+});
+
 // get tasks from a household for a specific user
 router.get('/:user', authenticate(), async (req, res) => {
 

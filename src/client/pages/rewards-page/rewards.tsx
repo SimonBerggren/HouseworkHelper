@@ -68,7 +68,7 @@ const Rewards: React.FC<RewardsProps> = ({ rewards, onRewardCreated, onRewardEdi
         <UserContext.Consumer>
             {({ user }) =>
                 <>
-                    <TableContainer style={{ width: '90%' }}>
+                    <Container style={{ width: '90%' }}>
                         <Table stickyHeader size='small'>
                             <TableHead>
                                 <TableRow>
@@ -135,7 +135,7 @@ const Rewards: React.FC<RewardsProps> = ({ rewards, onRewardCreated, onRewardEdi
                                 ))}
                             </TableBody>
                         </Table>
-                    </TableContainer>
+                    </Container>
 
                     <EditRewardDialog
                         onRewardCreated={onRewardCreated}
@@ -209,6 +209,12 @@ const BodyTR = styled(TableRow)`
 
 const SmallIconButton = styled(IconButton)`
     padding: 0px;
+`;
+
+const Container = styled(TableContainer)`
+&& {
+    min-height: 250px;
+}
 `;
 
 export default Rewards;

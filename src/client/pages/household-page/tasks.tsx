@@ -64,7 +64,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
         <UserContext.Consumer>
             {({ user }) =>
                 <>
-                    <TableContainer style={{ width: '90%' }}>
+                    <Container style={{ width: '90%' }}>
                         <Table stickyHeader size='small'>
                             <TableHead>
                                 <TableRow>
@@ -142,7 +142,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
                                 ))}
                             </TableBody>
                         </Table>
-                    </TableContainer>
+                    </Container>
 
                     <EditTaskDialog
                         onTaskCreated={onTaskCreated}
@@ -216,6 +216,12 @@ const BodyTR = styled(TableRow)`
 
 const SmallIconButton = styled(IconButton)`
     padding: 0px;
+`;
+
+const Container = styled(TableContainer)`
+&& {
+    min-height: 250px;
+}
 `;
 
 export default Tasks;

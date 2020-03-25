@@ -5,13 +5,15 @@ import { PageWrapper } from '../../common/utils/page-wrapper';
 import Users from './users';
 import Tasks from './tasks';
 
-import { getHousehold, getTasks, getUsers } from '../../common/utils/api-operations';
+import { getHousehold, getAllTasks, getAllRewards, getUsers } from '../../common/utils/api-operations';
+import Rewards from '../rewards-page/rewards';
 
 const HouseholdPage: React.FC = () => {
 
     const [household, setHousehold] = useState<Household>();
     const [users, setUsers] = useState<User[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [rewards, setRewards] = useState<Reward[]>([]);
 
     useEffect(() => {
         getHousehold()
@@ -20,14 +22,18 @@ const HouseholdPage: React.FC = () => {
         getUsers()
             .then(users => setUsers(users));
 
-        getTasks()
+        getAllTasks()
             .then(tasks => setTasks(tasks));
+
+        getAllRewards()
+            .then(rewards => setRewards(rewards));
     }, []);
 
     const onTaskCreated = (createdTask: Task) => {
         const newTasks = tasks.concat(createdTask);
         setTasks(newTasks);
     };
+
 
     const onTaskEdited = (oldTask: Task, updatedTask: Task) => {
         const indexOfOldTask = tasks.findIndex(task => task.taskName === oldTask.taskName);
@@ -43,6 +49,25 @@ const HouseholdPage: React.FC = () => {
         setTasks(filteredTasks);
     };
 
+    const onRewardCreated = (createdReward: Reward) => {
+        const newRewards = rewards.concat(createdReward);
+        setRewards(newRewards);
+    };
+
+    const onRewardEdited = (oldReward: Reward, updatedReward: Reward) => {
+        const indexOfOldTask = rewards.findIndex(task => task.rewardName === oldReward.rewardName);
+        if (indexOfOldTask !== -1) {
+            const copy = [...rewards];
+            copy.splice(indexOfOldTask, 1, updatedReward);
+            setRewards(copy);
+        }
+    };
+
+    const onRewardDeleted = ({ rewardName }: Reward) => {
+        const filteredTasks = rewards.filter(reward => reward.rewardName !== rewardName);
+        setRewards(filteredTasks);
+    };
+
     return (
 
         <PageWrapper>
@@ -52,19 +77,32 @@ const HouseholdPage: React.FC = () => {
                 <h2>{household.householdName}</h2>
                 <br />
 
+                <TasksTitle >{'Users'}</TasksTitle >
+
                 <Users
                     users={users}
                 />
 
                 <br />
 
-                <TasksTitle >{'All household tasks'}</TasksTitle >
+                <TasksTitle >{'Tasks'}</TasksTitle >
 
                 <Tasks
-                    onTaskDeleted={onTaskDeleted}
+                    tasks={tasks}
                     onTaskCreated={onTaskCreated}
                     onTaskEdited={onTaskEdited}
-                    tasks={tasks}
+                    onTaskDeleted={onTaskDeleted}
+                />
+
+                <br />
+
+                <TasksTitle >{'Rewards'}</TasksTitle >
+
+                <Rewards
+                    rewards={rewards}
+                    onRewardCreated={onRewardCreated}
+                    onRewardEdited={onRewardEdited}
+                    onRewardDeleted={onRewardDeleted}
                 />
 
             </>}
