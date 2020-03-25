@@ -7,7 +7,6 @@ import GlobalStyle from '../style/global-style';
 import AnimatedSwitch from './animated-switch';
 import Background from '../style/background';
 import ThemeProvider from '../style/theme';
-import MenuBar from './menu-bar';
 
 const App = () => {
     return (
@@ -18,7 +17,7 @@ const App = () => {
 
                     <GlobalStyle />
                     <Background />
-                    <MenuBar />
+                    
                     <AnimatedSwitch />
 
                 </UserContextProvider>

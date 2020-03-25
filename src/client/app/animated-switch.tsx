@@ -8,6 +8,7 @@ import { Location as ILocation } from 'history';
 import ProtectedRoute from '../common/utils/protected-route';
 
 import Lazy from './lazy';
+import MenuBar from './menu-bar';
 
 type AnimatedSwitchProps = {
     location: ILocation
@@ -18,10 +19,10 @@ const Error404Page = () => <Lazy importFunc={() => import('../pages/error-404-pa
 const SignUpPage = () => <Lazy importFunc={() => import('../pages/signup-page/signup-page')} />;
 const LoginPage = () => <Lazy importFunc={() => import('../pages/login-page/login-page')} />;
 const UsersPage = () => <Lazy importFunc={() => import('../pages/users-page/users-page')} />;
+const UserPage = () => <Lazy importFunc={() => import('../pages/user-page/user-page')} />;
 const HomePage = () => <Lazy importFunc={() => import('../pages/home-page/home-page')} />;
 
 const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwitchProps) => {
-
     return (
         <SwitchContainer>
 
@@ -33,10 +34,13 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
                 >
                     <RouteSection>
 
+                        <MenuBar />
+
                         <Switch location={location}>
 
                             <ProtectedRoute exact path='/household' render={() => <HouseholdPage />} />
                             <ProtectedRoute exact path='/users' render={() => <UsersPage />} />
+                            <ProtectedRoute exact path='/user' render={() => <UserPage />} />
 
                             <Route exact path='/signup' render={() => <SignUpPage />} />
                             <Route exact path='/login' render={() => <LoginPage />} />

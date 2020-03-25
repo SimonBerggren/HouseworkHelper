@@ -1,12 +1,13 @@
-import { AppBar, Toolbar } from '@material-ui/core';
 import styled, { css } from 'styled-components';
 import React from 'react';
 
+import { AppBar, Toolbar } from '@material-ui/core';
+
+import ProfilePicture from '../common/components/profile-picture';
 import Link from '../common/components/link';
 
 import { deauthenticate } from '../common/user/authentication';
 import { UserContext } from './user-context';
-import ProfilePicture from '../common/components/profile-picture';
 
 const MenuBar = () => {
 
@@ -15,16 +16,16 @@ const MenuBar = () => {
             <UserContext.Consumer>
                 {({ user, authenticated }) =>
                     <Bar>
-                        <h3 >
-                            <Link to='/' >
+                        <Link to='/' >
+                            <h3 >
                                 {'HouseWorkHelper'}
-                            </Link>
-                        </h3>
+                            </h3>
+                        </Link>
 
                         <RightArea>
 
-                            {user &&
-                                <StyledLink to='/users'>
+                            {!location.pathname.endsWith('/user') && user &&
+                                <StyledLink to='/user'>
                                     <div>
                                         {user.userName}
                                         <br />
@@ -38,15 +39,15 @@ const MenuBar = () => {
                             }
 
                             {authenticated ?
-                                <Link to='/'
+                                <StyledLink to='/'
                                     onClick={() => deauthenticate()}
                                 >
                                     {'Logout'}
-                                </Link>
+                                </StyledLink>
                                 :
-                                <Link to='/login'>
+                                <StyledLink to='/login'>
                                     {'Login'}
-                                </Link>
+                                </StyledLink>
                             }
                         </RightArea>
                     </Bar>

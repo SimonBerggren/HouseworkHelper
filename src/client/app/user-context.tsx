@@ -5,12 +5,12 @@ import { addEventListener } from './event-manager';
 import { getUser } from '../common/user/user-info';
 
 interface IUserContext {
-    user?: User;
+    user: User;
     authenticated: boolean;
 }
 
 const defaultUserContext: IUserContext = {
-    user: getUser(),
+    user: getUser() as User,
     authenticated: isAuthenticated()
 };
 
