@@ -3,13 +3,12 @@ import styled from 'styled-components';
 
 import ConfirmDialog from '../../common/components/dialog/confirm-dialog';
 import IconButtonTop from '../../common/components/icon-button-top';
-import { CenterPageWrapper } from '../../common/utils/page-wrapper';
 import Button from '../../common/components/button';
 import EditUserDialog from './edit-user-dialog';
 import User from './user';
 
-import { setUser } from '../../common/user/user-info';
 import { getUsers, deleteUser } from '../../common/utils/api-operations';
+import { CenterPageWrapper } from '../../common/utils/page-wrapper';
 import { flexCenter } from '../../style/mixins';
 import { Redirect } from 'react-router-dom';
 
@@ -68,7 +67,6 @@ const UsersPage = () => {
     };
 
     const onUserSelected = (selectedUser: User) => {
-        setUser(selectedUser);
         setSelectedUser(selectedUser);
     };
 

@@ -2,11 +2,15 @@ import React from 'react';
 
 import { Route, RouteProps as IRouteProps, Redirect } from 'react-router-dom';
 
-import { isAuthenticated } from '../user/authentication';
+import { isAuthenticated, isFullyConfigured } from '../user/authentication';
 
-const ProtectedRoute: React.FC<IRouteProps> = ({ render, ...routeProps }: IRouteProps) =>
+type ProtectedRouteProps = IRouteProps & {
+    onlyLoginRequired?: boolean;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ render, onlyLoginRequired, ...routeProps }: ProtectedRouteProps) =>
     <Route {...routeProps} render={(renderProps) =>
-        isAuthenticated()
+        (onlyLoginRequired && isAuthenticated()) || isFullyConfigured()
             ? render && render(renderProps)
             : <Redirect to={{
                 pathname: '/login',

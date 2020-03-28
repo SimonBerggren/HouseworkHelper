@@ -15,14 +15,16 @@ router.post('/', async (req, res) => {
         const existingHousehold = await HouseholdModel.findOne({ email: newHousehold.email });
 
         if (existingHousehold) {
-            return badRequest(res, 'Email is already in use');
+            throw 'Email is already in use';
         }
 
         const createdHousehold = await HouseholdModel.create(newHousehold);
 
-        if (createdHousehold) {
-            return res.json(true);
+        if (!createdHousehold) {
+            throw 'Unable to sign up';
         }
+
+        return res.json(true);
 
     } catch (error) {
         return badRequest(res, error);

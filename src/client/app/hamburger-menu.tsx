@@ -7,7 +7,8 @@ import ProfilePicture from '../common/components/profile-picture';
 import IconButton from '../common/components/icon-button';
 import Link from '../common/components/link';
 
-import { deauthenticate, isFullyConfigured } from '../common/user/authentication';
+import { isFullyConfigured } from '../common/user/authentication';
+import { logout } from '../common/utils/api-operations';
 import { UserContext } from './user-context';
 
 const HamburgerMenu: React.FC = () => {
@@ -86,7 +87,7 @@ const HamburgerMenu: React.FC = () => {
                         <MenuItem onClick={handleClose}>
                             {isFullyConfigured() ?
                                 <StyledLink to='/'
-                                    onClick={deauthenticate}
+                                    onClick={logout}
                                     label='Logout'
                                 />
                                 :

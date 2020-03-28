@@ -5,9 +5,12 @@ import UserModel from '../model/user-model';
 import TaskModel from '../model/task-model';
 import RewardModel from '../model/reward-model';
 
-export const getHousehold = (request: Express.Request) => (request.user as Household & IDocument);
-
+export const getHousehold = (request: Express.Request) => (request.user as any).household as Household & IDocument;
 export const getHouseholdID = (request: Express.Request): string => getHousehold(request).id;
+
+export const getUser = (request: Express.Request) => (request.user as any).user as User & IDocument;
+export const getUserName = (request: Express.Request): string => getUser(request).userName;
+export const getUserID = (request: Express.Request): string => getUser(request).id;
 
 export const findHousehold = async (conditions: any) => {
     const household = await HouseholdModel.findOne(conditions);
@@ -23,7 +26,6 @@ export const findUser = async (conditions?: any): Promise<User> => {
     const dirtyUser = await UserModel.findOne(conditions);
 
     if (!dirtyUser) {
-        console.log('Could not find user using conditions', conditions);
         return Promise.reject('Could not find user');
     }
 
@@ -36,6 +38,16 @@ export const findUser = async (conditions?: any): Promise<User> => {
     };
 
     return Promise.resolve(cleanUser);
+};
+
+export const findUserFull = async (conditions?: any): Promise<User & IDocument> => {
+    const user = await UserModel.findOne(conditions);
+
+    if (!user) {
+        return Promise.reject('Could not find user');
+    }
+
+    return Promise.resolve(user);
 };
 
 export const findUsers = async (conditions?: any): Promise<User[]> => {
@@ -59,6 +71,16 @@ export const findUsers = async (conditions?: any): Promise<User[]> => {
 };
 
 export const findTask = async (conditions: any): Promise<Task & IDocument> => {
+    const task = await TaskModel.findOne(conditions);
+
+    if (!task) {
+        return Promise.reject('Could not find task');
+    }
+
+    return Promise.resolve(task);
+};
+
+export const findTaskFull = async (conditions: any): Promise<Task & IDocument> => {
     const task = await TaskModel.findOne(conditions);
 
     if (!task) {

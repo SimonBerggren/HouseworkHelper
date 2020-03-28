@@ -10,7 +10,6 @@ import EditTaskDialog from './edit-task-dialog';
 
 import { deleteTask, completeTask } from '../../common/utils/api-operations';
 import { addUserPoints } from '../../common/user/user-info';
-import { UserContext } from '../../app/user-context';
 
 type TasksProps = {
     onTaskDeleted: (task: Task) => void;
@@ -43,8 +42,8 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
         onDialogClose();
     };
 
-    const onCompleteTask = async (taskToComplete: Task, userName: string) => {
-        const completed = await completeTask({ taskName: taskToComplete.taskName, userName });
+    const onCompleteTask = async (taskToComplete: Task) => {
+        const completed = await completeTask({ taskName: taskToComplete.taskName });
 
         if (completed) {
             addUserPoints(taskToComplete.points);
@@ -61,113 +60,109 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
     };
 
     return (
-        <UserContext.Consumer>
-            {({ user }) =>
-                <>
-                    <Container style={{ width: '90%' }}>
-                        <Table stickyHeader size='small'>
-                            <TableHead>
-                                <TableRow>
+        <>
+            <Container style={{ width: '90%' }}>
+                <Table stickyHeader size='small'>
+                    <TableHead>
+                        <TableRow>
 
-                                    <TH padding='none' style={{ width: '25%' }}>
-                                        <SmallIconButton
+                            <TH padding='none' style={{ width: '25%' }}>
+                                <SmallIconButton
 
-                                            style={{ padding: '0px' }}
-                                            onClick={() => setShowCreateTask(true)}
-                                            icon='add'
-                                        />
-                                    </TH>
+                                    style={{ padding: '0px' }}
+                                    onClick={() => setShowCreateTask(true)}
+                                    icon='add'
+                                />
+                            </TH>
 
-                                    <TH style={{ width: '50%' }}>
-                                        Task
-                                    </TH>
+                            <TH style={{ width: '50%' }}>
+                                Task
+                            </TH>
 
-                                    <TH padding='none' style={{ width: '20%' }} align='right'>
-                                        Frequency
-                                    </TH>
+                            <TH padding='none' style={{ width: '20%' }} align='right'>
+                                Frequency
+                            </TH>
 
-                                    <TH style={{ width: '10%' }} align='right'>
-                                        Points
-                                    </TH>
+                            <TH style={{ width: '10%' }} align='right'>
+                                Points
+                            </TH>
 
-                                </TableRow>
+                        </TableRow>
 
-                            </TableHead>
-                            <TableBody>
-                                {tasks.map((task, key) => (
+                    </TableHead>
+                    <TableBody>
+                        {tasks.map((task, key) => (
 
-                                    <BodyTR
-                                        key={key}
-                                        onClick={() => setSelectedTask(task)}
-                                        style={{ cursor: 'pointer' }}
-                                        className={`${taskToDelete && taskToDelete.taskName === task.taskName && 'deleting'} ${key % 2 ? 'odd' : 'even'}`}
-                                    >
-                                        <TableCell padding='none' style={{ minWidth: '20px' }}>
-                                            <SmallIconButton
-                                                onClick={e => { e.stopPropagation(); setTaskToEdit(task); }}
-                                                size='small'
-                                                icon='edit'
-                                            />
+                            <BodyTR
+                                key={key}
+                                onClick={() => setSelectedTask(task)}
+                                style={{ cursor: 'pointer' }}
+                                className={`${taskToDelete && taskToDelete.taskName === task.taskName && 'deleting'} ${key % 2 ? 'odd' : 'even'}`}
+                            >
+                                <TableCell padding='none' style={{ minWidth: '20px' }}>
+                                    <SmallIconButton
+                                        onClick={e => { e.stopPropagation(); setTaskToEdit(task); }}
+                                        size='small'
+                                        icon='edit'
+                                    />
 
-                                            <SmallIconButton
-                                                onClick={e => { e.stopPropagation(); onDeleteTask(task); }}
-                                                size='small'
-                                                icon='delete'
-                                            />
-                                        </TableCell>
+                                    <SmallIconButton
+                                        onClick={e => { e.stopPropagation(); onDeleteTask(task); }}
+                                        size='small'
+                                        icon='delete'
+                                    />
+                                </TableCell>
 
-                                        <TableCell
-                                            size='small'
-                                            padding='none'
-                                        >
-                                            <h4>{task.taskName}</h4>
-                                            <p>{task.desc}</p>
+                                <TableCell
+                                    size='small'
+                                    padding='none'
+                                >
+                                    <h4>{task.taskName}</h4>
+                                    <p>{task.desc}</p>
 
-                                        </TableCell>
+                                </TableCell>
 
-                                        <TableCell
-                                            padding='none'
-                                            align='right'
-                                        >
-                                            {task.frequency}
-                                        </TableCell>
+                                <TableCell
+                                    padding='none'
+                                    align='right'
+                                >
+                                    {task.frequency}
+                                </TableCell>
 
-                                        <TableCell
-                                            align='right'
-                                        >
-                                            {task.points}
-                                        </TableCell>
+                                <TableCell
+                                    align='right'
+                                >
+                                    {task.points}
+                                </TableCell>
 
-                                    </BodyTR>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </Container>
+                            </BodyTR>
+                        ))}
+                    </TableBody>
+                </Table>
+            </Container>
 
-                    <EditTaskDialog
-                        onTaskCreated={onTaskCreated}
-                        onClose={onDialogClose}
-                        onTaskEdited={onTaskEdited}
-                        open={showCreateTask}
-                        taskToEdit={taskToEdit}
-                    />
+            <EditTaskDialog
+                onTaskCreated={onTaskCreated}
+                onClose={onDialogClose}
+                onTaskEdited={onTaskEdited}
+                open={showCreateTask}
+                taskToEdit={taskToEdit}
+            />
 
-                    <CompleteTaskDialog
-                        onClose={onDialogClose}
-                        task={selectedTask}
-                        onCompleteTask={task => onCompleteTask(task, user.userName)}
-                    />
+            <CompleteTaskDialog
+                onClose={onDialogClose}
+                task={selectedTask}
+                onCompleteTask={onCompleteTask}
+            />
 
-                    <ConfirmDialog
-                        open={confirmingDelete}
-                        onClose={onDialogClose}
-                        onConfirm={onDeleteTaskConfirmed}
-                    >
-                        {`Are you sure you want to delete ${taskToDelete?.taskName}?`}
-                    </ConfirmDialog>
-                </>
-            }
-        </UserContext.Consumer>
+            <ConfirmDialog
+                open={confirmingDelete}
+                onClose={onDialogClose}
+                onConfirm={onDeleteTaskConfirmed}
+            >
+                {`Are you sure you want to delete ${taskToDelete?.taskName}?`}
+            </ConfirmDialog>
+        </>
     );
 };
 

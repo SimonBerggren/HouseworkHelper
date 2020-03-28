@@ -40,9 +40,10 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
                         <Switch location={location}>
 
                             <ProtectedRoute exact path='/household' render={() => <HouseholdPage />} />
-                            <ProtectedRoute exact path='/users' render={() => <UsersPage />} />
                             <ProtectedRoute exact path='/rewards' render={() => <RewardsPage />} />
                             <ProtectedRoute exact path='/user' render={() => <UserPage />} />
+                            
+                            <ProtectedRoute onlyLoginRequired exact path='/users' render={() => <UsersPage />} />
 
                             <Route exact path='/signup' render={() => <SignUpPage />} />
                             <Route exact path='/login' render={() => <LoginPage />} />

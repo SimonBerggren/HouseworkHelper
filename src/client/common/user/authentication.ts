@@ -7,12 +7,12 @@ export const storage = sessionStorage;
 
 // User authentication
 
-export const authenticate = (token: string) => {
+export const setToken = (token: string) => {
     storage.setItem(tokenKey, `bearer ${token}`);
     emitEvent('authenticateChanged', true);
 };
 
-export const deauthenticate = () => {
+export const unsetToken = () => {
     storage.removeItem(tokenKey);
     unsetUser();
 

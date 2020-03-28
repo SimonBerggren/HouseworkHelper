@@ -83,7 +83,6 @@ interface UpdateTaskRequest {
 
 interface CompleteTaskRequest {
     taskName: string;
-    userName: string;
 }
 
 interface UpdateRewardRequest {
@@ -97,5 +96,4 @@ interface DeleteRewardRequest {
 
 interface RedeemRewardRequest {
     rewardName: string;
-    userName: string;
 }

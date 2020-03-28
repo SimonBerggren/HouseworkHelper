@@ -6,7 +6,7 @@ import { CenterPageWrapper } from '../../common/utils/page-wrapper';
 import Link from '../../common/components/link';
 import LoginForm from './login-form';
 
-import { authenticate, isAuthenticated } from '../../common/user/authentication';
+import { setToken, isAuthenticated } from '../../common/user/authentication';
 import { login } from '../../common/utils/api-operations';
 
 const LoginPage: React.FC = () => {
@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
                 return setShowError(true);
             }
 
-            authenticate(token);
+            setToken(token);
             setLoggedin(true);
 
         } catch (error) {

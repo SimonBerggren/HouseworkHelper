@@ -1,5 +1,5 @@
-import { deauthenticate, getToken } from '../user/authentication';
-import { unsetUser, getUser } from '../user/user-info';
+import { unsetToken, getToken } from '../user/authentication';
+import { unsetUser } from '../user/user-info';
 
 const request = (path: string, method: string, data?: any) =>
     fetch(
@@ -47,7 +47,7 @@ export const loginUser = (userName: string, password: string): Promise<string> =
     post('login/user', { userName, password });
 
 export const logout = () =>
-    deauthenticate();
+    unsetToken();
 
 export const switchUser = () =>
     unsetUser();
@@ -73,17 +73,11 @@ export const deleteUser = (data: DeleteUserRequest): Promise<User> =>
 
 // Tasks
 
-export const getTasks = (): Promise<Task[]> => {
-    const user = getUser();
-    if (user) {
-        return get(`task/${user.userName}`);
-    }
-    return Promise.reject('Not logged in');
-};
+export const getTasks = (): Promise<Task[]> =>
+    get('task');
 
-export const getAllTasks = (): Promise<Task[]> => {
-    return get('task/all');
-};
+export const getAllTasks = (): Promise<Task[]> =>
+    get('task/all');
 
 export const createTask = (task: Task): Promise<Task> =>
     post('task', task);
@@ -102,17 +96,11 @@ export const completeTask = (data: CompleteTaskRequest): Promise<boolean> =>
 
 // Rewards
 
-export const getRewards = (): Promise<Reward[]> => {
-    const user = getUser();
-    if (user) {
-        return get(`reward/${user.userName}`);
-    }
-    return Promise.reject('Not logged in');
-};
+export const getRewards = (): Promise<Reward[]> =>
+    get('reward');
 
-export const getAllRewards = (): Promise<Reward[]> => {
-    return get('reward/all');
-};
+export const getAllRewards = (): Promise<Reward[]> =>
+    get('reward/all');
 
 export const createReward = (task: Reward): Promise<Reward> =>
     post('reward', task);

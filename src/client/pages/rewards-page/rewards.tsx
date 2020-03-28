@@ -8,7 +8,6 @@ import RedeemRewardDialog from './redeem-reward-dialog';
 
 import { deleteReward, redeemReward } from '../../common/utils/api-operations';
 import { subtractUserPoints } from '../../common/user/user-info';
-import { UserContext } from '../../app/user-context';
 import IconButton from '../../common/components/icon-button';
 import EditRewardDialog from './edit-reward-dialog';
 
@@ -43,9 +42,9 @@ const Rewards: React.FC<RewardsProps> = ({ rewards, onRewardCreated, onRewardEdi
         onDialogClose();
     };
 
-    const onRedeemReward = async (rewardToRedeem: Reward, userName: string) => {
+    const onRedeemReward = async (rewardToRedeem: Reward) => {
         try {
-            const redeemedReward = await redeemReward({ rewardName: rewardToRedeem.rewardName, userName });
+            const redeemedReward = await redeemReward({ rewardName: rewardToRedeem.rewardName });
 
             if (redeemedReward) {
                 subtractUserPoints(rewardToRedeem.points);
@@ -65,102 +64,98 @@ const Rewards: React.FC<RewardsProps> = ({ rewards, onRewardCreated, onRewardEdi
     };
 
     return (
-        <UserContext.Consumer>
-            {({ user }) =>
-                <>
-                    <Container style={{ width: '90%' }}>
-                        <Table stickyHeader size='small'>
-                            <TableHead>
-                                <TableRow>
+        <>
+            <Container style={{ width: '90%' }}>
+                <Table stickyHeader size='small'>
+                    <TableHead>
+                        <TableRow>
 
-                                    <TH padding='none' style={{ width: '25%' }}>
-                                        <SmallIconButton
+                            <TH padding='none' style={{ width: '25%' }}>
+                                <SmallIconButton
 
-                                            style={{ padding: '0px' }}
-                                            onClick={() => setShowCreateReward(true)}
-                                            icon='add'
-                                        />
-                                    </TH>
+                                    style={{ padding: '0px' }}
+                                    onClick={() => setShowCreateReward(true)}
+                                    icon='add'
+                                />
+                            </TH>
 
-                                    <TH style={{ width: '50%' }}>
-                                        Reward
-                                    </TH>
+                            <TH style={{ width: '50%' }}>
+                                Reward
+                            </TH>
 
-                                    <TH style={{ width: '10%' }} align='right'>
-                                        Points
-                                    </TH>
+                            <TH style={{ width: '10%' }} align='right'>
+                                Points
+                            </TH>
 
-                                </TableRow>
+                        </TableRow>
 
-                            </TableHead>
-                            <TableBody>
-                                {rewards.map((reward, key) => (
+                    </TableHead>
+                    <TableBody>
+                        {rewards.map((reward, key) => (
 
-                                    <BodyTR
-                                        key={key}
-                                        onClick={() => setSelectedReward(reward)}
-                                        style={{ cursor: 'pointer' }}
-                                        className={`${rewardToDelete && rewardToDelete.rewardName === reward.rewardName && 'deleting'} ${key % 2 ? 'odd' : 'even'}`}
-                                    >
-                                        <TableCell padding='none' style={{ minWidth: '20px' }}>
-                                            <SmallIconButton
-                                                onClick={e => { e.stopPropagation(); setRewardToEdit(reward); }}
-                                                size='small'
-                                                icon='edit'
-                                            />
+                            <BodyTR
+                                key={key}
+                                onClick={() => setSelectedReward(reward)}
+                                style={{ cursor: 'pointer' }}
+                                className={`${rewardToDelete && rewardToDelete.rewardName === reward.rewardName && 'deleting'} ${key % 2 ? 'odd' : 'even'}`}
+                            >
+                                <TableCell padding='none' style={{ minWidth: '20px' }}>
+                                    <SmallIconButton
+                                        onClick={e => { e.stopPropagation(); setRewardToEdit(reward); }}
+                                        size='small'
+                                        icon='edit'
+                                    />
 
-                                            <SmallIconButton
-                                                onClick={e => { e.stopPropagation(); onDeleteReward(reward); }}
-                                                size='small'
-                                                icon='delete'
-                                            />
-                                        </TableCell>
+                                    <SmallIconButton
+                                        onClick={e => { e.stopPropagation(); onDeleteReward(reward); }}
+                                        size='small'
+                                        icon='delete'
+                                    />
+                                </TableCell>
 
-                                        <TableCell
-                                            size='small'
-                                            padding='none'
-                                        >
-                                            <h4>{reward.rewardName}</h4>
-                                            <p>{reward.desc}</p>
+                                <TableCell
+                                    size='small'
+                                    padding='none'
+                                >
+                                    <h4>{reward.rewardName}</h4>
+                                    <p>{reward.desc}</p>
 
-                                        </TableCell>
+                                </TableCell>
 
-                                        <TableCell
-                                            align='right'
-                                        >
-                                            {reward.points}
-                                        </TableCell>
+                                <TableCell
+                                    align='right'
+                                >
+                                    {reward.points}
+                                </TableCell>
 
-                                    </BodyTR>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </Container>
+                            </BodyTR>
+                        ))}
+                    </TableBody>
+                </Table>
+            </Container>
 
-                    <EditRewardDialog
-                        onRewardCreated={onRewardCreated}
-                        onClose={onDialogClose}
-                        onRewardEdited={onRewardEdited}
-                        open={showCreateReward}
-                        rewardToEdit={rewardToEdit}
-                    />
+            <EditRewardDialog
+                onRewardCreated={onRewardCreated}
+                onClose={onDialogClose}
+                onRewardEdited={onRewardEdited}
+                open={showCreateReward}
+                rewardToEdit={rewardToEdit}
+            />
 
-                    <RedeemRewardDialog
-                        onClose={onDialogClose}
-                        reward={selectedReward}
-                        onRedeemReward={reward => onRedeemReward(reward, user.userName)}
-                    />
+            <RedeemRewardDialog
+                onClose={onDialogClose}
+                reward={selectedReward}
+                onRedeemReward={onRedeemReward}
+            />
 
-                    <ConfirmDialog
-                        open={confirmingDelete}
-                        onClose={onDialogClose}
-                        onConfirm={onDeleteRewardConfirmed}
-                    >
-                        {`Are you sure you want to delete ${rewardToDelete?.rewardName}?`}
-                    </ConfirmDialog>
-                </>
-            }
-        </UserContext.Consumer>
+            <ConfirmDialog
+                open={confirmingDelete}
+                onClose={onDialogClose}
+                onConfirm={onDeleteRewardConfirmed}
+            >
+                {`Are you sure you want to delete ${rewardToDelete?.rewardName}?`}
+            </ConfirmDialog>
+        </>
     );
 };
 

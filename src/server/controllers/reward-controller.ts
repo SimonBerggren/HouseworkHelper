@@ -1,31 +1,30 @@
 import express from 'express';
 
+import RewardModel from '../model/reward-model';
 import UserModel from '../model/user-model';
 
+import { getHouseholdID, findUser, findRewards, findHousehold, getUser, findUserFull } from '../utils/mongo-utils';
 import { authenticate } from '../authentication/authentication';
 import { badRequest } from '../error';
-import { getHouseholdID, findUser, findRewards, findHousehold } from '../utils/mongo-utils';
-import RewardModel from '../model/reward-model';
 
 const router = express.Router();
 
 // get all rewards from a household
 router.get('/all', authenticate(), async (req, res) => {
-
-    const householdID = getHouseholdID(req);
-
     try {
+        const householdID = getHouseholdID(req);
+
         const rewards = await findRewards({ householdID });
 
-        const mappedRewards = await Promise.all(rewards.map(async reward => {
-            reward.visibleTo = await Promise.all(reward.visibleTo.map(async userID => {
-                const user = await findUser({ _id: userID });
-                return user.userName;
-            }));
+        // convert visibleTo array to contain user names instead of user ids
+        const rewardsWithUserNames = await Promise.all(rewards.map(async reward => {
+            reward.visibleTo = await Promise.all(reward.visibleTo.map(async userID =>
+                (await findUser({ _id: userID })).userName
+            ));
             return reward;
         }));
 
-        return res.json(mappedRewards);
+        return res.json(rewardsWithUserNames);
 
     } catch (error) {
         return badRequest(res, error);
@@ -33,30 +32,24 @@ router.get('/all', authenticate(), async (req, res) => {
 });
 
 // get rewards from a household for a specific user
-router.get('/:user', authenticate(), async (req, res) => {
-
-    const householdID = getHouseholdID(req);
-
+router.get('/', authenticate(), async (req, res) => {
     try {
-        const user = await UserModel.findOne({ householdID, userName: req.params.user });
-
-        if (!user) {
-            return badRequest(res, 'Could not find user');
-        }
+        const householdID = getHouseholdID(req);
+        const user = getUser(req);
 
         const rewards = await findRewards({ householdID, visibleToEveryone: true });
         const privateRewards = await findRewards({ householdID, visibleTo: { '$in': [user.id] }, visibleToEveryone: false });
         rewards.push(...privateRewards);
 
-        const mappedRewards = await Promise.all(rewards.map(async reward => {
-            reward.visibleTo = await Promise.all(reward.visibleTo.map(async userID => {
-                const user = await findUser({ _id: userID });
-                return user.userName;
-            }));
+        // convert visibleTo array to contain user names instead of user ids
+        const rewardsWithUserNames = await Promise.all(rewards.map(async reward => {
+            reward.visibleTo = await Promise.all(reward.visibleTo.map(async userID =>
+                (await findUser({ _id: userID })).userName
+            ));
             return reward;
         }));
 
-        return res.json(mappedRewards);
+        return res.json(rewardsWithUserNames);
 
     } catch (error) {
         return badRequest(res, error);
@@ -65,11 +58,9 @@ router.get('/:user', authenticate(), async (req, res) => {
 
 // create new reward
 router.post('/', authenticate(), async (req, res) => {
-
-    const householdID = getHouseholdID(req);
-    const rewardToCreate = req.body as Reward;
-
     try {
+        const householdID = getHouseholdID(req);
+        const rewardToCreate = req.body as Reward;
 
         if (!rewardToCreate.visibleToEveryone && (!rewardToCreate.visibleTo || !rewardToCreate.visibleTo.length)) {
             throw 'Reward needs to be visible to at least one person';
@@ -77,15 +68,10 @@ router.post('/', authenticate(), async (req, res) => {
         } else {
 
             if (!rewardToCreate.visibleToEveryone) {
-                const visibleTo = await Promise.all(rewardToCreate.visibleTo.map(async (userName) => {
-
-                    const user = await UserModel.findOne({ userName, householdID });
-                    if (!user) {
-                        throw 'Invalid users in visibleTo';
-                    }
-
-                    return user.id as string;
-                }));
+                // convert visibleTo array to contain user ids instead of user objects
+                const visibleTo = await Promise.all(rewardToCreate.visibleTo.map(async userName =>
+                    (await findUserFull({ userName, householdID })).id
+                ));
 
                 rewardToCreate.visibleTo = visibleTo;
             } else {
@@ -94,6 +80,7 @@ router.post('/', authenticate(), async (req, res) => {
         }
 
         const createdTask = await RewardModel.create({ householdID, ...rewardToCreate });
+
         return res.json(createdTask);
 
     } catch (error) {
@@ -115,13 +102,12 @@ router.put('/', authenticate(), async (req, res) => {
         } else {
             if (!reward.visibleToEveryone) {
 
+                // convert visibleTo array to contain user ids instead of user objects
                 const visibleTo = await Promise.all(reward.visibleTo.map(async (userName) => {
-
                     const user = await UserModel.findOne({ userName, householdID });
                     if (!user) {
                         throw 'Invalid users in visibleTo';
                     }
-
                     return user.id as string;
                 }));
 
@@ -132,7 +118,12 @@ router.put('/', authenticate(), async (req, res) => {
         }
 
         const updatedReward = await RewardModel.updateOne({ householdID, rewardName: rewardToUpdate }, { householdID, ...reward });
-        return res.json(updatedReward ? true : false);
+
+        if (!updatedReward) {
+            throw 'Unable to update reward';
+        }
+
+        return res.json(true);
 
     } catch (error) {
         return badRequest(res, error);
@@ -141,12 +132,16 @@ router.put('/', authenticate(), async (req, res) => {
 
 // delete reward
 router.delete('/', authenticate(), async (req, res) => {
-
-    const householdID = getHouseholdID(req);
-    const { rewardName } = req.body as DeleteRewardRequest;
-
     try {
+        const householdID = getHouseholdID(req);
+        const { rewardName } = req.body as DeleteRewardRequest;
+
         const deletedReward = await RewardModel.findOneAndDelete({ householdID, rewardName });
+
+        if (!deletedReward) {
+            throw 'Unable to delete reward';
+        }
+
         return res.json(deletedReward);
 
     } catch (error) {

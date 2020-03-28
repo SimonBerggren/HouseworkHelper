@@ -8,6 +8,8 @@ import IconButton from '../../common/components/icon-button';
 
 import { boxShadow, boxShadowInset, boxShadowNone, flexCenter } from '../../style/mixins';
 import { loginUser } from '../../common/utils/api-operations';
+import { setUser } from '../../common/user/user-info';
+import { setToken } from '../../common/user/authentication';
 
 type UserProps = {
     onUserSelected: (selectedUser: User) => void;
@@ -44,7 +46,8 @@ const User: React.FC<UserProps> = ({ user, editMode, onUserSelected, onDeleteUse
                 const userToken = await loginUser(user.userName, password);
 
                 if (userToken) {
-                    console.log(userToken);
+                    setUser(user);
+                    setToken(userToken);
                     onUserSelected(user);
                 } else {
                     disablePasswordMode();

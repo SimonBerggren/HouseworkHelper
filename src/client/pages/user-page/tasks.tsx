@@ -7,7 +7,6 @@ import CompleteTaskDialog from '../household-page/complete-task-dialog';
 
 import { completeTask } from '../../common/utils/api-operations';
 import { addUserPoints } from '../../common/user/user-info';
-import { UserContext } from '../../app/user-context';
 
 type TasksProps = {
     tasks: Task[];
@@ -17,8 +16,8 @@ const Tasks: React.FC<TasksProps> = ({ tasks }: TasksProps) => {
 
     const [selectedTask, setSelectedTask] = useState<Task>();
 
-    const onCompleteTask = async (taskToComplete: Task, userName: string) => {
-        const completed = await completeTask({ taskName: taskToComplete.taskName, userName });
+    const onCompleteTask = async (taskToComplete: Task) => {
+        const completed = await completeTask({ taskName: taskToComplete.taskName });
 
         if (completed) {
             addUserPoints(taskToComplete.points);
@@ -32,73 +31,69 @@ const Tasks: React.FC<TasksProps> = ({ tasks }: TasksProps) => {
     };
 
     return (
-        <UserContext.Consumer>
-            {({ user }) =>
-                <>
-                    <Container style={{ width: '90%' }}>
-                        <Table stickyHeader size='small'>
-                            <TableHead>
-                                <TableRow>
+        <>
+            <Container style={{ width: '90%' }}>
+                <Table stickyHeader size='small'>
+                    <TableHead>
+                        <TableRow>
 
-                                    <TH>
-                                        Task
-                                    </TH>
+                            <TH>
+                                Task
+                            </TH>
 
-                                    <TH padding='none'>
-                                        Frequency
-                                    </TH>
+                            <TH padding='none'>
+                                Frequency
+                            </TH>
 
-                                    <TH align='right'>
-                                        Points
-                                    </TH>
+                            <TH align='right'>
+                                Points
+                            </TH>
 
-                                </TableRow>
+                        </TableRow>
 
-                            </TableHead>
-                            <TableBody>
-                                {tasks.map((task, key) => (
+                    </TableHead>
+                    <TableBody>
+                        {tasks.map((task, key) => (
 
-                                    <BodyTR
-                                        key={key}
-                                        onClick={() => setSelectedTask(task)}
-                                        style={{ cursor: 'pointer' }}
-                                        className={`${key % 2 ? 'odd' : 'even'}`}
-                                    >
-                                        <TableCell
-                                            size='small'
-                                        >
-                                            <h4>{task.taskName}</h4>
-                                            <p>{task.desc}</p>
+                            <BodyTR
+                                key={key}
+                                onClick={() => setSelectedTask(task)}
+                                style={{ cursor: 'pointer' }}
+                                className={`${key % 2 ? 'odd' : 'even'}`}
+                            >
+                                <TableCell
+                                    size='small'
+                                >
+                                    <h4>{task.taskName}</h4>
+                                    <p>{task.desc}</p>
 
-                                        </TableCell>
+                                </TableCell>
 
-                                        <TableCell
-                                            padding='none'
-                                            align='right'
-                                        >
-                                            {task.frequency}
-                                        </TableCell>
+                                <TableCell
+                                    padding='none'
+                                    align='right'
+                                >
+                                    {task.frequency}
+                                </TableCell>
 
-                                        <TableCell
-                                            align='right'
-                                        >
-                                            {task.points}
-                                        </TableCell>
+                                <TableCell
+                                    align='right'
+                                >
+                                    {task.points}
+                                </TableCell>
 
-                                    </BodyTR>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </Container>
+                            </BodyTR>
+                        ))}
+                    </TableBody>
+                </Table>
+            </Container>
 
-                    <CompleteTaskDialog
-                        onClose={onDialogClose}
-                        task={selectedTask}
-                        onCompleteTask={task => onCompleteTask(task, user.userName)}
-                    />
-                </>
-            }
-        </UserContext.Consumer>
+            <CompleteTaskDialog
+                onClose={onDialogClose}
+                task={selectedTask}
+                onCompleteTask={onCompleteTask}
+            />
+        </>
     );
 };
 

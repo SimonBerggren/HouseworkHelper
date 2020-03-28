@@ -3,57 +3,57 @@ import bcrypt from 'bcrypt';
 
 import UserModel from '../model/user-model';
 
-import { generateToken, authenticate } from '../authentication/authentication';
-import { findHousehold, getHouseholdID } from '../utils/mongo-utils';
+import { generateEmailToken, authenticate, generateUserToken } from '../authentication/authentication';
+import { findHousehold, getHousehold } from '../utils/mongo-utils';
 import { badRequest } from '../error';
 
 const router = express.Router();
 
 // login as existing household
 router.post('/', async (req, res) => {
-
-    const { email, password } = req.body as Household;
-
     try {
+        const { email, password } = req.body as Household;
+
         const existingHousehold = await findHousehold({ email });
         const correctPassword = await bcrypt.compare(password, existingHousehold.password);
 
-        if (correctPassword) {
-            const token = generateToken(email);
-            return res.json(token);
+        if (!correctPassword) {
+            throw '';
         }
 
-        return badRequest(res, 'Invalid Credentials');
+        const token = generateEmailToken(email);
+        
+        return res.json(token);
 
     } catch (error) {
-        return badRequest(res, 'Invalid Credentials');
+        return badRequest(res, 'Invalid credentials');
     }
 });
 
 // login as existing user
 router.post('/user', authenticate(), async (req, res) => {
-
-    const householdID = getHouseholdID(req);
-    const { userName, password } = req.body;
-
     try {
-        const existingUser = await UserModel.findOne({ householdID, userName });
+        const household = getHousehold(req);
+        const { userName, password } = req.body;
+
+        const existingUser = await UserModel.findOne({ householdID: household.id, userName });
 
         if (!existingUser || !existingUser.password) {
-            return badRequest(res, 'Cannot login user');
+            throw '';
         }
 
         const correctPassword = await bcrypt.compare(password, existingUser.password);
 
-        if (correctPassword) {
-            const token = generateToken(userName);
-            return res.json(token);
+        if (!correctPassword) {
+            throw '';
         }
 
-        return badRequest(res, 'Invalid Credentials');
+        const token = generateUserToken(household.email, userName);
+
+        return res.json(token);
 
     } catch (error) {
-        return badRequest(res, 'Invalid Credentials');
+        return badRequest(res, 'Invalid credentials');
     }
 });
 
