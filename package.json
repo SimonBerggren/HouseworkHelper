@@ -11,7 +11,8 @@
     "build-client": "webpack --env.client",
     "build-server": "webpack",
     "start-mongo": "mongod --logpath logs/mongo/.log",
-    "lint": "eslint --ext .tsx,.ts src/ --fix"
+    "lint": "eslint --ext .tsx,.ts src/ --fix",
+    "check-types": "tsc"
   },
   "repository": {
     "type": "git",
