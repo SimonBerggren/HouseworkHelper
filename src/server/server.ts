@@ -13,23 +13,7 @@ import TaskController from './controllers/task-controller';
 import connect from './mongo';
 
 import { passportAuthentication } from './authentication/authentication';
-
-// @ts-ignore
-// eslint-disable-next-line no-unused-vars
-const handleError = (err, _req, res, _next) => {
-    var statusCode = err.status || 500;
-    res.status(statusCode).json(err.message);
-};
-
-// @ts-ignore
-const handleTrailingSlash = (req, res, next) => {
-    const test = /\?[^]*\//.test(req.url);
-    if (req.url.substr(-1) === '/' && req.url.length > 1 && !test) {
-        res.redirect(301, req.url.slice(0, -1));
-    }
-    else
-        next();
-};
+import { handleError, handleTrailingSlash } from './utils/server-utils';
 
 const staticPath = path.resolve('dist', 'client');
 const appPath = path.resolve(staticPath, 'index.html');
@@ -56,6 +40,8 @@ connect()
         app.use('/api/login', LoginController);
         app.use('/api/task', TaskController);
         app.use('/api/user', UserController);
+
+        app.use('/api/*', (_req, res) => res.status(404).send());
 
         app.use('*', (_req, res) => res.sendFile(appPath));
 
