@@ -104,17 +104,17 @@ const HamburgerMenu: React.FC = () => {
 
 const HamburgerContainer = styled.span`
     * {
-                color: black;
-        }
-    `;
+        color: black;
+    }
+`;
 
 const StyledLink = styled(Link)`
-        display: flex;
-        text-align: right;
-        margin-right: 10px;
-        color: black;
-        justify-content: space-between;
-        width: 100%;
-    `;
+    display: flex;
+    text-align: right;
+    margin-right: 10px;
+    color: black;
+    justify-content: space-between;
+    width: 100%;
+`;
 
 export default HamburgerMenu;
