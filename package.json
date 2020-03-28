@@ -12,6 +12,7 @@
     "build-server": "webpack",
     "start-mongo": "mongod --logpath logs/mongo/.log",
     "lint": "eslint --ext .tsx,.ts src/ --fix",
+    "watch-types": "tsc --watch",
     "check-types": "tsc"
   },
   "repository": {
