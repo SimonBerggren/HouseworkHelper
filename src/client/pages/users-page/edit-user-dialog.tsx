@@ -32,6 +32,7 @@ const defaultValues = (defaultUser?: User): User => {
 const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEdit, onUserCreated, onUserEdited }: EditUserDialogProps) => {
 
     const [user, setUser] = useState<User>(defaultValues(userToEdit));
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
 
     useEffect(() => {
         if (open) {
@@ -55,7 +56,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
         try {
             if (userToEdit) {
 
-                const editedUser = await editUser({ userToUpdate: userToEdit.userName, user });
+                const editedUser = await editUser({ userToUpdate: userToEdit.userName, password: confirmPassword, user });
 
                 if (editedUser) {
                     onUserEdited(userToEdit.userName, user);
@@ -105,12 +106,22 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
                     onChange={event => setUser({ ...user, userName: event.currentTarget.value })}
                 />
 
-                <StyledPasswordInput disableEndAdornment={userToEdit !== undefined}
+                <StyledPasswordInput disableEndAdornment
+                    className={!userToEdit ? 'extra-margin' : ''}
                     value={user.password}
                     label='Password (optional)'
                     autoComplete='new-password'
                     onChange={event => setUser({ ...user, password: event.currentTarget.value })}
                 />
+
+                {userToEdit && userToEdit.password &&
+                    <PasswordInput disableEndAdornment
+                        value={confirmPassword}
+                        label='Confirm Password'
+                        autoComplete='new-password'
+                        onChange={event => setConfirmPassword(event.currentTarget.value)}
+                    />
+                }
 
             </CenterDialogContent>
 
@@ -135,7 +146,9 @@ const KidCheckbox = styled(FormControlLabel)`
 
 const StyledPasswordInput = styled(PasswordInput)`
     && {
-        margin-left: 30px;
+        .extra-margin {
+            margin-left: 30px;
+        }
     }
 `;
 

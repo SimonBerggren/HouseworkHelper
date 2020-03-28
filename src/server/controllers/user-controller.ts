@@ -1,6 +1,8 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 
+import UserViewModel from '../view/user-view-model';
+
 import { findUser, findUsers, createUser, deleteUser, updateUser } from '../model/user-model';
 import { authenticate, getHouseholdID } from '../authentication/authentication';
 import { badRequest } from '../error';
@@ -14,7 +16,9 @@ router.get('/', authenticate(), async (req, res) => {
 
         const users = await findUsers(householdID);
 
-        return res.json(users);
+        const viewModels = users.map(user => new UserViewModel(user));
+
+        return res.json(viewModels);
 
     } catch (error) {
         return badRequest(res, error);
@@ -27,9 +31,17 @@ router.post('/', authenticate(), async (req, res) => {
         const householdID = getHouseholdID(req);
         const { user } = req.body as CreateUserRequest;
 
-        const createdUser = await createUser(householdID, user);
+        try {
+            await findUser(householdID, user.userName);
+            return badRequest(res, 'User already exist');
 
-        return res.json(createdUser);
+        } catch {
+            // user doesn't exist, continue
+        }
+
+        await createUser(householdID, user);
+
+        return res.json(true);
 
     } catch (error) {
         return badRequest(res, error);
@@ -40,20 +52,22 @@ router.post('/', authenticate(), async (req, res) => {
 router.put('/', authenticate(), async (req, res) => {
     try {
         const householdID = getHouseholdID(req);
-        const { userToUpdate, user } = req.body as UpdateUserRequest;
+        const { userToUpdate, password, user } = req.body as UpdateUserRequest;
 
         if (userToUpdate !== user.userName) {
-            const existingUser = await findUser(householdID, user.userName);
+            try {
+                await findUser(householdID, user.userName);
+                return badRequest(res, 'User already exist');
 
-            if (existingUser) {
-                throw 'User already exist';
+            } catch {
+                // user doesn't exist, continue
             }
         }
 
         const existingUser = await findUser(householdID, userToUpdate);
 
         if (existingUser.password) {
-            const correctPassword = user.password && await bcrypt.compare(user.password, existingUser.password);
+            const correctPassword = password && await bcrypt.compare(password, existingUser.password);
 
             if (correctPassword) {
                 await updateUser(householdID, userToUpdate, user);
@@ -79,9 +93,9 @@ router.delete('/', authenticate(), async (req, res) => {
         const householdID = getHouseholdID(req);
         const { userName } = req.body as DeleteUserRequest;
 
-        const deletedUser = await deleteUser(householdID, userName);
+        await deleteUser(householdID, userName);
 
-        return res.json(deletedUser);
+        return res.json(true);
 
     } catch (error) {
         return badRequest(res, error);
@@ -94,7 +108,10 @@ router.delete('/', authenticate(), async (req, res) => {
 router.get('/dev', async (_req, res) => {
     try {
         const users = await findUsers();
-        return res.json(users);
+
+        const viewModels = users.map(user => new UserViewModel(user));
+
+        return res.json(viewModels);
 
     } catch (error) {
         return badRequest(res, error);

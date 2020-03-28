@@ -64,6 +64,7 @@ interface CreateUserRequest {
 
 interface UpdateUserRequest {
     userToUpdate: string;
+    password?: string;
     user: User;
 }
 

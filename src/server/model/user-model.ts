@@ -1,8 +1,9 @@
 import mongoose, { Schema, Document as IDocument } from 'mongoose';
-import bcrypt from 'bcrypt';
 
+import { validateUser } from '../../common/validation/validate-user';
 import { dropAllTables, dropUserTable } from '../utils/dev-utils';
 import { findTasks, deleteTask } from './task-model';
+import { encrypt } from '../utils/encryption';
 
 interface UserSchemaModel extends User, IDocument {
 }
@@ -17,15 +18,6 @@ const UserSchema = new Schema<UserSchemaModel>({
 });
 
 UserSchema.index({ householdID: 1, userName: 1 }, { unique: true });
-
-// Hash the password before saving the user
-UserSchema.pre<UserSchemaModel>('save', async function (next) {
-    const user = this;
-    if (user.isModified('password') && user.password) {
-        user.password = await bcrypt.hash(user.password, 8);
-    }
-    next();
-});
 
 const UserModel = mongoose.model<UserSchemaModel>('user', UserSchema);
 
@@ -68,6 +60,13 @@ export const findUsers = async (householdID?: string): Promise<User[]> => {
 };
 
 export const createUser = async (householdID: string, user: User): Promise<User> => {
+
+    validateUser(user);
+
+    if (user.password) {
+        user.password = await encrypt(user.password);
+    }
+
     const createdUser = await UserModel.create({ householdID, ...user });
 
     if (!createdUser) {
@@ -77,6 +76,13 @@ export const createUser = async (householdID: string, user: User): Promise<User>
     return createdUser;
 };
 export const updateUser = async (householdID: string, userName: string, user: User): Promise<User> => {
+
+    validateUser(user);
+
+    if (user.password) {
+        user.password = await encrypt(user.password);
+    }
+
     const updatedUser = await UserModel.updateOne({ householdID, userName }, { householdID, ...user });
 
     if (!updatedUser) {
