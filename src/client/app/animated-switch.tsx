@@ -16,6 +16,7 @@ type AnimatedSwitchProps = {
 
 const HouseholdPage = () => <Lazy importFunc={() => import('../pages/household-page/household-page')} />;
 const Error404Page = () => <Lazy importFunc={() => import('../pages/error-404-page/error-404-page')} />;
+const RequestsPage = () => <Lazy importFunc={() => import('../pages/requests-page/requests-page')} />;
 const RewardsPage = () => <Lazy importFunc={() => import('../pages/rewards-page/rewards-page')} />;
 const SignUpPage = () => <Lazy importFunc={() => import('../pages/signup-page/signup-page')} />;
 const LoginPage = () => <Lazy importFunc={() => import('../pages/login-page/login-page')} />;
@@ -40,9 +41,10 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({ location }: AnimatedSwi
                         <Switch location={location}>
 
                             <ProtectedRoute exact path='/household' render={() => <HouseholdPage />} />
+                            <ProtectedRoute exact path='/requests' render={() => <RequestsPage />} />
                             <ProtectedRoute exact path='/rewards' render={() => <RewardsPage />} />
                             <ProtectedRoute exact path='/user' render={() => <UserPage />} />
-                            
+
                             <ProtectedRoute onlyLoginRequired exact path='/users' render={() => <UsersPage />} />
 
                             <Route exact path='/signup' render={() => <SignUpPage />} />

@@ -1,7 +1,14 @@
 import styled from 'styled-components';
 import React from 'react';
 
-import { Menu, MenuItem } from '@material-ui/core';
+import { Menu, MenuItem, Badge } from '@material-ui/core';
+
+import NotificationsIconNone from '@material-ui/icons/NotificationsNone';
+import NotificationsIcon from '@material-ui/icons/NotificationsActive';
+import PeopleIcon from '@material-ui/icons/PeopleAlt';
+import ExitIcon from '@material-ui/icons/ExitToApp';
+import RedeemIcon from '@material-ui/icons/Redeem';
+import HomeIcon from '@material-ui/icons/Home';
 
 import ProfilePicture from '../common/components/profile-picture';
 import IconButton from '../common/components/icon-button';
@@ -60,38 +67,68 @@ const HamburgerMenu: React.FC = () => {
                                     </StyledLink>
                                 </MenuItem>
 
-                                <MenuItem disabled></MenuItem>
+                                {user && !user.isKid ?
+                                    <span>
+                                        < MenuItem >
+                                            <StyledLink to='/household'>
+                                                <HomeIcon />
+                                                {'Household'}
+                                            </StyledLink>
+                                        </MenuItem>
+
+                                        <MenuItem onClick={handleClose}>
+                                            <StyledLink to='/requests'>
+                                                <Badge color='primary' badgeContent={2}>
+                                                    {/* <NotificationsIconNone /> */}
+                                                    <NotificationsIcon />
+                                                </Badge>
+                                                {'Requests'}
+                                            </StyledLink>
+                                        </MenuItem>
+
+                                        <MenuItem>
+                                            <StyledLink to='/users' >
+                                                <PeopleIcon />
+                                                {'Users'}
+                                            </StyledLink>
+                                        </MenuItem>
+                                    </span>
+                                    :
+                                    <MenuItem onClick={handleClose}>
+                                        <StyledLink to='/requests'>
+                                            <Badge color='primary' badgeContent={0}>
+                                                <NotificationsIconNone />
+                                                {/* <NotificationsIcon /> */}
+                                            </Badge>
+                                            {'Requests'}
+                                        </StyledLink>
+                                    </MenuItem>
+                                }
 
                                 <MenuItem onClick={handleClose}>
-                                    <StyledLink to='rewards' label='Redeem Rewards' />
-                                </MenuItem>
-                            </span>
-                        }
-
-                        {user && !user.isKid ?
-                            <span>
-                                <MenuItem>
-                                    <StyledLink to='household' label='View Household' />
+                                    <StyledLink to='/rewards'>
+                                        <RedeemIcon />
+                                        {'Rewards'}
+                                    </StyledLink>
                                 </MenuItem>
 
                                 <MenuItem disabled></MenuItem>
-
-                                <MenuItem>
-                                    <StyledLink to='users' label='Switch User' />
-                                </MenuItem>
                             </span>
-                            :
-                            <MenuItem disabled></MenuItem>
                         }
 
                         <MenuItem onClick={handleClose}>
                             {isFullyConfigured() ?
                                 <StyledLink to='/'
                                     onClick={logout}
-                                    label='Logout'
-                                />
+                                >
+                                    <ExitIcon />
+                                    {'Logout'}
+                                </StyledLink>
                                 :
-                                <StyledLink to='/login' label='Login' />
+                                <StyledLink to='/login'>
+                                    <ExitIcon />
+                                    {'Login'}
+                                </StyledLink>
                             }
                         </MenuItem>
 
@@ -115,6 +152,7 @@ const StyledLink = styled(Link)`
     color: black;
     justify-content: space-between;
     width: 100%;
+    min-width: 125px;
 `;
 
 export default HamburgerMenu;
