@@ -27,6 +27,15 @@ if (dropAllTables || dropUserTable) {
 
 //////////////////////////////// OPERATIONS ////////////////////////////////
 
+export const userExist = async (householdID: string, userName: string): Promise<boolean> => {
+    try {
+        await findUser(householdID, userName);
+        return true;
+    } catch{
+        return false;
+    }
+};
+
 export const findUser = async (householdID: string, userName: string): Promise<User & IDocument> => {
     const user = await UserModel.findOne({ householdID, userName });
 

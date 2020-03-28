@@ -29,6 +29,15 @@ if (dropAllTables || dropHouseholdTable) {
 
 //////////////////////////////// OPERATIONS ////////////////////////////////
 
+export const householdExist = async (email: string): Promise<boolean> => {
+    try {
+        await findHousehold(email);
+        return true;
+    } catch{
+        return false;
+    }
+};
+
 export const findHousehold = async (email: string): Promise<Household & IDocument> => {
     const household = await HouseholdModel.findOne({ email });
 

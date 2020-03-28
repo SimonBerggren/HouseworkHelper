@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 import UserViewModel from '../view/user-view-model';
 
-import { findUser, findUsers, createUser, deleteUser, updateUser } from '../model/user-model';
+import { findUser, findUsers, createUser, deleteUser, updateUser, userExist } from '../model/user-model';
 import { authenticate, getHouseholdID } from '../authentication/authentication';
 import { badRequest } from '../error';
 
@@ -31,12 +31,8 @@ router.post('/', authenticate(), async (req, res) => {
         const householdID = getHouseholdID(req);
         const { user } = req.body as CreateUserRequest;
 
-        try {
-            await findUser(householdID, user.userName);
-            return badRequest(res, 'User already exist');
-
-        } catch {
-            // user doesn't exist, continue
+        if (await userExist(householdID, user.userName)) {
+            throw 'User already exist';
         }
 
         await createUser(householdID, user);
@@ -54,14 +50,8 @@ router.put('/', authenticate(), async (req, res) => {
         const householdID = getHouseholdID(req);
         const { userToUpdate, password, user } = req.body as UpdateUserRequest;
 
-        if (userToUpdate !== user.userName) {
-            try {
-                await findUser(householdID, user.userName);
-                return badRequest(res, 'User already exist');
-
-            } catch {
-                // user doesn't exist, continue
-            }
+        if (userToUpdate !== user.userName && userExist(householdID, user.userName)) {
+            throw 'User already exist';
         }
 
         const existingUser = await findUser(householdID, userToUpdate);
