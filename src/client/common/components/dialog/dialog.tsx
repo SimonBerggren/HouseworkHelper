@@ -38,9 +38,7 @@ const StyledDialog = styled(MaterialDialog)`
             color: ${theme.palette.primary.main};
         }
         
-        div {
-            min-width: 250px;
-        }
+        min-width: 250px;
     `}
 `;
 

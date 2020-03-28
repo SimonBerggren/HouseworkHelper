@@ -105,7 +105,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ open, onClose, userToEd
                     onChange={event => setUser({ ...user, userName: event.currentTarget.value })}
                 />
 
-                <PasswordInput disableEndAdornment
+                <StyledPasswordInput disableEndAdornment={userToEdit !== undefined}
                     value={user.password}
                     label='Password (optional)'
                     autoComplete='new-password'
@@ -131,6 +131,12 @@ const CenterDialogContent = styled(DialogContent)`
 
 const KidCheckbox = styled(FormControlLabel)`
     align-self: flex-end;
+`;
+
+const StyledPasswordInput = styled(PasswordInput)`
+    && {
+        margin-left: 30px;
+    }
 `;
 
 export default EditUserDialog;
