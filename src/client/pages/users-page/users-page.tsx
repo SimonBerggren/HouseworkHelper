@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import ConfirmDialog from '../../common/components/dialog/confirm-dialog';
@@ -12,17 +13,16 @@ import { CenterPageWrapper } from '../../common/utils/page-wrapper';
 import { setToken } from '../../common/user/authentication';
 import { setUser } from '../../common/user/user-info';
 import { flexCenter } from '../../style/mixins';
-import { Redirect } from 'react-router-dom';
 
 const UsersPage = () => {
 
     const [isConfirmingDelete, setIsConfirmingDelete] = useState<boolean>(false);
     const [showUserDialog, setShowUserDialog] = useState<boolean>(false);
-    const [selectedUser, setSelectedUser] = useState<User>();
     const [userToDelete, setUserToDelete] = useState<User>();
     const [editMode, setEditMode] = useState<boolean>(false);
     const [userToEdit, setUserToEdit] = useState<User>();
     const [users, setUsers] = useState<User[]>([]);
+    const history = useHistory();
 
     useEffect(() => {
         getUsers().then(users => {
@@ -65,13 +65,12 @@ const UsersPage = () => {
 
     const onEditModeToggle = () => {
         setEditMode(!editMode);
-        setSelectedUser(undefined);
     };
 
     const onUserSelected = (selectedUser: User, userToken: string) => {
         setUser(selectedUser);
         setToken(userToken);
-        setSelectedUser(selectedUser);
+        history.push('/user');
     };
 
     const onDialogClose = () => {
@@ -100,7 +99,7 @@ const UsersPage = () => {
         }
     };
 
-    return (selectedUser ? <Redirect to='/user' /> :
+    return (
         <CenterPageWrapper>
             <Background>
                 <UsersContainer>
