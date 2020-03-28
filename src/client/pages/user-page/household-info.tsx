@@ -20,23 +20,21 @@ const HouseholdInfo: React.FC<HouseholdInfoProps> = ({ household, users, kidView
                 <h3>{household.householdName}</h3>
             </Link>
 
-            {
-                users.map((u, key) =>
-                    <User
-                        key={key}
-                        percentage={Math.round(Math.random() * 100)}
-                    >
-                        <span><span></span></span>
+            {users.map((u, key) =>
+                <User
+                    key={key}
+                    percentage={Math.round(Math.random() * 100)}
+                >
+                    <span><span></span></span>
 
-                        <ProfilePicture
-                            size='small'
-                            pic={u.profilePicture}
-                        />
-                        <h4>{u.userName}</h4>
+                    <ProfilePicture
+                        size='small'
+                        pic={u.profilePicture}
+                    />
+                    <h4>{u.userName}</h4>
 
-                    </User>
-                )
-            }
+                </User>
+            )}
 
         </Container >
     );
