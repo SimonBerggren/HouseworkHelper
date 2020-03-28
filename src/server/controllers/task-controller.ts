@@ -2,10 +2,10 @@ import express from 'express';
 
 import { findTasks, createTask, updateTask, deleteTask } from '../model/task-model';
 
-import { authenticate } from '../authentication/authentication';
-import { badRequest } from '../error';
-import { getHouseholdID, findHousehold, getUserID } from '../utils/mongo-utils';
+import { authenticate, getHouseholdID, getUserID } from '../authentication/authentication';
 import { findUser, findUserByID } from '../model/user-model';
+import { findHousehold } from '../model/household-model';
+import { badRequest } from '../error';
 
 const router = express.Router();
 
@@ -108,9 +108,9 @@ router.put('/', authenticate(), async (req, res) => {
             }
         }
 
-        const updatedTask = await updateTask(householdID, taskToUpdate, task);
+        await updateTask(householdID, taskToUpdate, task);
 
-        return res.json(updatedTask ? true : false);
+        return res.json(true);
 
     } catch (error) {
         return badRequest(res, error);
@@ -148,7 +148,7 @@ router.get('/dev/dev', async (_req, res) => {
 // get tasks from a household
 router.get('/dev/:email', async (req, res) => {
     try {
-        let household = await findHousehold({ email: req.params.email });
+        let household = await findHousehold(req.params.email);
 
         if (!household) {
             return badRequest(res, 'Cannot find any email');

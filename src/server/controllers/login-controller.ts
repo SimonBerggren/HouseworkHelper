@@ -1,10 +1,10 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 
-import { generateEmailToken, authenticate, generateUserToken } from '../authentication/authentication';
-import { findHousehold, getHousehold } from '../utils/mongo-utils';
-import { badRequest } from '../error';
+import { getHousehold, authenticate, generateEmailToken, generateUserToken } from '../authentication/authentication';
+import { findHousehold } from '../model/household-model';
 import { findUser } from '../model/user-model';
+import { badRequest } from '../error';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
     try {
         const { email, password } = req.body as Household;
 
-        const existingHousehold = await findHousehold({ email });
+        const existingHousehold = await findHousehold(email);
         const correctPassword = await bcrypt.compare(password, existingHousehold.password);
 
         if (!correctPassword) {
@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
 
         return res.json(token);
 
-    } catch (error) {
+    } catch {
         return badRequest(res, 'Invalid credentials');
     }
 });
@@ -49,7 +49,7 @@ router.post('/user', authenticate(), async (req, res) => {
 
         return res.json(token);
 
-    } catch (error) {
+    } catch {
         return badRequest(res, 'Invalid credentials');
     }
 });

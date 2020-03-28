@@ -35,7 +35,7 @@ export const findTask = async (householdID: string, taskName: string): Promise<T
     return task;
 };
 
-export const findTasks = async (householdID?: string, userID?: string, includeVisibleToEveryOne: boolean = true): Promise<(Task & IDocument)[]> => {
+export const findTasks = async (householdID?: string, userID?: string): Promise<(Task & IDocument)[]> => {
 
     // dev
     if (!householdID) {
@@ -47,10 +47,10 @@ export const findTasks = async (householdID?: string, userID?: string, includeVi
         return await TaskModel.find({ householdID });
     }
 
-    const publicTasks = await TaskModel.find({ householdID, visibleToEveryone: includeVisibleToEveryOne });
-    const otherTasks = await TaskModel.find({ householdID, visibleToEveryone: false, visibleTo: { '$in': [userID] } });
+    const publicTasks = await TaskModel.find({ householdID, visibleToEveryone: true });
+    const privateTasks = await TaskModel.find({ householdID, visibleToEveryone: false, visibleTo: { '$in': [userID] } });
 
-    return publicTasks.concat(otherTasks);
+    return publicTasks.concat(privateTasks);
 };
 
 export const createTask = async (householdID: string, taskToCreate: Task): Promise<(Task & IDocument)> => {

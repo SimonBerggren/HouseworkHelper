@@ -76,6 +76,15 @@ export const createUser = async (householdID: string, user: User): Promise<User>
 
     return createdUser;
 };
+export const updateUser = async (householdID: string, userName: string, user: User): Promise<User> => {
+    const updatedUser = await UserModel.updateOne({ householdID, userName }, { householdID, ...user });
+
+    if (!updatedUser) {
+        throw 'Unable to update user';
+    }
+
+    return updatedUser;
+};
 
 export const deleteUser = async (householdID: string, userName: string): Promise<User> => {
     const deletedUser = await UserModel.findOneAndDelete({ householdID, userName });
@@ -84,18 +93,15 @@ export const deleteUser = async (householdID: string, userName: string): Promise
         throw 'Unable to delete user';
     }
 
-    const tasks = await findTasks(householdID, deletedUser.id, false);
+    // remove user from visibleTo 
+    // if any task's visibleTo is empty afterwards, delete it
+    const privateTasks = (await findTasks(householdID, deletedUser.id)).filter(task => !task.visibleToEveryone);
 
-    await Promise.all(tasks.map(async task => {
+    await Promise.all(privateTasks.map(async task => {
         task.visibleTo = task.visibleTo.filter(userID => userID !== deletedUser.id);
 
         if (!task.visibleTo.length) {
-            const deletedTask = await deleteTask(householdID, task.taskName);
-
-            if (!deletedTask) {
-                throw 'Something went wrong while deleting private task';
-            }
-
+            return deleteTask(householdID, task.taskName);
         } else {
             task.save();
         }

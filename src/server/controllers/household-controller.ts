@@ -1,9 +1,7 @@
 import express from 'express';
 
-import HouseholdModel from '../model/household-model';
-
-import { authenticate } from '../authentication/authentication';
-import { getHousehold } from '../utils/mongo-utils';
+import { authenticate, getHousehold } from '../authentication/authentication';
+import { findHouseholds } from '../model/household-model';
 import { badRequest } from '../error';
 
 const router = express.Router();
@@ -25,14 +23,13 @@ router.get('/', authenticate(), async (req, res) => {
 // get all households
 router.get('/dev', async (_req, res) => {
     try {
-        const households = await HouseholdModel.find();
-        
+        const households = await findHouseholds();
+
         return res.json(households);
 
     } catch (error) {
         return badRequest(res, error);
     }
 });
-
 
 export default router;

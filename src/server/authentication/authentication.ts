@@ -2,7 +2,9 @@ import passportJwt from 'passport-jwt';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 
-import { findHousehold } from '../utils/mongo-utils';
+import { Document as IDocument } from 'mongoose';
+
+import { findHousehold } from '../model/household-model';
 import { findUser } from '../model/user-model';
 
 const secret = 'secret';
@@ -13,7 +15,7 @@ const jwtOptions: passportJwt.StrategyOptions = {
 };
 
 const jwtStrategy = new passportJwt.Strategy(jwtOptions, async (payload, next) => {
-    const household = await findHousehold({ email: payload.email });
+    const household = await findHousehold(payload.email);
     if (household) {
         const user = payload.userName && await findUser(household.id, payload.userName);
 
@@ -34,3 +36,10 @@ export const generateEmailToken = function (email: string) {
 export const generateUserToken = function (email: string, userName: string) {
     return jwt.sign({ email, userName }, secret);
 };
+
+export const getHousehold = (request: Express.Request) => (request.user as any).household as Household & IDocument;
+export const getHouseholdID = (request: Express.Request): string => getHousehold(request).id;
+
+export const getUser = (request: Express.Request) => (request.user as any).user as User & IDocument;
+export const getUserName = (request: Express.Request): string => getUser(request).userName;
+export const getUserID = (request: Express.Request): string => getUser(request).id;

@@ -1,9 +1,8 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 
-import { findUser, findUsers, createUser, deleteUser } from '../model/user-model';
-import { authenticate } from '../authentication/authentication';
-import { getHouseholdID } from '../utils/mongo-utils';
+import { findUser, findUsers, createUser, deleteUser, updateUser } from '../model/user-model';
+import { authenticate, getHouseholdID } from '../authentication/authentication';
 import { badRequest } from '../error';
 
 const router = express.Router();
@@ -14,7 +13,7 @@ router.get('/', authenticate(), async (req, res) => {
         const householdID = getHouseholdID(req);
 
         const users = await findUsers(householdID);
-        
+
         return res.json(users);
 
     } catch (error) {
@@ -25,7 +24,6 @@ router.get('/', authenticate(), async (req, res) => {
 // create new user
 router.post('/', authenticate(), async (req, res) => {
     try {
-
         const householdID = getHouseholdID(req);
         const { user } = req.body as CreateUserRequest;
 
@@ -40,12 +38,11 @@ router.post('/', authenticate(), async (req, res) => {
 
 // update user
 router.put('/', authenticate(), async (req, res) => {
-
-    const householdID = getHouseholdID(req);
-    const { userToUpdate, user } = req.body as UpdateUserRequest;
-
     try {
-        if (userToUpdate != user.userName) {
+        const householdID = getHouseholdID(req);
+        const { userToUpdate, user } = req.body as UpdateUserRequest;
+
+        if (userToUpdate !== user.userName) {
             const existingUser = await findUser(householdID, user.userName);
 
             if (existingUser) {
@@ -55,20 +52,16 @@ router.put('/', authenticate(), async (req, res) => {
 
         const existingUser = await findUser(householdID, userToUpdate);
 
-        if (!existingUser) {
-            throw 'Cannot find user';
-        }
-
-        existingUser.userName = user.userName;
-        existingUser.profilePicture = user.profilePicture;
-
         if (existingUser.password) {
             const correctPassword = user.password && await bcrypt.compare(user.password, existingUser.password);
+
             if (correctPassword) {
-                existingUser.password = user.password;
+                await updateUser(householdID, userToUpdate, user);
             } else {
                 throw 'Invalid credentials';
             }
+        } else {
+            await updateUser(householdID, userToUpdate, user);
         }
 
         await existingUser.save();
@@ -99,7 +92,6 @@ router.delete('/', authenticate(), async (req, res) => {
 
 // get all users
 router.get('/dev', async (_req, res) => {
-
     try {
         const users = await findUsers();
         return res.json(users);

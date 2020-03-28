@@ -27,4 +27,50 @@ if (dropAllTables || dropHouseholdTable) {
     HouseholdModel.collection.drop();
 }
 
-export default HouseholdModel;
+//////////////////////////////// OPERATIONS ////////////////////////////////
+
+export const findHousehold = async (email: string): Promise<Household & IDocument> => {
+    const household = await HouseholdModel.findOne({ email });
+
+    if (!household) {
+        throw 'Unable to find household';
+    }
+
+    return household;
+};
+
+// dev
+export const findHouseholds = async (): Promise<(Household & IDocument)[]> => {
+    const households = await HouseholdModel.find();
+
+    return households;
+};
+
+export const findHouseholdByID = async (id: string): Promise<Household & IDocument> => {
+    const household = await HouseholdModel.findOne({ _id: id });
+
+    if (!household) {
+        throw 'Unable to find household';
+    }
+
+    return household;
+};
+
+export const createHousehold = async (email: string, householdName: string, password: string): Promise<Household> => {
+    const createdHousehold = await HouseholdModel.create({ email, householdName, password });
+
+    if (!createdHousehold) {
+        throw 'Unable to create household';
+    }
+
+    return createdHousehold;
+};
+export const updateHousehold = async (householdID: string, householdName: string, household: Household): Promise<Household> => {
+    const updatedHousehold = await HouseholdModel.updateOne({ householdID, householdName }, { householdID, ...household });
+
+    if (!updatedHousehold) {
+        throw 'Unable to update household';
+    }
+
+    return updatedHousehold;
+};
