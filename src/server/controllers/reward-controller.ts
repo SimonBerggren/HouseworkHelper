@@ -1,11 +1,11 @@
 import express from 'express';
 
 import RewardModel from '../model/reward-model';
-import UserModel from '../model/user-model';
 
-import { getHouseholdID, findUser, findRewards, findHousehold, getUser, findUserFull } from '../utils/mongo-utils';
+import { getHouseholdID, findRewards, findHousehold, getUser } from '../utils/mongo-utils';
 import { authenticate } from '../authentication/authentication';
 import { badRequest } from '../error';
+import { findUser, findUserByID } from '../model/user-model';
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.get('/all', authenticate(), async (req, res) => {
         // convert visibleTo array to contain user names instead of user ids
         const rewardsWithUserNames = await Promise.all(rewards.map(async reward => {
             reward.visibleTo = await Promise.all(reward.visibleTo.map(async userID =>
-                (await findUser({ _id: userID })).userName
+                (await findUserByID(userID)).userName
             ));
             return reward;
         }));
@@ -44,7 +44,7 @@ router.get('/', authenticate(), async (req, res) => {
         // convert visibleTo array to contain user names instead of user ids
         const rewardsWithUserNames = await Promise.all(rewards.map(async reward => {
             reward.visibleTo = await Promise.all(reward.visibleTo.map(async userID =>
-                (await findUser({ _id: userID })).userName
+                (await findUserByID(userID)).userName
             ));
             return reward;
         }));
@@ -70,7 +70,7 @@ router.post('/', authenticate(), async (req, res) => {
             if (!rewardToCreate.visibleToEveryone) {
                 // convert visibleTo array to contain user ids instead of user objects
                 const visibleTo = await Promise.all(rewardToCreate.visibleTo.map(async userName =>
-                    (await findUserFull({ userName, householdID })).id
+                    (await findUser(householdID, userName)).id
                 ));
 
                 rewardToCreate.visibleTo = visibleTo;
@@ -90,11 +90,9 @@ router.post('/', authenticate(), async (req, res) => {
 
 // update reward
 router.put('/', authenticate(), async (req, res) => {
-
-    const householdID = getHouseholdID(req);
-    const { rewardToUpdate, reward } = req.body as UpdateRewardRequest;
-
     try {
+        const householdID = getHouseholdID(req);
+        const { rewardToUpdate, reward } = req.body as UpdateRewardRequest;
 
         if (!reward.visibleToEveryone && (!reward.visibleTo || !reward.visibleTo.length)) {
             throw 'Task needs to be visible to at least one person';
@@ -103,13 +101,9 @@ router.put('/', authenticate(), async (req, res) => {
             if (!reward.visibleToEveryone) {
 
                 // convert visibleTo array to contain user ids instead of user objects
-                const visibleTo = await Promise.all(reward.visibleTo.map(async (userName) => {
-                    const user = await UserModel.findOne({ userName, householdID });
-                    if (!user) {
-                        throw 'Invalid users in visibleTo';
-                    }
-                    return user.id as string;
-                }));
+                const visibleTo = await Promise.all(reward.visibleTo.map(async (userName) =>
+                    (await findUser(householdID, userName)).id
+                ));
 
                 reward.visibleTo = visibleTo;
             } else {

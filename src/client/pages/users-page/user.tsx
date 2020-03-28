@@ -8,11 +8,9 @@ import IconButton from '../../common/components/icon-button';
 
 import { boxShadow, boxShadowInset, boxShadowNone, flexCenter } from '../../style/mixins';
 import { loginUser } from '../../common/utils/api-operations';
-import { setUser } from '../../common/user/user-info';
-import { setToken } from '../../common/user/authentication';
 
 type UserProps = {
-    onUserSelected: (selectedUser: User) => void;
+    onUserSelected: (selectedUser: User, userToken: string) => void;
     onDeleteUser: (userToDelete: User) => void;
     onEditUser: (userToEdit: User) => void;
     editMode: boolean;
@@ -36,23 +34,19 @@ const User: React.FC<UserProps> = ({ user, editMode, onUserSelected, onDeleteUse
             return inputRef.focus();
         }
 
-        onUserSelected(user);
+        onUserLogin();
     };
 
     const onUserLogin = async () => {
 
         try {
-            if (password) {
-                const userToken = await loginUser(user.userName, password);
+            const userToken = await loginUser(user.userName, password);
 
-                if (userToken) {
-                    setUser(user);
-                    setToken(userToken);
-                    onUserSelected(user);
-                } else {
-                    disablePasswordMode();
-                    alert('Something went wrong when generating user token');
-                }
+            if (userToken) {
+                onUserSelected(user, userToken);
+            } else {
+                disablePasswordMode();
+                alert('Something went wrong when generating user token');
             }
         } catch (error) {
             disablePasswordMode();

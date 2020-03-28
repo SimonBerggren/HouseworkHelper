@@ -1,11 +1,10 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 
-import UserModel from '../model/user-model';
-
 import { generateEmailToken, authenticate, generateUserToken } from '../authentication/authentication';
 import { findHousehold, getHousehold } from '../utils/mongo-utils';
 import { badRequest } from '../error';
+import { findUser } from '../model/user-model';
 
 const router = express.Router();
 
@@ -22,7 +21,7 @@ router.post('/', async (req, res) => {
         }
 
         const token = generateEmailToken(email);
-        
+
         return res.json(token);
 
     } catch (error) {
@@ -33,19 +32,17 @@ router.post('/', async (req, res) => {
 // login as existing user
 router.post('/user', authenticate(), async (req, res) => {
     try {
-        const household = getHousehold(req);
         const { userName, password } = req.body;
+        const household = getHousehold(req);
 
-        const existingUser = await UserModel.findOne({ householdID: household.id, userName });
+        const existingUser = await findUser(household.id, userName);
 
-        if (!existingUser || !existingUser.password) {
-            throw '';
-        }
+        if (existingUser.password) {
+            const correctPassword = await bcrypt.compare(password, existingUser.password);
 
-        const correctPassword = await bcrypt.compare(password, existingUser.password);
-
-        if (!correctPassword) {
-            throw '';
+            if (!correctPassword) {
+                throw '';
+            }
         }
 
         const token = generateUserToken(household.email, userName);

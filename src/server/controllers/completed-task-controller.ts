@@ -2,8 +2,9 @@ import express from 'express';
 
 import CompletedTaskModel from '../model/completed-task-model';
 
-import { getHouseholdID, getUserName, findUserFull, findTaskFull } from '../utils/mongo-utils';
 import { authenticate } from '../authentication/authentication';
+import { getHouseholdID, getUser } from '../utils/mongo-utils';
+import { findTask } from '../model/task-model';
 import { badRequest } from '../error';
 
 const router = express.Router();
@@ -26,11 +27,10 @@ router.get('/', authenticate(), async (req, res) => {
 router.post('/', authenticate(), async (req, res) => {
     try {
         const householdID = getHouseholdID(req);
-        const userName = getUserName(req);
+        const user = getUser(req);
         const { taskName } = req.body as CompleteTaskRequest;
 
-        const taskToComplete = await findTaskFull({ householdID, taskName });
-        const user = await findUserFull({ householdID, userName });
+        const taskToComplete = await findTask(householdID, taskName);
 
         const completedTask: CompletedTask = {
             householdID,
@@ -47,7 +47,7 @@ router.post('/', authenticate(), async (req, res) => {
 
         user.points += taskToComplete.points;
         user.save();
-        
+
         return res.json(true);
 
     } catch (error) {

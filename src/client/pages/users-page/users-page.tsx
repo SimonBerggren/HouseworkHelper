@@ -9,6 +9,8 @@ import User from './user';
 
 import { getUsers, deleteUser } from '../../common/utils/api-operations';
 import { CenterPageWrapper } from '../../common/utils/page-wrapper';
+import { setToken } from '../../common/user/authentication';
+import { setUser } from '../../common/user/user-info';
 import { flexCenter } from '../../style/mixins';
 import { Redirect } from 'react-router-dom';
 
@@ -66,7 +68,9 @@ const UsersPage = () => {
         setSelectedUser(undefined);
     };
 
-    const onUserSelected = (selectedUser: User) => {
+    const onUserSelected = (selectedUser: User, userToken: string) => {
+        setUser(selectedUser);
+        setToken(userToken);
         setSelectedUser(selectedUser);
     };
 

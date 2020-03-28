@@ -4,6 +4,7 @@ import { storage } from './authentication';
 const userKey = 'hwhUser';
 
 export const setUser = (user: User) => {
+    console.log(user);
     storage.setItem(userKey, JSON.stringify(user));
     emitEvent('userChanged', user);
 };

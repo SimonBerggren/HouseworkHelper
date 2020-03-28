@@ -8,13 +8,17 @@ type ProtectedRouteProps = IRouteProps & {
     onlyLoginRequired?: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ render, onlyLoginRequired, ...routeProps }: ProtectedRouteProps) =>
-    <Route {...routeProps} render={(renderProps) =>
-        (onlyLoginRequired && isAuthenticated()) || isFullyConfigured()
-            ? render && render(renderProps)
-            : <Redirect to={{
-                pathname: '/login',
-            }} />
-    } />;
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ render, onlyLoginRequired, ...routeProps }: ProtectedRouteProps) => {
+
+    return (
+        <Route {...routeProps} render={(renderProps) =>
+            (onlyLoginRequired && isAuthenticated()) || isFullyConfigured()
+                ? render && render(renderProps)
+                : <Redirect to={{
+                    pathname: '/login',
+                }} />
+        } />
+    );
+};
 
 export default ProtectedRoute;

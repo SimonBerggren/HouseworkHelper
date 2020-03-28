@@ -8,10 +8,9 @@ const router = express.Router();
 
 // sign up as new household
 router.post('/', async (req, res) => {
-
-    const newHousehold = req.body as Household;
-
     try {
+        const newHousehold = req.body as Household;
+
         const existingHousehold = await HouseholdModel.findOne({ email: newHousehold.email });
 
         if (existingHousehold) {

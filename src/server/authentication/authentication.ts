@@ -2,9 +2,8 @@ import passportJwt from 'passport-jwt';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 
-import UserModel from '../model/user-model';
-
 import { findHousehold } from '../utils/mongo-utils';
+import { findUser } from '../model/user-model';
 
 const secret = 'secret';
 
@@ -16,7 +15,7 @@ const jwtOptions: passportJwt.StrategyOptions = {
 const jwtStrategy = new passportJwt.Strategy(jwtOptions, async (payload, next) => {
     const household = await findHousehold({ email: payload.email });
     if (household) {
-        const user = await UserModel.findOne({ householdID: household.id, userName: payload.userName });
+        const user = payload.userName && await findUser(household.id, payload.userName);
 
         next(undefined, { household, user });
     }

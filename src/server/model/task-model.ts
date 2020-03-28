@@ -23,4 +23,62 @@ if (dropAllTables || dropTaskTable) {
     TaskModel.collection.drop();
 }
 
-export default TaskModel;
+//////////////////////////////// OPERATIONS ////////////////////////////////
+
+export const findTask = async (householdID: string, taskName: string): Promise<Task & IDocument> => {
+    const task = await TaskModel.findOne({ householdID, taskName });
+
+    if (!task) {
+        throw 'Unable to find task';
+    }
+
+    return task;
+};
+
+export const findTasks = async (householdID?: string, userID?: string, includeVisibleToEveryOne: boolean = true): Promise<(Task & IDocument)[]> => {
+
+    // dev
+    if (!householdID) {
+        return await TaskModel.find();
+    }
+
+    // adult
+    if (!userID) {
+        return await TaskModel.find({ householdID });
+    }
+
+    const publicTasks = await TaskModel.find({ householdID, visibleToEveryone: includeVisibleToEveryOne });
+    const otherTasks = await TaskModel.find({ householdID, visibleToEveryone: false, visibleTo: { '$in': [userID] } });
+
+    return publicTasks.concat(otherTasks);
+};
+
+export const createTask = async (householdID: string, taskToCreate: Task): Promise<(Task & IDocument)> => {
+    const createdTask = await TaskModel.create({ householdID, ...taskToCreate });
+
+    if (!createdTask) {
+        throw 'Unable to create task';
+    }
+
+    return createdTask;
+};
+
+export const updateTask = async (householdID: string, taskName: string, taskToUpdate: Task): Promise<(Task & IDocument)> => {
+    const task = await TaskModel.updateOne({ householdID, taskName }, { householdID, ...taskToUpdate });
+
+    if (!task) {
+        throw 'Unable to update task';
+    }
+
+    return task;
+};
+
+export const deleteTask = async (householdID: string, taskName: string): Promise<(Task & IDocument)> => {
+    const deletedTask = await TaskModel.findOneAndDelete({ householdID, taskName });
+
+    if (!deletedTask) {
+        throw 'Unable to delete task';
+    }
+
+    return deletedTask;
+};
