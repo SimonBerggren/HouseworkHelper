@@ -15,6 +15,7 @@ import connect from './mongo';
 
 import { passportAuthentication } from './authentication/authentication';
 import { handleError, handleTrailingSlash } from './utils/server-utils';
+import { getIP } from './utils/ip-utils';
 
 const staticPath = path.resolve('dist', 'client');
 const appPath = path.resolve(staticPath, 'index.html');
@@ -23,6 +24,7 @@ connect()
     .then(() => {
         const port = process.argv.pop();
         const app = express();
+        const ip = getIP();
 
         app.use(
             cors(),
@@ -47,7 +49,7 @@ connect()
 
         app.use('*', (_req, res) => res.sendFile(appPath));
 
-        app.listen(port, () => console.info(`Up and running on port ${port}`));
+        app.listen(port, () => console.info(`Up and running on port ${ip}`));
 
     })
     .catch(error => {
