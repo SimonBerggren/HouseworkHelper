@@ -8,7 +8,7 @@ import IconButton from '../../common/components/icon-button';
 import CompleteTaskDialog from './complete-task-dialog';
 import EditTaskDialog from './edit-task-dialog';
 
-import { deleteTask, completeTask } from '../../common/utils/api-operations';
+import { deleteTask, completeTask, requestDoTask } from '../../common/utils/api-operations';
 import { addUserPoints } from '../../common/user/user-info';
 
 type TasksProps = {
@@ -48,6 +48,14 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
         if (completed) {
             addUserPoints(taskToComplete.points);
 
+            onDialogClose();
+        }
+    };
+
+    const onRequestDoTask = async (data: RequestDoTask) => {
+        const requested = await requestDoTask(data);
+
+        if (requested) {
             onDialogClose();
         }
     };
@@ -152,6 +160,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks, onTaskDeleted, onTaskCreated, onTa
             <CompleteTaskDialog
                 onClose={onDialogClose}
                 task={selectedTask}
+                onRequestDoTask={onRequestDoTask}
                 onCompleteTask={onCompleteTask}
             />
 

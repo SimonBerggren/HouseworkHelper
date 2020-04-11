@@ -13,6 +13,9 @@ const defaultTheme = createMuiTheme({
         type: 'light',
         primary: purple,
         secondary: purple,
+        text: {
+            primary: '#000'
+        }
     }
 });
 

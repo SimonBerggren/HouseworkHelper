@@ -1,12 +1,22 @@
 import styled, { css } from 'styled-components';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { AppBar, Toolbar } from '@material-ui/core';
+import { AppBar, Toolbar, Badge } from '@material-ui/core';
+
+import NotificationsIconNone from '@material-ui/icons/NotificationsNone';
+import NotificationsIcon from '@material-ui/icons/NotificationsActive';
 
 import HamburgerMenu from './hamburger-menu';
 import Link from '../common/components/link';
+import { getRequests } from '../common/utils/api-operations';
 
 const MenuBar = () => {
+
+    const [notifications, setNotifications] = useState<number>(0);
+
+    useEffect(() => {
+        getRequests().then(requests => setNotifications(requests.length));
+    }, []);
 
     return (
         <StyledAppBar >
@@ -18,7 +28,14 @@ const MenuBar = () => {
                     </h3>
                 </Link>
 
-                <HamburgerMenu />
+                <span>
+                    <Badge badgeContent={notifications}>
+                        <NotificationsIconNone />
+                        {/* <NotificationsIcon /> */}
+                    </Badge>
+
+                    <HamburgerMenu />
+                </span>
             </Bar>
 
         </StyledAppBar>

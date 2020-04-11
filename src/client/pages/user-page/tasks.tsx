@@ -5,7 +5,7 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconB
 
 import CompleteTaskDialog from '../household-page/complete-task-dialog';
 
-import { completeTask } from '../../common/utils/api-operations';
+import { completeTask, requestDoTask } from '../../common/utils/api-operations';
 import { addUserPoints } from '../../common/user/user-info';
 
 type TasksProps = {
@@ -22,6 +22,14 @@ const Tasks: React.FC<TasksProps> = ({ tasks }: TasksProps) => {
         if (completed) {
             addUserPoints(taskToComplete.points);
 
+            onDialogClose();
+        }
+    };
+
+    const onRequestDoTask = async (data: RequestDoTask) => {
+        const requested = await requestDoTask(data);
+
+        if (requested) {
             onDialogClose();
         }
     };
@@ -92,6 +100,7 @@ const Tasks: React.FC<TasksProps> = ({ tasks }: TasksProps) => {
                 onClose={onDialogClose}
                 task={selectedTask}
                 onCompleteTask={onCompleteTask}
+                onRequestDoTask={onRequestDoTask}
             />
         </>
     );

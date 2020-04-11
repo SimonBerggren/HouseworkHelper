@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
+import { DialogActions, DialogContent, FormControlLabel, Switch } from '@material-ui/core';
+
+import Dialog, { DialogProps as IDialogProps } from '../../common/components/dialog/dialog';
 import EditableProfilePicture from '../../common/components/editable-profile-picture';
 import PasswordInput from '../../common/components/input/password-input';
 import TextInput from '../../common/components/input/text-input';
-import Dialog from '../../common/components/dialog/dialog';
 import Button from '../../common/components/button';
 
-import { DialogActions, DialogContent, FormControlLabel, Switch } from '@material-ui/core';
 import { editUser, createUser } from '../../common/utils/api-operations';
 import { flexCenter } from '../../style/mixins';
 
-type EditUserDialogProps = {
+type EditUserDialogProps = IDialogProps & {
     onUserEdited: (editedUserName: string, newUser: User) => void;
     onUserCreated: (createdUser: User) => void;
-    onClose: () => void;
     userToEdit?: User;
-    open: boolean;
 }
 
 const defaultValues = (defaultUser?: User): User => {
@@ -26,6 +25,7 @@ const defaultValues = (defaultUser?: User): User => {
         profilePicture: defaultUser ? defaultUser.profilePicture : 0,
         password: defaultUser ? defaultUser.password : '',
         isKid: defaultUser ? defaultUser.isKid : false,
+        isHonest: defaultUser ? defaultUser.isHonest : false,
     };
 };
 

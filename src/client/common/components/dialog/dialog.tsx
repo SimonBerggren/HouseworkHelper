@@ -6,15 +6,17 @@ import IconButtonTop from '../icon-button-top';
 
 export type DialogProps = React.PropsWithChildren<IDialogProps> & {
     title?: string;
+    size?: 'small' | 'large';
     onClose: () => void;
 }
 
-const Dialog: React.FC<DialogProps> = ({ title, children, onClose, ...props }: DialogProps) => {
+const Dialog: React.FC<DialogProps> = ({ title, size, onClose, children, ...props }: DialogProps) => {
 
     return (
         <StyledDialog
             onBackdropClick={onClose}
             color='primary'
+            className={size}
             {...props}
         >
             <StyledTitle>
@@ -32,14 +34,32 @@ const Dialog: React.FC<DialogProps> = ({ title, children, onClose, ...props }: D
 };
 
 const StyledDialog = styled(MaterialDialog)`
-
+&& {
     ${({ theme }) => css`
         a {
             color: ${theme.palette.primary.main};
         }
         
-        min-width: 250px;
+        >div>div {
+            min-width: 300px;
+            min-height: 300px;
+        }
+
+        &.small {
+            >div>div {
+                min-width: unset;
+                min-height: unset;
+            }
+        }
+
+        &.large {
+            >div>div {
+                width: 80%;
+                min-height: 300px;
+            }
+        }
     `}
+}
 `;
 
 const StyledTitle = styled(DialogTitle)`

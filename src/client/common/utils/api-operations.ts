@@ -116,3 +116,11 @@ export const getRedeemedRewards = (): Promise<CompletedTask[]> =>
 
 export const redeemReward = (data: RedeemRewardRequest): Promise<boolean> =>
     post('redeemed-reward', data);
+
+// Requests
+
+export const getRequests = (): Promise<(RequestDoTask | RequestCompleteTask)[]> =>
+    get('request');
+
+export const requestDoTask = (data: RequestDoTask): Promise<boolean> =>
+    post('request/do', data);

@@ -36,12 +36,6 @@ const UserPage: React.FC = () => {
 
                     <br />
 
-                    <Tasks
-                        tasks={tasks}
-                    />
-
-                    <br />
-
                     {household &&
                         <HouseholdInfo
                             household={household}
@@ -49,6 +43,13 @@ const UserPage: React.FC = () => {
                             users={users}
                         />
                     }
+
+                    <br />
+
+                    <Tasks
+                        tasks={tasks}
+                    />
+
                 </PageWrapper>
             }
         </UserContext.Consumer >
@@ -58,7 +59,6 @@ const UserPage: React.FC = () => {
 const UserInfoContainer = styled.div`
     width: 280px;
     padding: 20px;
-    
 `;
 
 export default UserPage;

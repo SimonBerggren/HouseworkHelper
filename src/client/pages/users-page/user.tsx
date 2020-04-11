@@ -110,6 +110,7 @@ const User: React.FC<UserProps> = ({ user, editMode, onUserSelected, onDeleteUse
                 value={password}
                 placeholder='Password'
                 inputRef={r => inputRef = r}
+                autoComplete='on'
                 onChange={event => setPassword(event.currentTarget.value)}
                 onKeyDown={onPasswordKeyDown}
             />

@@ -5,6 +5,7 @@ import cors from 'cors';
 import CompletedTaskController from './controllers/completed-task-controller';
 import RedeemRewardController from './controllers/redeemed-reward-controller';
 import HouseholdController from './controllers/household-controller';
+import RequestController from './controllers/request-controller';
 import RewardController from './controllers/reward-controller';
 import SignupController from './controllers/signup-controller';
 import LoginController from './controllers/login-controller';
@@ -35,6 +36,7 @@ connect()
         app.use('/api/completed-task', CompletedTaskController);
         app.use('/api/redeemed-reward', RedeemRewardController);
         app.use('/api/household', HouseholdController);
+        app.use('/api/request', RequestController);
         app.use('/api/signup', SignupController);
         app.use('/api/reward', RewardController);
         app.use('/api/login', LoginController);

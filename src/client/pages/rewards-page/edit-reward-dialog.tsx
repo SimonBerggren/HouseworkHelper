@@ -106,7 +106,6 @@ const EditRewardDialog: React.FC<EditRewardDialogProps> = ({ open, rewardToEdit,
                                 type='number'
                                 variant='standard'
                                 label='Cost Points'
-                                rows='3'
                                 value={reward.points}
                                 onChange={e => setReward({ ...reward, points: parseInt(e.currentTarget.value) })}
                             />

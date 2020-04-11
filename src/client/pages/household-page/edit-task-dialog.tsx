@@ -108,7 +108,6 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({ open, taskToEdit, onClo
                                 type='number'
                                 variant='standard'
                                 label='Reward Points'
-                                rows='3'
                                 value={task.points}
                                 onChange={e => setTask({ ...task, points: parseInt(e.currentTarget.value) })}
                             />

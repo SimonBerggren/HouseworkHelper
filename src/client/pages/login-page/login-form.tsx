@@ -25,7 +25,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }: LoginFormProps) => {
                 required
                 label='Email'
                 type='email'
-                autoComplete='email'
                 onChange={event => setEmail(event.currentTarget.value)}
             />
 
@@ -34,7 +33,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }: LoginFormProps) => {
                 label='Password'
                 type='password'
                 disableEndAdornment
-                autoComplete='password'
                 onChange={event => setPassword(event.currentTarget.value)}
             />
 

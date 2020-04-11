@@ -1,10 +1,8 @@
 import styled from 'styled-components';
 import React from 'react';
 
-import { Menu, MenuItem, Badge } from '@material-ui/core';
+import { Menu, MenuItem } from '@material-ui/core';
 
-import NotificationsIconNone from '@material-ui/icons/NotificationsNone';
-import NotificationsIcon from '@material-ui/icons/NotificationsActive';
 import PeopleIcon from '@material-ui/icons/PeopleAlt';
 import ExitIcon from '@material-ui/icons/ExitToApp';
 import RedeemIcon from '@material-ui/icons/Redeem';
@@ -67,22 +65,12 @@ const HamburgerMenu: React.FC = () => {
                                     </StyledLink>
                                 </MenuItem>
 
-                                {user && !user.isKid ?
+                                {user && !user.isKid &&
                                     <span>
                                         < MenuItem >
                                             <StyledLink to='/household'>
                                                 <HomeIcon />
                                                 {'Household'}
-                                            </StyledLink>
-                                        </MenuItem>
-
-                                        <MenuItem onClick={handleClose}>
-                                            <StyledLink to='/requests'>
-                                                <Badge color='primary' badgeContent={2}>
-                                                    {/* <NotificationsIconNone /> */}
-                                                    <NotificationsIcon />
-                                                </Badge>
-                                                {'Requests'}
                                             </StyledLink>
                                         </MenuItem>
 
@@ -93,16 +81,7 @@ const HamburgerMenu: React.FC = () => {
                                             </StyledLink>
                                         </MenuItem>
                                     </span>
-                                    :
-                                    <MenuItem onClick={handleClose}>
-                                        <StyledLink to='/requests'>
-                                            <Badge color='primary' badgeContent={0}>
-                                                <NotificationsIconNone />
-                                                {/* <NotificationsIcon /> */}
-                                            </Badge>
-                                            {'Requests'}
-                                        </StyledLink>
-                                    </MenuItem>
+
                                 }
 
                                 <MenuItem onClick={handleClose}>
