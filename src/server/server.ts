@@ -49,7 +49,7 @@ connect()
 
         app.use('*', (_req, res) => res.sendFile(appPath));
 
-        app.listen(port, () => console.info(`Up and running on port ${ip}`));
+        app.listen(port, () => console.info(`Up and running on ${ip}`));
 
     })
     .catch(error => {
