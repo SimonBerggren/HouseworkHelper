@@ -71,7 +71,7 @@
     "express": "^4.17.1",
     "file-loader": "^5.1.0",
     "jsonwebtoken": "^8.5.1",
-    "minimist": ">=1.2.2",
+    "minimist": ">=1.2.6",
     "moment": "^2.24.0",
     "mongoose": "^5.9.6",
     "nodemon": "^2.0.2",
